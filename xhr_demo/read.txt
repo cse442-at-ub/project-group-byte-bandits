@@ -1,0 +1,3 @@
+put xhr_demo folder into the htdocs folder in xampp to run the code
+it uses one sql table called texts (id,user,content,time)
+we still need to connect it to cheshire
