@@ -1,3 +1,3 @@
-put xhr_demo folder into the htdocs folder in xampp to run the code
+put xhr_demo folder into the public_html folder on cheshire
+https://cse.buffalo.edu/~UBITname/xhr_demo/send_xhr.php
 it uses one sql table called texts (id,user,content,time)
-we still need to connect it to cheshire

@@ -1,9 +1,10 @@
-const url = "http://127.0.0.1/xhr_demo/recieve_xhr.php"
+const url = "https://cse.buffalo.edu/~jderosa3/xhr_demo/recieve_xhr.php"
 
 function xhr_post_request() {
     var xhr = new XMLHttpRequest();
     const text_input = document.getElementById("text_input");
     const request = "content=" + text_input.value;      // forming html post request
+    text_input.value = "";
     xhr.addEventListener('load', function (event) {
         console.log("data sent");
     });
