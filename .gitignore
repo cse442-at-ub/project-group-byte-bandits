@@ -33,3 +33,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Compiled Python Cache Files
+__pycache__/
+*.pyc

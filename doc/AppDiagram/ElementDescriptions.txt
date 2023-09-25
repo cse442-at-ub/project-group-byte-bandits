@@ -1,0 +1,50 @@
+Config File: json
+Contains settings stored from the Chatroom 	Menu
+Accessed by the Traffic Controller to decide what
+data gets sent and how it gets sent
+Accessed by the Location Controller to help decide
+who accesses the chatroom and roles data
+
+Temporary Text Storage:
+Contains text message data uploaded by people in a
+chatroom
+Stored in the Temporary Storage folder
+written to by the File Editor
+
+Temporary Folder:
+Contains video, image, text data from a chatroom
+
+Render Data:
+This reads the Contents of the media storage folder
+and displays it on the ui.
+It should be able to reload or re-render the whole foler
+and render a new line without reloading
+
+Chatroom:
+Part of the Ui where users interact with eachother through a message board. These chatrooms contain a unique id and are logged on a database
+
+Chatroom Menu:
+Another Part of the Ui which only the host of a private chatroom has
+access to. Here they can update specific settings of the chatroom
+
+Config File:
+This file stores the properties of the chatroom. It can also be used to log users in it
+
+SmartPhone:
+user interface
+
+File Editor:
+This manipulates the contents of the media storage folder. Its main job will be appending messages to the text storage and adding pictures to the media storage folder. It can also be used to update the contents of the config file
+
+Traffic Controller:
+This handles xmlhttps requests. It will reject requests based on some conditions or queue them for the file editor
+
+Location Controller:
+This manages who has access to the chatroom and how big it is. We will use some clustering algorithm to create the "bubble". It will use gps data to determine who is inside the bubbles radius then invites that person to access the chatroom
+
+SQL:
+The oceanus sql databse
+
+Draw over Screen:
+used gps data to draw the bubbles "chatrooms" on a map widget, we can also use google maps to "find a route" to one of the chatrooms
+
