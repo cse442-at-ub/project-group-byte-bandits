@@ -31,7 +31,7 @@ const RegisterForm = () => {
     </View>
   )
 }
-const Register = ({navigation}) => {
+const Chatroom = ({navigation}) => {
   return (
     <View style={{
       flex:1, backgroundColor:'darkgrey'}}>
@@ -55,17 +55,10 @@ const Register = ({navigation}) => {
                         Register</Text>
         <RegisterForm/>
       </View>
-      <View style={{
-        justifyContent:'space-evenly',
-        alignItems:'center',
-        flex:1
-      }}>
-        <Home/>
-      </View>
     </View>
   )
 }
 
-export default Register
+export default Chatroom
 
 const styles = StyleSheet.create({})

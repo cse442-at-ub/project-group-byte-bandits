@@ -10,8 +10,8 @@ const LinkButton = ({to,action, children, ...rest}) => {
     </TouchableOpacity>
   );
 };
-function Home() {
-  return <LinkButton to={{ screen: 'Register'}}>Register</LinkButton>
+function Chatroom() {
+  return <LinkButton to={{ screen: 'Chatroom'}}>Demo Chatroom</LinkButton>
 }
 
 const Onboarding = ({navigation}) => {
@@ -42,7 +42,7 @@ const Onboarding = ({navigation}) => {
         alignItems:'center',
         flex:1
       }}>
-        <Home/>
+        <Chatroom/>
       </View>
     </View>
     

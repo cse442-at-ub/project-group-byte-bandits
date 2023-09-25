@@ -2,16 +2,16 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psycopg2
 
+"""
 def create_friend_requests_table(cursor, connection):
     try:
         # Create the friend_requests table
-        cursor.execute("""
+        cursor.execute(
             CREATE TABLE friend_requests (
                 from_user_id INTEGER,
                 to_user_id INTEGER,
                 PRIMARY KEY (from_user_id, to_user_id)
-            );
-        """)
+            );)
 
         connection.commit()
         print("Table 'friend_requests' created successfully.")
@@ -32,13 +32,13 @@ def create_friend_request(from_user_id, to_user_id, cur, conn):
         conn.rollback()
 
 def check_friend_request_exists(from_user_id, to_user_id, cur, conn):
-        cur.execute("""
+        cur.execute(
             SELECT EXISTS (
                 SELECT 1
                 FROM friend_requests
                 WHERE from_user_id = %s AND to_user_id = %s
             );
-        """, (from_user_id, to_user_id))
+        , (from_user_id, to_user_id))
 
         result = cur.fetchone()[0]
         conn.commit()
@@ -55,11 +55,11 @@ try:
 
     cursor = connection.cursor()
 
-    cursor.execute("""CREATE TABLE IF NOT EXISTS users (
+    cursor.execute(CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY
 );
 
-""")
+)
     connection.commit()
     create_friend_requests_table(cursor, connection)
     # Fetch and print the results
@@ -123,7 +123,7 @@ def get_friend_request_pairs():
 
 @app.route('/api/get-users', methods=['GET'])
 def get_users():
-    cursor.execute("""Select * from users;""")
+    cursor.executeSelect * from users)
     rows = cursor.fetchall()
     connection.commit()
     return rows
@@ -135,3 +135,4 @@ if __name__ == '__main__':
 
 
 # PostgreSQL connection Railway URL
+"""

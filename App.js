@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Onboarding from "./src/screens/Onboarding";
+import Chatroom from "./src/screens/Chatroom"
 import Login from "./src/screens/Login";
 import Register from "./src/screens/Register";
 import { UserContext } from "./src/context/UserContext";
@@ -89,7 +90,7 @@ const seeStyles = StyleSheet.create({
 export default function App() {
   const [id, setID] = useState(null);
   const [users, setUsers] = useState([]);
-  const [friendRequest, setFriendRequest] = useState([]);
+  /*const [friendRequest, setFriendRequest] = useState([]);
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/get-friend-requests", { method: "GET" })
       .then((r) => r.json())
@@ -112,52 +113,14 @@ export default function App() {
       .then((users) => {
         setUsers(users);
       });
-  }, []);
+  }, []);*/
   return (
     <UserContext.Provider
       value={{
         id,
         setID,
-      }}
-    >
-      <View>
-        {users.map((user) => (
-          <ListItem
-            style={(() => {
-              const doesFriendRequestContainMyPair = friendRequest.some((p) => {
-                const potentialFrom = p.from_user_id;
-                const potentialTo = p.to_user_id;
-
-                return potentialFrom == id && potentialTo == user[0];
-              });
-              return doesFriendRequestContainMyPair
-                ? alreadyFriends
-                : seeStyles;
-            })()}
-            id={user[0]}
-            onPress={async () => {
-              const doesFriendRequestContainMyPair = friendRequest.some((p) => {
-                const potentialFrom = p.from_user_id;
-                const potentialTo = p.to_user_id;
-
-                return potentialFrom == id && potentialTo == user[0];
-              });
-              console.log(doesFriendRequestContainMyPair, friendRequest);
-              if (!doesFriendRequestContainMyPair) {
-                const newFriendRequestRes = await sendFriendRequest(
-                  id,
-                  user[0]
-                );
-                console.log(newFriendRequestRes);
-
-                setFriendRequest(newFriendRequestRes);
-              }
-            }}
-          />
-        ))}
-      </View>
-
-      {/* <NavigationContainer>
+      }}>
+      { <NavigationContainer>
     <Stack.Navigator>
       <Stack.Screen
         options={{ headerShown: false }}
@@ -174,8 +137,13 @@ export default function App() {
         name="Login"
         component={Login}
       />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Chatroom"
+        component={Chatroom}
+      />
       </Stack.Navigator>
-      </NavigationContainer> */}
+      </NavigationContainer> }
     </UserContext.Provider>
   );
 }
