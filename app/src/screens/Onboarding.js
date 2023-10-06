@@ -1,54 +1,69 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { DarkTheme, useLinkProps } from '@react-navigation/native';
+import React from "react"; // It's important to import React
+import { Text, View, StyleSheet } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-const LinkButton = ({to,action, children, ...rest}) => {
-  const {onPress, ...props} = useLinkProps({to,action})
+const Onboarding = ({ navigation }) => {
   return (
-    <TouchableOpacity onPress={onPress} {...props} {...rest}>
-      <Text>{children}</Text>
-    </TouchableOpacity>
-  );
-};
-function Home() {
-  return <LinkButton to={{ screen: 'Register'}}>Register</LinkButton>
-}
-
-const Onboarding = ({navigation}) => {
-  return (
-    <View style={{
-      flex:1, backgroundColor:'darkgrey'}}>
-      <View style={{
-        alignItems:'center',
-        backgroundColor:'white',
-        flex:1,
-        borderRadius:30,
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 3,
-        },
-        shadowOpacity: 0.29,
-        shadowRadius: 4.65,
-
-        elevation: 7,
-      }}>
-        <Text style={{fontSize:20, 
-                      marginTop:50}}>
-                        Onboarding</Text>
+    <View style={styles.onboardingBackground}>
+      <View style={styles.upperHalfofOnboarding}>
+        <View style={styles.lowerOfUpper}>
+          {/* View for Bubble Logo and Motto*/}
+          <View style={styles.bubbleLogo}>
+            <Ionicons name="chatbox" size={100} style={styles.iconStyle} />
+            <Text style={{ fontSize: 64, color: "gray" }}>Bubble</Text>
+          </View>
+          <View></View>
+        </View>
       </View>
-      <View style={{
-        justifyContent:'space-evenly',
-        alignItems:'center',
-        flex:1
-      }}>
-        <Home/>
+
+      {/* View for Login and Register Buttons*/}
+      <View style={styles.bottomHalfofOnboarding}>
+        <Text>Joe</Text>
       </View>
     </View>
-    
-  )
-}
+  );
+};
 
-export default Onboarding
+export default Onboarding;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  onboardingBackground: {
+    display: "flex",
+    backgroundColor: "#1a1a1a",
+  },
+  upperHalfofOnboarding: {
+    display: "flex",
+    justifyContent: "flex-end",
+    height: "50%",
+    width: "100%",
+    backgroundColor: "red",
+  },
+  bottomHalfofOnboarding: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "50%",
+    backgroundColor: "blue",
+  },
+  bubbleLogo: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  lowerOfUpper: {
+    display: "flex",
+    width: "100%",
+    alignItems: "center",
+    backgroundColor: "green",
+    height: "50%",
+  },
+  iconStyle: {
+    size: 100,
+    position: "absolute",
+    right: "60%",
+    color: "black",
+  },
+});
