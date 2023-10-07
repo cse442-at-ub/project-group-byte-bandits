@@ -1,7 +1,8 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Onboarding from "./src/screens/Onboarding";
+import Login from "./src/screens/Onboarding/Login";
+import Register from "./src/screens/Onboarding/Register";
 // import { UserContext } from "./src/context/UserContext";
 
 const Stack = createNativeStackNavigator();
@@ -13,9 +14,14 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Onboarding"
+          name="Login"
           options={{ headerShown: false }}
-          component={Onboarding}
+          component={Login}
+        />
+        <Stack.Screen
+          name="Register"
+          options={{ headerShown: false }}
+          component={Register}
         />
       </Stack.Navigator>
     </NavigationContainer>
