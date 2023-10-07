@@ -31,9 +31,9 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         exit(197);
     }
 
+    $pword_hashed = hash("sha256", $pword);
     try {
         // check if the table was updated
-        $pword_hashed = hash("sha256", $pword);
         if(!$connection->query("INSERT INTO `user_data` (`name`,`password`,`email`)  VALUES('$uname','$pword_hashed','$email');")) {
             throw new Exception('failed to insert record into database');
         }
@@ -41,11 +41,21 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
         exit(-1);
     }
-    // initate the session
-    $session_id = session_create_id('auth-');
-    session_id($session_id);
-    setcookie("session",$session_id, 7 * 24 * 60 * 60);    # stores session id for 7 days
+    try {
+        $time_seconds = 10;
+        $session_id = session_create_id('auth-');
+        session_id($session_id);
+        if(!setcookie("session", $session_id,  time() + $time_seconds, "cse.buffalo.edu/~jderosa3/")) {
+            throw new Exception('failed to retrieve session id from cookies');
+        }
+    } catch(Exception $e) {
+        echo 'Caught exception: ',  $e->getMessage(), "\n";
+        exit(150);
+    }
+
+    $connection->query("UPDATE `user_data` SET `session` = '$session_id' WHERE `name` = '$uname'");
+    if($connection->connect_error) die("connection failed: " . $connection->connect_error);
+    
     session_start();
-    // redirect to a different page
     header("Location: ../xhr_demo/send_xhr");
 }
