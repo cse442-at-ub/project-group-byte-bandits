@@ -1,50 +1,12 @@
-import React from "react"; // It's important to import React
+import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Button } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Oticons from "react-native-vector-icons/Octicons";
 
-const Register = ({ navigation }) => {
+const CustomButtons = () => {
   return (
-    <View style={styles.onboardingBackground}>
-      <View style={styles.upperHalfofOnboarding}>
-        <View style={styles.lowerOfUpper}>
-          {/* View for Bubble Logo and Motto*/}
-          <View style={styles.bubbleLogo}>
-            <Ionicons name="chatbox" size={100} style={styles.iconStyle} />
-            <Text
-              style={{
-                fontSize: 70,
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
-              Bubble
-            </Text>
-          </View>
-          {/* View for Underline */}
-          <View style={styles.underLineArea}>
-            <Oticons
-              name="horizontal-rule"
-              size={150}
-              style={styles.underlineStyle}
-            />
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: "white",
-                position: "absolute",
-                top: 18,
-                fontSize: 18,
-              }}
-            >
-              where conversation pops
-            </Text>
-          </View>
-        </View>
-      </View>
-
+    <>
       {/* View for Login and Register Buttons*/}
       <View style={styles.bottomHalfofOnboarding}>
         {/* BUTTON ONE */}
@@ -65,7 +27,7 @@ const Register = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={styles.buttonText}>Register with Apple</Text>
+              <Text style={styles.buttonText}>Login with Apple</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -88,7 +50,7 @@ const Register = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={styles.buttonText}>Register with Google</Text>
+              <Text style={styles.buttonText}>Login with Google</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -115,7 +77,7 @@ const Register = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={styles.buttonText}>Register with Username</Text>
+              <Text style={styles.buttonText}>Login with Username</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -141,66 +103,23 @@ const Register = ({ navigation }) => {
 
           {/* REGISTER HERE BUTTON */}
           <View style={styles.registerHere}>
-            <Button title="Login Here" color={"royalblue"} />
+            <Button title="Register Here" color={"royalblue"} />
           </View>
         </View>
       </View>
-    </View>
+    </>
   );
 };
 
-export default Register;
+export default CustomButtons;
 
 const styles = StyleSheet.create({
-  registerHere: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
-  },
-  orDesign: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
-  },
-  changeToRegister: {
+  bottomHalfofOnboarding: {
     display: "flex",
     flexDirection: "column",
-    height: "40%",
-    width: "100%",
     alignItems: "center",
-    justifyContent: "flex-start",
-    paddingTop: 20,
-  },
-  accountButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 300,
-    height: 60,
-    backgroundColor: "darkslategrey",
-    borderRadius: 20,
-  },
-  googleButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 300,
-    height: 60,
-    backgroundColor: "royalblue",
-    borderRadius: 20,
-  },
-  logoDiv: {
-    display: "flex",
-    height: "100%",
-    width: "20%",
-    justifyContent: "center",
-    alignItems: "center",
+    paddingTop: 60,
+    height: "50%",
   },
   buttonDiv: {
     display: "flex",
@@ -208,11 +127,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 22,
-    fontWeight: "bold",
   },
   appleButton: {
     display: "flex",
@@ -223,74 +137,59 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     borderRadius: 20,
   },
-  onboardingBackground: {
+  logoDiv: {
     display: "flex",
-    backgroundColor: "#1a1a1a",
-  },
-  upperHalfofOnboarding: {
-    display: "flex",
-    justifyContent: "flex-end",
-    height: "50%",
-    width: "100%",
-  },
-  bottomHalfofOnboarding: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: 60,
-    height: "50%",
-    // backgroundColor: "blue",
-  },
-  bubbleLogo: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    height: "50%",
+    height: "100%",
+    width: "20%",
     justifyContent: "center",
     alignItems: "center",
   },
-  underLineArea: {
+  googleButton: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: 300,
+    height: 60,
+    backgroundColor: "royalblue",
+    borderRadius: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  accountButton: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: 300,
+    height: 60,
+    backgroundColor: "darkslategrey",
+    borderRadius: 20,
+  },
+  changeToRegister: {
     display: "flex",
     flexDirection: "column",
+    height: "40%",
+    width: "100%",
+    alignItems: "center",
     justifyContent: "flex-start",
-    alignItems: "center",
-    width: "100%",
-    height: "50%",
+    paddingTop: 20,
   },
-
-  lowerOfUpper: {
+  orDesign: {
     display: "flex",
-    flexDirection: "column",
-    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    height: "50%",
+    width: "100%",
+    height: "25%",
   },
-  iconStyle: {
-    position: "absolute",
-    right: "60%",
-    color: "darkslategrey",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-  },
-  underlineStyle: {
-    position: "absolute",
-    bottom: 30,
-    color: "darkslategrey",
+  registerHere: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "25%",
   },
 });
-
-{
-  /* <View>
-        {utilityStatement(() => {
-          if (a) {
-            return "g";
-          } else if (false) {
-            return "b";
-          }
-          // if nothing is true, simply return the custom Button component
-          return <Buttons />;
-        })}
-      </View> */
-}

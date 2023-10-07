@@ -9,3 +9,5 @@
 //                      - user can simply login with their credentials
 //          IF USER DOESN'T HAVE ACCOUNT AND COOKIE WASN'T FOUND:
 //                      - user will click "Register Here" on bottom of screen and create their account
+//
+//
