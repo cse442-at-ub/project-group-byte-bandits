@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Register";
 // import { UserContext } from "./src/context/UserContext";
+import UsernameLogin from "./src/screens/Onboarding/usernameLogin";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,11 @@ const App = () => {
           name="Register"
           options={{ headerShown: false }}
           component={Register}
+        />
+        <Stack.Screen
+          name="UsernameLogin"
+          options={{ headerShown: false }}
+          component={UsernameLogin}
         />
       </Stack.Navigator>
     </NavigationContainer>

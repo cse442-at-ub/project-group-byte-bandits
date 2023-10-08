@@ -280,17 +280,3 @@ const styles = StyleSheet.create({
     color: "darkslategrey",
   },
 });
-
-{
-  /* <View>
-        {utilityStatement(() => {
-          if (a) {
-            return "g";
-          } else if (false) {
-            return "b";
-          }
-          // if nothing is true, simply return the custom Button component
-          return <Buttons />;
-        })}
-      </View> */
-}
