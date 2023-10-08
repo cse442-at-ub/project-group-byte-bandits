@@ -18,24 +18,16 @@ function check_post_record($post) {
     }
 }
 
-function check_sql_request($result) {
-    try {
-        if($connection->connect_error) 
-            throw new Exception("failed to get user data");
-    } catch {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit($errc['sql']);
-    }
-}
-
 function get_with_name($uname) {
     $result = $connection->query("SELECT * FROM `user_data` WHERE `name` = '$uname'");
-    check_sql_request($result);
+    if($connection->connect_error)
+        die("connection failed: " . $connection->connect_error);
     return = $result->fetch_assoc();
 }
 
 function get_with_email($email) {
     $result = $connection->query("SELECT * FROM `user_data` WHERE `email` = '$email'");
-    check_sql_request();
+    if($connection->connect_error)
+        die("connection failed: " . $connection->connect_error);
     return = $result->fetch_assoc();
 }
