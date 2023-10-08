@@ -181,20 +181,65 @@ const UsernameLogin = ({ navigation }) => {
         </View>
 
         <View style={styles.logInDiv}>
-          {/* ADD ONCLICK FUNCTIONALITY HERE */}
           <TouchableOpacity style={styles.logInButton}>
             {/* Login w/ Apple Text*/}
             <View
               style={{
                 height: "100%",
                 width: "80%",
-                alignItems: "flex-start",
+                alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <Text style={styles.buttonText}>Log In</Text>
             </View>
           </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            height: "35%",
+            width: "100%",
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              height: "80%",
+              width: "30%",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                height: "50%",
+                width: "100%",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Login")}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="caret-back-outline" size={32} />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  Back
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </View>
     </View>
@@ -204,11 +249,23 @@ const UsernameLogin = ({ navigation }) => {
 export default UsernameLogin;
 
 const styles = StyleSheet.create({
+  logInButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 40,
+    width: 200,
+    backgroundColor: "royalblue",
+    borderRadius: 15,
+  },
   logInDiv: {
     display: "flex",
-    height: "25%",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    height: "15%",
     width: "100%",
-    backgroundColor: "blue",
+    paddingTop: 10,
   },
   textBox: {
     height: 60,
@@ -266,6 +323,10 @@ const styles = StyleSheet.create({
     backgroundColor: "darkslategrey",
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
   },
   bubbleLogo: {
     display: "flex",
