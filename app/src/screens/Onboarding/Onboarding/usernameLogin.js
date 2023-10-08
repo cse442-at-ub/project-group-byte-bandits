@@ -18,17 +18,20 @@ const UsernameLogin = ({ navigation }) => {
         url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
         var xhr = new XMLHttpRequest();
         // sha256 hash password before .. fix backend first
-        const request = "username=" + username+"&passowrd="+ password;      // forming html post request
+        const request = "name="+username+"&pwd="+ password;      // forming html post request
         xhr.addEventListener('load', function (event) {
             console.log("data sent");
         });
         xhr.open('POST', url);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send(request);
+        xhr.onload = function(){
+          console.log(xhr.response);
+          // redirect user
+        }
     }
     catch (error){
-      console.log("Error:", error)
-      
+      console.log("Error:", error);
     }
   }
   
@@ -205,6 +208,7 @@ const UsernameLogin = ({ navigation }) => {
         <View style={styles.logInDiv}>
           <TouchableOpacity 
           onPress={() => loginUser()}
+          
           style={styles.logInButton}>
             {/* Login w/ Apple Text*/}
             <View

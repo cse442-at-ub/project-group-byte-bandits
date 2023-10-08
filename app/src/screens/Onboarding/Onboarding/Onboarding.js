@@ -4,7 +4,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState("")

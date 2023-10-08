@@ -7,8 +7,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import {useEffect} from "react";
 
 const Login = ({ navigation }) => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
     //useEffect will fetch the user Cookies and send them to Main Page if cookies are found
     useEffect(() => {
         async function fetchCookies() {
