@@ -36,6 +36,25 @@ const Login = ({ navigation }) => {
       fetchCookies();
            
     }, []); 
+
+    function loginUser () {
+      try {
+          url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
+          var xhr = new XMLHttpRequest();
+          const request = "username=" + username+"&passowrd="+ password;      // forming html post request
+          xhr.addEventListener('load', function (event) {
+              console.log("data sent");
+          });
+          xhr.open('POST', url);
+          xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+          xhr.send(request);
+      }
+      catch (error){
+        console.log("Error", error)
+        
+      }
+    }
+  
   return (
     <View style={styles.onboardingBackground}>
       <View style={styles.upperHalfofOnboarding}>

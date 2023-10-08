@@ -12,6 +12,25 @@ import Oticons from "react-native-vector-icons/Octicons";
 const UsernameLogin = ({ navigation }) => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
+  function loginUser () {
+    try {
+        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
+        var xhr = new XMLHttpRequest();
+        // sha256 hash password before .. fix backend first
+        const request = "username=" + username+"&passowrd="+ password;      // forming html post request
+        xhr.addEventListener('load', function (event) {
+            console.log("data sent");
+        });
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(request);
+    }
+    catch (error){
+      console.log("Error:", error)
+      
+    }
+  }
   
   return (
     <View style={styles.onboardingBackground}>
@@ -184,7 +203,9 @@ const UsernameLogin = ({ navigation }) => {
         </View>
 
         <View style={styles.logInDiv}>
-          <TouchableOpacity style={styles.logInButton}>
+          <TouchableOpacity 
+          onPress={() => loginUser()}
+          style={styles.logInButton}>
             {/* Login w/ Apple Text*/}
             <View
               style={{
