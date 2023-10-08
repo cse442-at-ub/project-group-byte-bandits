@@ -12,6 +12,7 @@ import Oticons from "react-native-vector-icons/Octicons";
 const UsernameLogin = ({ navigation }) => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  
   return (
     <View style={styles.onboardingBackground}>
       <View style={styles.upperHalfofOnboarding}>
