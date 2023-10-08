@@ -11,36 +11,17 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'];
 
     try {
-        // check if a user already exists with the same username
-        $result = $connection->query("SELECT * FROM `user_data` WHERE `name` = '$uname'");
-        $row = $result->fetch_assoc();
-        if(sizeof($row)) {
+        if(get_with_name($uname))
             throw new Exception('username record already exists in database');
-        }
-        // check if a user already exists with the same email
-        $result = $connection->query("SELECT * FROM `user_data` WHERE `email` = '$email'");
-        $row = $result->fetch_assoc();
-        if(sizeof($row)) {
+        if(get_with_email($email))
             throw new Exception('email record already exists in database');
-        }
-        // check if the passwords match
-        if($pword != $pword_chk) throw new Exception('passwords do not match');
-        
+        if($pword != $pword_chk)
+            throw new Exception('passwords do not match');        
     } catch (Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit(197);
+        exit($errc['form']);
     }
 
-    $pword_hashed = hash("sha256", $pword);
-    try {
-        // check if the table was updated
-        if(!$connection->query("INSERT INTO `user_data` (`name`,`password`,`email`)  VALUES('$uname','$pword_hashed','$email');")) {
-            throw new Exception('failed to insert record into database');
-        }
-    } catch(Exception $e) {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit(-1);
-    }
     try {
         $time_seconds = 10;
         $session_id = session_create_id('auth-');
@@ -50,11 +31,19 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     } catch(Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit(150);
+        exit($errc['cookies']);
     }
 
-    $connection->query("UPDATE `user_data` SET `session` = '$session_id' WHERE `name` = '$uname'");
-    if($connection->connect_error) die("connection failed: " . $connection->connect_error);
+    try {        
+        $pword_hashed = hash("sha256", $pword);
+        $connection->query("INSERT INTO `user_data` (`name`,`password`,`email`,`session`)  VALUES('$uname','$pword_hashed','$email','$session_id');")
+        if($connection->connect_error) 
+            throw new Exception("could not insert user data, connection error: " . $connection->connect_error);
+
+    } catch(Exception $e) {
+        echo 'Caught exception: ',  $e->getMessage(), "\n";
+        exit($errc['sql']);
+    }
     
     session_start();
     header("Location: ../xhr_demo/send_xhr");
