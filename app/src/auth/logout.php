@@ -1,5 +1,4 @@
 <?php
-include "connect.php";
 include "utility.php";
 try {
     $time_seconds = 3600;

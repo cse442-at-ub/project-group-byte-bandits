@@ -1,5 +1,4 @@
 <?php
-include "connect.php";
 include "utility.php";
 
 if($_SERVER["REQUEST_METHOD"] === "POST") {
