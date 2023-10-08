@@ -1,5 +1,4 @@
 <?php
-include "connect.php";
 include "utility.php";
 
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -8,10 +7,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uname = $_POST['username'];
     $pword = $_POST['password'];
     $hashed_pword = hash("sha256", $pword);
-
     try {
-        if(!get_with_name($uname)) {
-            if(!get_with_email($uname))
+        if(!$row = get_with_name($uname,$connection)) {
+            if(!$row = get_with_email($uname,$connection))
                 throw new Exception('no record found in database');
         }
         if(!hash_equals($row['password'], $hashed_pword))
@@ -22,17 +20,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit($errc['form']);
     }
 
-    try {
-        $time_seconds = 10;
-        $session_id = session_create_id('auth-');
-        session_id($session_id);
-        if(!setcookie("session", $session_id,  time() + $time_seconds, "cse.buffalo.edu/~jderosa3/"))
-            throw new Exception('failed to retrieve session id from cookies');
-
-    } catch(Exception $e) {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit($errc['cookies']);
-    }
+    $time_seconds = 3600;
+    $session_id = session_create_id('auth-');
+    session_id($session_id);
 
     try {
         $connection->query("UPDATE `user_data` SET `session` = '$session_id' WHERE `name` = '$uname'");
@@ -45,5 +35,5 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     session_start();
-    header("Location: ../xhr_demo/send_xhr");
+    header("Location: ../send_messages/send_xhr");
 }
