@@ -11,9 +11,9 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'];
 
     try {
-        if(get_with_name($uname))
+        if(get_with_name($uname,$connection))
             throw new Exception('username record already exists in database');
-        if(get_with_email($email))
+        if(get_with_email($email,$connection))
             throw new Exception('email record already exists in database');
         if($pword != $pword_chk)
             throw new Exception('passwords do not match');        
@@ -22,21 +22,13 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         exit($errc['form']);
     }
 
-    try {
-        $time_seconds = 10;
-        $session_id = session_create_id('auth-');
-        session_id($session_id);
-        if(!setcookie("session", $session_id,  time() + $time_seconds, "cse.buffalo.edu/~jderosa3/")) {
-            throw new Exception('failed to retrieve session id from cookies');
-        }
-    } catch(Exception $e) {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit($errc['cookies']);
-    }
+    $time_seconds = 3600;
+    $session_id = session_create_id('auth-');
+    session_id($session_id);
 
     try {        
         $pword_hashed = hash("sha256", $pword);
-        $connection->query("INSERT INTO `user_data` (`name`,`password`,`email`,`session`)  VALUES('$uname','$pword_hashed','$email','$session_id');")
+        $connection->query("INSERT INTO `user_data` (`name`,`password`,`email`,`session`)  VALUES('$uname','$pword_hashed','$email','$session_id')");
         if($connection->connect_error) 
             throw new Exception("could not insert user data, connection error: " . $connection->connect_error);
 
@@ -46,5 +38,5 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     
     session_start();
-    header("Location: ../xhr_demo/send_xhr");
+    header("Location: ../send_messages/send_xhr");
 }

@@ -1,30 +1,22 @@
 <?php
 include "connect.php";
-
+include "utility.php";
 try {
-    $time_seconds = 10;
-    if($_COOKIE['session']) {
-        $session_id = $_COOKIE['session'];
-        $result = $connection->query("SELECT * FROM `user_data` WHERE `session` = '$session_id'");
-        $row = $result->fetch_assoc();
-        if($row) {
-            if(!$connection->query("UPDATE `user_data` SET `session` = '' WHERE `session` = '$session_id'")) {
-                throw new Exception('failed to remove session id from database');
-            }
-            unset($_COOKIE['session']);
-            session_id($session_id);
-            if(!setcookie("session", "",  time() - $time_seconds, "cse.buffalo.edu/~jderosa3/")) {
-                throw new Exception('failed to remove session id from cookies');
-            }
+    $time_seconds = 3600;
+    if($session_id = $_COOKIE['PHPSESSID']) {   
+        if(get_with_sid($session_id,$connection)) {
+            $connection->query("UPDATE `user_data` SET `session` = '' WHERE `session` = '$session_id'");
+            if($connection->connect_error)
+                die("connection failed: " . $connection->connect_error);
+            unset($_COOKIE['PHPSESSID']);
             session_destroy();
-        }
-    } else {
-        throw new Exception('there is no logged in user');
+        } else
+            throw new Exception('there is no logged in user');
     }
     
 } catch(Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
-    exit(99);
+    exit($errc['session']);
 }
 
 header("Location: ../auth/login_form");

@@ -1,17 +1,11 @@
 <?php
 include "connect.php";
 session_start();
-echo $_COOKIE['session'];
 if(session_status() === 2) {
-    if($_COOKIE['session']) {
-        $session_id = $_COOKIE['session'];
-        echo $session_id;
+    if($session_id = $_COOKIE['PHPSESSID']) {
         $result = $connection->query("SELECT * FROM `user_data` WHERE `session` = '$session_id'");
-        $row = $result->fetch_assoc();
-        echo sizeof($row);  
-        if($row) {
-            header("Location: ../xhr_demo/send_xhr");
-        }
+        if($result->fetch_assoc())
+            header("Location: ../send_messages/send_xhr");
     }
 }
 ?>
