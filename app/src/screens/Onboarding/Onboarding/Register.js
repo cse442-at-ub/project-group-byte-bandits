@@ -96,7 +96,10 @@ const Register = ({ navigation }) => {
         {/* BUTTON THREE */}
         <View style={styles.buttonDiv}>
           {/* ADD ONCLICK FUNCTIONALITY HERE */}
-          <TouchableOpacity style={styles.accountButton}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("UsernameRegister")}
+            style={styles.accountButton}
+          >
             {/* Account Logo */}
             <View style={styles.logoDiv}>
               <MaterialCommunityIcons
@@ -115,7 +118,9 @@ const Register = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={styles.buttonText}>Register with Username</Text>
+              <Text paddingLeft={15} style={styles.buttonText}>
+                Create Account
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -141,7 +146,11 @@ const Register = ({ navigation }) => {
 
           {/* REGISTER HERE BUTTON */}
           <View style={styles.registerHere}>
-            <Button title="Login Here" color={"royalblue"} />
+            <Button
+              onPress={() => navigation.navigate("Login")}
+              title="Login Here"
+              color={"royalblue"}
+            />
           </View>
         </View>
       </View>
@@ -211,7 +220,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
   },
   appleButton: {

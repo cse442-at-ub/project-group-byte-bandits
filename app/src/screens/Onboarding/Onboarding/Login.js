@@ -144,7 +144,11 @@ const Login = ({ navigation }) => {
 
           {/* REGISTER HERE BUTTON */}
           <View style={styles.registerHere}>
-            <Button title="Register Here" color={"royalblue"} />
+            <Button
+              onPress={() => navigation.navigate("Register")}
+              title="Register Here"
+              color={"royalblue"}
+            />
           </View>
         </View>
       </View>
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
   },
   appleButton: {

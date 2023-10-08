@@ -9,9 +9,11 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Oticons from "react-native-vector-icons/Octicons";
 
-const UsernameLogin = ({ navigation }) => {
+const UsernameRegister = ({ navigation }) => {
+  const [email, setEmail] = useState("");
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   return (
     <View style={styles.onboardingBackground}>
       <View style={styles.upperHalfofOnboarding}>
@@ -59,7 +61,7 @@ const UsernameLogin = ({ navigation }) => {
             display: "flex",
             flexDirection: "row",
             width: "100%",
-            height: "25%",
+            height: "20%",
             alignItems: "flex-start",
           }}
         >
@@ -96,7 +98,71 @@ const UsernameLogin = ({ navigation }) => {
                   paddingLeft: 15,
                 }}
               >
-                Username or Email
+                Email
+              </Text>
+            </View>
+
+            <View
+              style={{
+                display: "flex",
+                width: "90%",
+                height: "80%",
+                justifyContent: "flex-start",
+              }}
+            >
+              <TextInput
+                style={styles.textBox}
+                value={email}
+                onChangeText={(text) => setEmail(text)}
+                fontWeight={"bold"}
+              />
+            </View>
+          </View>
+        </View>
+        {/* TEXT INPUT FOR PASSWORD */}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            height: "20%",
+            alignItems: "flex-start",
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              width: "15%",
+              height: "100%",
+            }}
+          ></View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "flex-end",
+                width: "90%",
+                height: "20%",
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  paddingLeft: 15,
+                }}
+              >
+                Username
               </Text>
             </View>
 
@@ -117,13 +183,13 @@ const UsernameLogin = ({ navigation }) => {
             </View>
           </View>
         </View>
-        {/* TEXT INPUT FOR PASSWORD */}
+
         <View
           style={{
             display: "flex",
             flexDirection: "row",
             width: "100%",
-            height: "25%",
+            height: "20%",
             alignItems: "flex-start",
           }}
         >
@@ -182,21 +248,71 @@ const UsernameLogin = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={styles.logInDiv}>
-          <TouchableOpacity style={styles.logInButton}>
-            {/* Login w/ Apple Text*/}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "100%",
+            height: "20%",
+            alignItems: "flex-start",
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              width: "15%",
+              height: "100%",
+            }}
+          ></View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              width: "100%",
+              height: "100%",
+            }}
+          >
             <View
               style={{
-                height: "100%",
-                width: "80%",
-                alignItems: "center",
-                justifyContent: "center",
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "flex-end",
+                width: "90%",
+                height: "20%",
               }}
             >
-              <Text style={styles.buttonText}>Log In</Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  paddingLeft: 15,
+                }}
+              >
+                Confirm Password
+              </Text>
             </View>
-          </TouchableOpacity>
+
+            <View
+              style={{
+                display: "flex",
+                width: "90%",
+                height: "80%",
+                justifyContent: "flex-start",
+              }}
+            >
+              <TextInput
+                style={styles.textBox}
+                value={confirmPassword}
+                onChangeText={(text) => setConfirmPassword(text)}
+                fontWeight={"bold"}
+              />
+            </View>
+          </View>
         </View>
+
+        {/* WORKING HERE RN */}
 
         <View
           style={{
@@ -209,36 +325,43 @@ const UsernameLogin = ({ navigation }) => {
           <View
             style={{
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
-              height: "80%",
-              width: "30%",
+              justifyContent: "center",
+              height: "50%",
+              width: "25%",
             }}
           >
-            <View
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Register")}
               style={{
                 display: "flex",
-                justifyContent: "center",
-                height: "50%",
-                width: "100%",
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Login")}
+              <Ionicons name="caret-back-outline" size={32} />
+              <Text
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
+                  fontWeight: "bold",
                 }}
               >
-                <Ionicons name="caret-back-outline" size={32} />
-                <Text
+                Back
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {/* LOGIN BUTTON */}
+          <View>
+            <View style={styles.logInDiv}>
+              <TouchableOpacity style={styles.logInButton}>
+                <View
                   style={{
-                    fontWeight: "bold",
+                    height: "100%",
+                    width: "80%",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  Back
-                </Text>
+                  <Text style={styles.buttonText}>Create Account</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -248,7 +371,7 @@ const UsernameLogin = ({ navigation }) => {
   );
 };
 
-export default UsernameLogin;
+export default UsernameRegister;
 
 const styles = StyleSheet.create({
   logInButton: {
@@ -259,15 +382,6 @@ const styles = StyleSheet.create({
     width: 200,
     backgroundColor: "royalblue",
     borderRadius: 15,
-  },
-  logInDiv: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    height: "15%",
-    width: "100%",
-    paddingTop: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -276,6 +390,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
+  },
+  logInDiv: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    height: "25%",
+    width: "100%",
+    paddingTop: 10,
   },
   textBox: {
     shadowColor: "#000",
@@ -336,7 +459,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: 60,
+    paddingTop: 20,
     height: "50%",
     backgroundColor: "darkslategrey",
     borderTopRightRadius: 25,
