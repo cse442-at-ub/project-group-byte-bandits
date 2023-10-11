@@ -7,35 +7,36 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Oticons from "react-native-vector-icons/Octicons";
+import BubbleComponent from "../../../svgs/bubbleComponent";
+import LineComponent from "../../../svgs/lineComponent";
 
 const UsernameLogin = ({ navigation }) => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
+  // const loginUser = async () => {
+  //   try {
+  //     const response = await axios.get("", {
+  //       username: username,
+  //       password: password,
+  //     });
+  //     console.log("Response:", response);
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //   }
+  // };
+
   return (
     <View style={styles.onboardingBackground}>
       <View style={styles.upperHalfofOnboarding}>
         <View style={styles.lowerOfUpper}>
           {/* View for Bubble Logo and Motto*/}
           <View style={styles.bubbleLogo}>
-            <Ionicons name="chatbox" size={100} style={styles.iconStyle} />
-            <Text
-              style={{
-                fontSize: 70,
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
-              Bubble
-            </Text>
+            <BubbleComponent />
           </View>
           {/* View for Underline */}
           <View style={styles.underLineArea}>
-            <Oticons
-              name="horizontal-rule"
-              size={150}
-              style={styles.underlineStyle}
-            />
+            <LineComponent />
             <Text
               style={{
                 fontWeight: "bold",
@@ -59,22 +60,16 @@ const UsernameLogin = ({ navigation }) => {
             display: "flex",
             flexDirection: "row",
             width: "100%",
-            height: "25%",
+            height: "30%",
             alignItems: "flex-start",
           }}
         >
           <View
             style={{
               display: "flex",
-              width: "15%",
-              height: "100%",
-            }}
-          ></View>
-          <View
-            style={{
-              display: "flex",
               flexDirection: "column",
               justifyContent: "flex-start",
+              alignItems: "center",
               width: "100%",
               height: "100%",
             }}
@@ -83,8 +78,8 @@ const UsernameLogin = ({ navigation }) => {
               style={{
                 display: "flex",
                 alignItems: "flex-start",
-                justifyContent: "flex-end",
-                width: "90%",
+                justifyContent: "center",
+                width: "80%",
                 height: "20%",
               }}
             >
@@ -106,6 +101,7 @@ const UsernameLogin = ({ navigation }) => {
                 width: "90%",
                 height: "80%",
                 justifyContent: "flex-start",
+                alignItems: "center",
               }}
             >
               <TextInput
@@ -123,22 +119,16 @@ const UsernameLogin = ({ navigation }) => {
             display: "flex",
             flexDirection: "row",
             width: "100%",
-            height: "25%",
+            height: "30%",
             alignItems: "flex-start",
           }}
         >
           <View
             style={{
               display: "flex",
-              width: "15%",
-              height: "100%",
-            }}
-          ></View>
-          <View
-            style={{
-              display: "flex",
               flexDirection: "column",
-              justifyContent: "flex-start",
+              justifyContent: "center",
+              alignItems: "center",
               width: "100%",
               height: "100%",
             }}
@@ -147,8 +137,8 @@ const UsernameLogin = ({ navigation }) => {
               style={{
                 display: "flex",
                 alignItems: "flex-start",
-                justifyContent: "flex-end",
-                width: "90%",
+                justifyContent: "center",
+                width: "80%",
                 height: "20%",
               }}
             >
@@ -170,6 +160,7 @@ const UsernameLogin = ({ navigation }) => {
                 width: "90%",
                 height: "80%",
                 justifyContent: "flex-start",
+                alignItems: "center",
               }}
             >
               <TextInput
@@ -183,7 +174,10 @@ const UsernameLogin = ({ navigation }) => {
         </View>
 
         <View style={styles.logInDiv}>
-          <TouchableOpacity style={styles.logInButton}>
+          <TouchableOpacity
+            // ADD FUNCTION THAT SENDS GET REQUEST
+            style={styles.logInButton}
+          >
             {/* Login w/ Apple Text*/}
             <View
               style={{
@@ -259,6 +253,11 @@ const styles = StyleSheet.create({
     width: 200,
     backgroundColor: "royalblue",
     borderRadius: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
   },
   logInDiv: {
     display: "flex",
@@ -268,14 +267,6 @@ const styles = StyleSheet.create({
     height: "15%",
     width: "100%",
     paddingTop: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
   },
   textBox: {
     shadowColor: "#000",
@@ -291,39 +282,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "gray",
   },
-  registerHere: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
-  },
-  orDesign: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
-  },
-
   buttonText: {
     color: "white",
     fontSize: 22,
     fontWeight: "bold",
   },
-  appleButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 300,
-    height: 60,
-    backgroundColor: "black",
-    borderRadius: 20,
-  },
+
   onboardingBackground: {
     display: "flex",
+    height: "100%",
+    weight: "100%",
     backgroundColor: "#1a1a1a",
   },
   upperHalfofOnboarding: {
@@ -336,7 +304,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: 60,
+    justifyContent: "space-between",
+    paddingTop: 20,
     height: "50%",
     backgroundColor: "darkslategrey",
     borderTopRightRadius: 25,
@@ -369,19 +338,5 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     height: "50%",
-  },
-  iconStyle: {
-    position: "absolute",
-    right: "60%",
-    color: "darkslategrey",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-  },
-  underlineStyle: {
-    position: "absolute",
-    bottom: 30,
-    color: "darkslategrey",
   },
 });

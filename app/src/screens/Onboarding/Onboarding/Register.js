@@ -1,9 +1,10 @@
 import React from "react"; // It's important to import React
 import { Text, View, StyleSheet, TouchableOpacity, Button } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import BubbleComponent from "../../../svgs/bubbleComponent";
+import LineComponent from "../../../svgs/lineComponent";
 
 const Register = ({ navigation }) => {
   return (
@@ -12,24 +13,11 @@ const Register = ({ navigation }) => {
         <View style={styles.lowerOfUpper}>
           {/* View for Bubble Logo and Motto*/}
           <View style={styles.bubbleLogo}>
-            <Ionicons name="chatbox" size={100} style={styles.iconStyle} />
-            <Text
-              style={{
-                fontSize: 70,
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
-              Bubble
-            </Text>
+            <BubbleComponent />
           </View>
           {/* View for Underline */}
           <View style={styles.underLineArea}>
-            <Oticons
-              name="horizontal-rule"
-              size={150}
-              style={styles.underlineStyle}
-            />
+            <LineComponent />
             <Text
               style={{
                 fontWeight: "bold",
@@ -97,8 +85,8 @@ const Register = ({ navigation }) => {
         <View style={styles.buttonDiv}>
           {/* ADD ONCLICK FUNCTIONALITY HERE */}
           <TouchableOpacity
-            onPress={() => navigation.navigate("UsernameRegister")}
             style={styles.accountButton}
+            onPress={() => navigation.navigate("UsernameRegister")}
           >
             {/* Account Logo */}
             <View style={styles.logoDiv}>
@@ -118,9 +106,7 @@ const Register = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Text paddingLeft={15} style={styles.buttonText}>
-                Create Account
-              </Text>
+              <Text style={styles.buttonText}>Create Account</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -184,7 +170,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 20,
   },
   accountButton: {
     display: "flex",
@@ -213,7 +198,7 @@ const styles = StyleSheet.create({
   },
   buttonDiv: {
     display: "flex",
-    height: "20%",
+    height: "22%",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -234,6 +219,8 @@ const styles = StyleSheet.create({
   },
   onboardingBackground: {
     display: "flex",
+    height: "100%",
+    width: "100%",
     backgroundColor: "#1a1a1a",
   },
   upperHalfofOnboarding: {
@@ -246,9 +233,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: 60,
+    justifyContent: "space-between",
     height: "50%",
-    // backgroundColor: "blue",
   },
   bubbleLogo: {
     display: "flex",
@@ -273,19 +259,5 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     height: "50%",
-  },
-  iconStyle: {
-    position: "absolute",
-    right: "60%",
-    color: "darkslategrey",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-  },
-  underlineStyle: {
-    position: "absolute",
-    bottom: 30,
-    color: "darkslategrey",
   },
 });
