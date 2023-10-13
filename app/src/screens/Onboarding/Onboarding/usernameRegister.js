@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
@@ -21,331 +22,330 @@ const UsernameRegister = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   return (
     <View style={styles.onboardingBackground}>
-      <View style={styles.upperHalfofOnboarding}>
-        <View style={styles.lowerOfUpper}>
-          {/* View for Bubble Logo and Motto*/}
-          <View style={styles.bubbleLogo}>
-            <BubbleComponent
-              width={windowWidth * 0.5}
-              height={windowHeight * 0.1}
-            />
-          </View>
-          {/* View for Underline */}
-          <View style={styles.underLineArea}>
-            <LineComponent />
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: "white",
-                position: "absolute",
-                top: 18,
-                fontSize: 18,
-              }}
-            >
-              where conversation pops
-            </Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.upperHalfofOnboarding}>
+          <View style={styles.lowerOfUpper}>
+            {/* View for Bubble Logo and Motto*/}
+            <View style={styles.bubbleLogo}>
+              <BubbleComponent width={windowWidth} height={windowHeight} />
+            </View>
+            {/* View for Underline */}
+            <View style={styles.underLineArea}>
+              <LineComponent />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  position: "absolute",
+                  top: 18,
+                  fontSize: 18,
+                }}
+              >
+                where conversation pops
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* View for Login and Register Buttons*/}
-      <View style={styles.bottomHalfofOnboarding}>
-        {/* TEXT INPUT FOR USERNAME OR EMAIL */}
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "20%",
-            justifyContent: "space-between",
-          }}
-        >
+        {/* View for Login and Register Buttons*/}
+        <View style={styles.bottomHalfofOnboarding}>
+          {/* TEXT INPUT FOR USERNAME OR EMAIL */}
           <View
             style={{
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "center",
+              flexDirection: "row",
               width: "100%",
-              height: "100%",
+              height: "20%",
+              justifyContent: "space-between",
             }}
           >
             <View
               style={{
                 display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                width: "80%",
-                height: "20%",
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 18,
-                  paddingLeft: 18,
-                  paddingBottom: 3,
-                }}
-              >
-                Email
-              </Text>
-            </View>
-
-            <View
-              style={{
-                display: "flex",
-                width: "90%",
-                height: "80%",
+                flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "center",
+                width: "100%",
+                height: "100%",
               }}
             >
-              <TextInput
-                style={styles.textBox}
-                value={username}
-                onChangeText={(text) => setUserName(text)}
-                fontWeight={"bold"}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* TEXT INPUT FOR PASSWORD */}
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "20%",
-            alignItems: "flex-start",
-          }}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                width: "80%",
-                height: "20%",
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 18,
-                  paddingLeft: 18,
-                  paddingBottom: 3,
-                }}
-              >
-                Username
-              </Text>
-            </View>
-
-            <View
-              style={{
-                display: "flex",
-                width: "90%",
-                height: "80%",
-                justifyContent: "flex-start",
-                alignItems: "center",
-              }}
-            >
-              <TextInput
-                style={styles.textBox}
-                value={password}
-                onChangeText={(text) => setPassword(text)}
-                fontWeight={"bold"}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "20%",
-            alignItems: "flex-start",
-          }}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                width: "80%",
-                height: "20%",
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 18,
-                  paddingLeft: 18,
-                  paddingBottom: 3,
-                }}
-              >
-                Password
-              </Text>
-            </View>
-
-            <View
-              style={{
-                display: "flex",
-                width: "90%",
-                height: "80%",
-                justifyContent: "flex-start",
-                alignItems: "center",
-              }}
-            >
-              <TextInput
-                style={styles.textBox}
-                value={password}
-                onChangeText={(text) => setPassword(text)}
-                fontWeight={"bold"}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
-            height: "20%",
-            alignItems: "flex-start",
-          }}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "center",
-                width: "80%",
-                height: "20%",
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 18,
-                  paddingLeft: 18,
-                  paddingBottom: 3,
-                }}
-              >
-                Confirm Password
-              </Text>
-            </View>
-
-            <View
-              style={{
-                display: "flex",
-                width: "90%",
-                height: "80%",
-                justifyContent: "flex-start",
-                alignItems: "center",
-              }}
-            >
-              <TextInput
-                style={styles.textBox}
-                value={password}
-                onChangeText={(text) => setPassword(text)}
-                fontWeight={"bold"}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.logInDiv}>
-          <View
-            style={{
-              height: "100%",
-              width: "25%",
-              justifyContent: "flex-end",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Register")}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons name="caret-back-outline" size={32} />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                }}
-              >
-                Back
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              width: "50%",
-            }}
-          >
-            <TouchableOpacity
-              // ADD FUNCTION THAT SENDS GET REQUEST
-              style={styles.logInButton}
-            >
-              {/* Login w/ Apple Text*/}
               <View
                 style={{
-                  height: "100%",
-                  width: "80%",
-                  alignItems: "center",
+                  display: "flex",
+                  alignItems: "flex-start",
                   justifyContent: "center",
+                  width: "80%",
+                  height: "20%",
                 }}
               >
-                <Text style={styles.buttonText}>Log In</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: 18,
+                    paddingBottom: 3,
+                  }}
+                >
+                  Email
+                </Text>
               </View>
-            </TouchableOpacity>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={username}
+                  onChangeText={(text) => setUserName(text)}
+                  fontWeight={"bold"}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* TEXT INPUT FOR PASSWORD */}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "20%",
+              alignItems: "flex-start",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  width: "80%",
+                  height: "20%",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: 18,
+                    paddingBottom: 3,
+                  }}
+                >
+                  Username
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  fontWeight={"bold"}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "20%",
+              alignItems: "flex-start",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  width: "80%",
+                  height: "20%",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: 18,
+                    paddingBottom: 3,
+                  }}
+                >
+                  Password
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  fontWeight={"bold"}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "20%",
+              alignItems: "flex-start",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  width: "80%",
+                  height: "20%",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: 18,
+                    paddingBottom: 3,
+                  }}
+                >
+                  Confirm Password
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  fontWeight={"bold"}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.logInDiv}>
+            <View
+              style={{
+                height: "100%",
+                width: "25%",
+                justifyContent: "flex-end",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Register")}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="caret-back-outline" size={32} />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  Back
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: "50%",
+              }}
+            >
+              <TouchableOpacity
+                // ADD FUNCTION THAT SENDS GET REQUEST
+                style={styles.logInButton}
+              >
+                {/* Login w/ Apple Text*/}
+                <View
+                  style={{
+                    height: "100%",
+                    width: "80%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.buttonText}>Log In</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </View>
   );
 };

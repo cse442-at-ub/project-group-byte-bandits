@@ -1,5 +1,12 @@
 import React from "react"; // It's important to import React
-import { Text, View, StyleSheet, TouchableOpacity, Button } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+  SafeAreaView,
+} from "react-native";
 import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -9,137 +16,151 @@ import LineComponent from "../../../svgs/lineComponent";
 const Register = ({ navigation }) => {
   return (
     <View style={styles.onboardingBackground}>
-      <View style={styles.upperHalfofOnboarding}>
-        <View style={styles.lowerOfUpper}>
-          {/* View for Bubble Logo and Motto*/}
-          <View style={styles.bubbleLogo}>
-            <BubbleComponent />
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.upperHalfofOnboarding}>
+          <View style={styles.lowerOfUpper}>
+            {/* View for Bubble Logo and Motto*/}
+            <View style={styles.bubbleLogo}>
+              <BubbleComponent />
+            </View>
+            {/* View for Underline */}
+            <View style={styles.underLineArea}>
+              <LineComponent />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  position: "absolute",
+                  top: 18,
+                  fontSize: 18,
+                }}
+              >
+                where conversation pops
+              </Text>
+            </View>
           </View>
-          {/* View for Underline */}
-          <View style={styles.underLineArea}>
-            <LineComponent />
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: "white",
-                position: "absolute",
-                top: 18,
-                fontSize: 18,
-              }}
-            >
-              where conversation pops
-            </Text>
+        </View>
+
+        {/* View for Login and Register Buttons*/}
+        <View style={styles.bottomHalfofOnboarding}>
+          {/* BUTTON ONE */}
+          <View style={styles.buttonDiv}>
+            {/* ADD ONCLICK FUNCTIONALITY HERE */}
+            <TouchableOpacity style={styles.appleButton}>
+              {/* Apple Logo */}
+              <View style={styles.logoDiv}>
+                <AntDesign name="apple-o" size={44} color={"white"} />
+              </View>
+
+              {/* Login w/ Apple Text*/}
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.buttonText}>Register with Apple</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </View>
-      </View>
 
-      {/* View for Login and Register Buttons*/}
-      <View style={styles.bottomHalfofOnboarding}>
-        {/* BUTTON ONE */}
-        <View style={styles.buttonDiv}>
-          {/* ADD ONCLICK FUNCTIONALITY HERE */}
-          <TouchableOpacity style={styles.appleButton}>
-            {/* Apple Logo */}
-            <View style={styles.logoDiv}>
-              <AntDesign name="apple-o" size={44} color={"white"} />
-            </View>
+          {/* BUTTON TWO */}
+          <View style={styles.buttonDiv}>
+            {/* ADD ONCLICK FUNCTIONALITY HERE */}
+            <TouchableOpacity style={styles.googleButton}>
+              {/* Google Logo */}
+              <View style={styles.logoDiv}>
+                <MaterialCommunityIcons
+                  name="google"
+                  size={44}
+                  color={"white"}
+                />
+              </View>
 
-            {/* Login w/ Apple Text*/}
-            <View
-              style={{
-                height: "100%",
-                width: "80%",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
+              {/* Login w/ Google Text*/}
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.buttonText}>Register with Google</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* BUTTON THREE */}
+          <View style={styles.buttonDiv}>
+            {/* ADD ONCLICK FUNCTIONALITY HERE */}
+            <TouchableOpacity
+              style={styles.accountButton}
+              onPress={() => navigation.navigate("UsernameRegister")}
             >
-              <Text style={styles.buttonText}>Register with Apple</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+              {/* Account Logo */}
+              <View style={styles.logoDiv}>
+                <MaterialCommunityIcons
+                  name="account-outline"
+                  size={44}
+                  color={"white"}
+                />
+              </View>
 
-        {/* BUTTON TWO */}
-        <View style={styles.buttonDiv}>
-          {/* ADD ONCLICK FUNCTIONALITY HERE */}
-          <TouchableOpacity style={styles.googleButton}>
-            {/* Google Logo */}
-            <View style={styles.logoDiv}>
-              <MaterialCommunityIcons name="google" size={44} color={"white"} />
-            </View>
+              {/* Login w/ Email/Password Text*/}
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.buttonText}>Create Account</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
-            {/* Login w/ Google Text*/}
-            <View
-              style={{
-                height: "100%",
-                width: "80%",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={styles.buttonText}>Register with Google</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* BUTTON THREE */}
-        <View style={styles.buttonDiv}>
-          {/* ADD ONCLICK FUNCTIONALITY HERE */}
-          <TouchableOpacity
-            style={styles.accountButton}
-            onPress={() => navigation.navigate("UsernameRegister")}
-          >
-            {/* Account Logo */}
-            <View style={styles.logoDiv}>
-              <MaterialCommunityIcons
-                name="account-outline"
-                size={44}
-                color={"white"}
+          {/* Area to switch to Register */}
+          <View style={styles.changeToRegister}>
+            {/* -- OR -- */}
+            <View style={styles.orDesign}>
+              <Oticons
+                name="horizontal-rule"
+                size={35}
+                color={"darkslategrey"}
+              />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  paddingLeft: 3,
+                  paddingRight: 3,
+                  color: "darkslategrey",
+                }}
+              >
+                OR
+              </Text>
+              <Oticons
+                name="horizontal-rule"
+                size={35}
+                color={"darkslategrey"}
               />
             </View>
 
-            {/* Login w/ Email/Password Text*/}
-            <View
-              style={{
-                height: "100%",
-                width: "80%",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={styles.buttonText}>Create Account</Text>
+            {/* REGISTER HERE BUTTON */}
+            <View style={styles.registerHere}>
+              <Button
+                onPress={() => navigation.navigate("Login")}
+                title="Login Here"
+                color={"royalblue"}
+              />
             </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Area to switch to Register */}
-        <View style={styles.changeToRegister}>
-          {/* -- OR -- */}
-          <View style={styles.orDesign}>
-            <Oticons name="horizontal-rule" size={35} color={"darkslategrey"} />
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 18,
-                paddingLeft: 3,
-                paddingRight: 3,
-                color: "darkslategrey",
-              }}
-            >
-              OR
-            </Text>
-            <Oticons name="horizontal-rule" size={35} color={"darkslategrey"} />
-          </View>
-
-          {/* REGISTER HERE BUTTON */}
-          <View style={styles.registerHere}>
-            <Button
-              onPress={() => navigation.navigate("Login")}
-              title="Login Here"
-              color={"royalblue"}
-            />
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -252,7 +273,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "50%",
   },
-
   lowerOfUpper: {
     display: "flex",
     flexDirection: "column",

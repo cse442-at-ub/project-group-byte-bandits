@@ -5,6 +5,7 @@ import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import UsernameLogin from "./src/screens/Onboarding/Onboarding/usernameLogin";
 import UsernameRegister from "./src/screens/Onboarding/Onboarding/usernameRegister";
+import HomePageSocial from "./src/screens/Homepage/HomePageSocial";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,11 @@ const App = () => {
     // <UserContext.Provider value={{ /* your value here */ }}>
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen
+          name="HomePageSocial"
+          options={{ headerShown: false }}
+          component={HomePageSocial}
+        />
         <Stack.Screen
           name="Login"
           options={{ headerShown: false }}
