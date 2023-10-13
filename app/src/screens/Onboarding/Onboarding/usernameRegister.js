@@ -340,7 +340,7 @@ const UsernameRegister = ({ navigation }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={styles.buttonText}>Log In</Text>
+                  <Text style={styles.buttonText}>Create Account</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -398,14 +398,14 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: "white",
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
   },
 
   onboardingBackground: {
     display: "flex",
     height: "100%",
-    weight: "100%",
+    width: "100%",
     backgroundColor: "#1a1a1a",
   },
   upperHalfofOnboarding: {

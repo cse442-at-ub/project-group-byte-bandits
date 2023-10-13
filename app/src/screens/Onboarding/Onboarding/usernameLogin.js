@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   onboardingBackground: {
     display: "flex",
     height: "100%",
-    weight: "100%",
+    width: "100%",
     backgroundColor: "#1a1a1a",
   },
   upperHalfofOnboarding: {

@@ -1,10 +1,10 @@
 import Svg, { Rect, Path } from "react-native-svg";
 
-const BubbleComponent = () => (
+const BubbleComponent = ({ width, height }) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
-    width={298}
-    height={99}
+    width={width}
+    height={height}
     fill="none"
     viewBox="0 0 298 99"
   >
