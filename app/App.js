@@ -16,11 +16,6 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="HomePageSocial"
-          options={{ headerShown: false }}
-          component={HomePageSocial}
-        />
-        <Stack.Screen
           name="Login"
           options={{ headerShown: false }}
           component={Login}

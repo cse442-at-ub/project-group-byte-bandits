@@ -6,15 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
-import { Dimensions } from "react-native";
 
 const UsernameRegister = ({ navigation }) => {
+  // Calculating width of phone screen to dynamically change position of text
   const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
+  const leftIndentation = 0.1 * windowWidth;
 
   const [email, setEmail] = useState("");
   const [username, setUserName] = useState("");
@@ -27,7 +28,7 @@ const UsernameRegister = ({ navigation }) => {
           <View style={styles.lowerOfUpper}>
             {/* View for Bubble Logo and Motto*/}
             <View style={styles.bubbleLogo}>
-              <BubbleComponent width={windowWidth} height={windowHeight} />
+              <BubbleComponent />
             </View>
             {/* View for Underline */}
             <View style={styles.underLineArea}>
@@ -76,6 +77,7 @@ const UsernameRegister = ({ navigation }) => {
                   justifyContent: "center",
                   width: "80%",
                   height: "20%",
+                  marginBottom: 3,
                 }}
               >
                 <Text
@@ -83,8 +85,7 @@ const UsernameRegister = ({ navigation }) => {
                     color: "white",
                     fontWeight: "bold",
                     fontSize: 18,
-                    paddingLeft: 18,
-                    paddingBottom: 3,
+                    paddingLeft: leftIndentation,
                   }}
                 >
                   Email
@@ -137,6 +138,7 @@ const UsernameRegister = ({ navigation }) => {
                   justifyContent: "center",
                   width: "80%",
                   height: "20%",
+                  marginBottom: 3,
                 }}
               >
                 <Text
@@ -144,8 +146,7 @@ const UsernameRegister = ({ navigation }) => {
                     color: "white",
                     fontWeight: "bold",
                     fontSize: 18,
-                    paddingLeft: 18,
-                    paddingBottom: 3,
+                    paddingLeft: leftIndentation,
                   }}
                 >
                   Username
@@ -197,6 +198,7 @@ const UsernameRegister = ({ navigation }) => {
                   justifyContent: "center",
                   width: "80%",
                   height: "20%",
+                  marginBottom: 3,
                 }}
               >
                 <Text
@@ -204,8 +206,7 @@ const UsernameRegister = ({ navigation }) => {
                     color: "white",
                     fontWeight: "bold",
                     fontSize: 18,
-                    paddingLeft: 18,
-                    paddingBottom: 3,
+                    paddingLeft: leftIndentation,
                   }}
                 >
                   Password
@@ -257,6 +258,7 @@ const UsernameRegister = ({ navigation }) => {
                   justifyContent: "center",
                   width: "80%",
                   height: "20%",
+                  marginBottom: 3,
                 }}
               >
                 <Text
@@ -264,8 +266,7 @@ const UsernameRegister = ({ navigation }) => {
                     color: "white",
                     fontWeight: "bold",
                     fontSize: 18,
-                    paddingLeft: 18,
-                    paddingBottom: 3,
+                    paddingLeft: leftIndentation,
                   }}
                 >
                   Confirm Password
@@ -390,6 +391,8 @@ const styles = StyleSheet.create({
     height: 41,
     width: 300,
     borderRadius: 20,
+    borderColor: "black",
+    borderWidth: 1,
     backgroundColor: "gray",
   },
 
@@ -418,8 +421,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     height: "50%",
     backgroundColor: "darkslategrey",
-    borderTopRightRadius: 25,
-    borderTopLeftRadius: 25,
+    borderRadius: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.6,

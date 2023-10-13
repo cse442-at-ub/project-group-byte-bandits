@@ -5,12 +5,18 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  SafeAreaView,
+  Dimensions,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
 
 const UsernameLogin = ({ navigation }) => {
+  const windowWidth = Dimensions.get("window").width;
+
+  // Calculating width of phone screen to dynamically change position of text
+  const leftIndentation = 0.1 * windowWidth;
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
@@ -62,7 +68,7 @@ const UsernameLogin = ({ navigation }) => {
               flexDirection: "row",
               width: "100%",
               height: "30%",
-              alignItems: "flex-start",
+              alignItems: "space-between",
             }}
           >
             <View
@@ -82,6 +88,7 @@ const UsernameLogin = ({ navigation }) => {
                   justifyContent: "center",
                   width: "80%",
                   height: "20%",
+                  marginBottom: 3,
                 }}
               >
                 <Text
@@ -89,7 +96,7 @@ const UsernameLogin = ({ navigation }) => {
                     color: "white",
                     fontWeight: "bold",
                     fontSize: 18,
-                    paddingLeft: 15,
+                    paddingLeft: leftIndentation,
                   }}
                 >
                   Username or Email
@@ -121,7 +128,7 @@ const UsernameLogin = ({ navigation }) => {
               flexDirection: "row",
               width: "100%",
               height: "30%",
-              alignItems: "flex-start",
+              alignItems: "space-between",
             }}
           >
             <View
@@ -148,7 +155,7 @@ const UsernameLogin = ({ navigation }) => {
                     color: "white",
                     fontWeight: "bold",
                     fontSize: 18,
-                    paddingLeft: 15,
+                    paddingLeft: leftIndentation,
                   }}
                 >
                   Password
@@ -283,6 +290,8 @@ const styles = StyleSheet.create({
     height: 60,
     width: 300,
     borderRadius: 20,
+    borderColor: "black",
+    borderWidth: 1,
     backgroundColor: "gray",
   },
   buttonText: {
@@ -311,8 +320,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     height: "50%",
     backgroundColor: "darkslategrey",
-    borderTopRightRadius: 25,
-    borderTopLeftRadius: 25,
+    borderRadius: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.6,
