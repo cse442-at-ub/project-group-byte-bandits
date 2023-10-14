@@ -15,7 +15,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const HomePageSocial = ({ navigation }) => {
+const HomePageNearby = ({ navigation }) => {
   return (
     <View style={styles.HomePageBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -70,14 +70,16 @@ const HomePageSocial = ({ navigation }) => {
             {/* Social Icon */}
             <View style={styles.topIconDiv}>
               <View style={styles.iconDiv}>
-                <TouchableOpacity>
-                  <Ionicons name="people-outline" size={60} color={"#93B8DA"} />
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("HomePageSocial")}
+                >
+                  <Ionicons name="people-outline" size={60} color={"#56585B"} />
                 </TouchableOpacity>
               </View>
 
               <View style={styles.iconTextDiv}>
                 <Text
-                  style={{ fontWeight: "bold", fontSize: 18, color: "#93B8DA" }}
+                  style={{ fontWeight: "bold", fontSize: 18, color: "#56585B" }}
                 >
                   Social
                 </Text>
@@ -87,15 +89,17 @@ const HomePageSocial = ({ navigation }) => {
             {/* Nearby Icon */}
             <View style={styles.topIconDiv}>
               <View style={styles.iconDiv}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("HomePageNearby")}
-                >
-                  <Feather name="map-pin" size={50} color={"#56585B"} />
+                <TouchableOpacity>
+                  <Feather name="map-pin" size={50} color={"#93B8DA"} />
                 </TouchableOpacity>
               </View>
 
               <View style={styles.iconTextDiv}>
-                <Text style={styles.iconText}>Nearby</Text>
+                <Text
+                  style={{ fontWeight: "bold", fontSize: 18, color: "#93B8DA" }}
+                >
+                  Nearby
+                </Text>
               </View>
             </View>
 
@@ -117,15 +121,6 @@ const HomePageSocial = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Search Bar Div */}
-          <View style={styles.searchBarDiv}>
-            <TextInput
-              style={styles.searchBar}
-              placeholder="Add a Friend..."
-              placeholderTextColor={"#56585B"}
-            />
-          </View>
-
           {/* Recent Users Text */}
           <View style={styles.recentUserTextDiv}>
             <View style={styles.infoIcon}>
@@ -136,12 +131,12 @@ const HomePageSocial = ({ navigation }) => {
               <Text
                 style={{ fontWeight: "bold", color: "white", fontSize: 14 }}
               >
-                Recent Users You've Chatted With
+                Tap a Bubble to Join
               </Text>
             </View>
           </View>
-          {/* WHERE TO ADD RECENT USERS YOU'VE CHAT WITH */}
-          <View style={styles.recentUsersDiv}></View>
+          {/* WHERE TO ADD BUBBLES NEARBY */}
+          <View style={styles.nearbyBubblesDiv}></View>
         </View>
 
         <View style={styles.bottomNavBar}>
@@ -167,12 +162,12 @@ const HomePageSocial = ({ navigation }) => {
   );
 };
 
-export default HomePageSocial;
+export default HomePageNearby;
 
 const styles = StyleSheet.create({
-  recentUsersDiv: {
+  nearbyBubblesDiv: {
     display: "flex",
-    height: "63%",
+    height: "73%",
     width: "100%",
   },
   bottomIconDiv: {
@@ -199,35 +194,10 @@ const styles = StyleSheet.create({
   recentUserTextDiv: {
     display: "flex",
     flexDirection: "row",
-    height: "7%",
+    height: "12%",
     width: "100%",
   },
-  searchBar: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-    height: 60,
-    width: 320,
-    borderRadius: 20,
-    borderColor: "#56585B",
-    borderWidth: 1,
-    backgroundColor: "#191818",
-    color: "#56585B",
-    fontWeight: "bold",
-    paddingLeft: 15,
-  },
-  searchBarDiv: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "15%",
-    width: "100%",
-  },
+
   iconText: {
     fontWeight: "bold",
     fontSize: 18,

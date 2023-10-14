@@ -293,6 +293,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 1,
     backgroundColor: "gray",
+    paddingLeft: 15,
   },
   buttonText: {
     color: "white",
