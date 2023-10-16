@@ -4,16 +4,14 @@ include "utility.php";
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     check_post_record($_POST);
     
-    $uname = $_POST['name'];
-    $pword = $_POST['pwd'];
+    $uname = $_POST['username'];
+    $pword = $_POST['password'];
     $hashed_pword = hash("sha256", $pword);
-    echo $uname . "\n" . $pword;
     try {
         if(!$row = get_with_name($uname,$connection)) {
             if(!$row = get_with_email($uname,$connection))
                 throw new Exception('no record found in database');
         }
-        echo '('.$pword.')'. $hashed_pword;
         if(!hash_equals($row['password'], $hashed_pword))
             throw new Exception('password does not match record');
 
@@ -35,6 +33,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
         exit($errc['sql']);
     }
-    echo 200;
+
     session_start();
+    header("Location: ../send_messages/send_xhr");
 }
