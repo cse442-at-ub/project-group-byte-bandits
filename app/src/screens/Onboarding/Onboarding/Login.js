@@ -4,36 +4,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {useEffect} from "react";
 
 const Login = ({ navigation }) => {
-    //useEffect will fetch the user Cookies and send them to Main Page if cookies are found
-    useEffect(() => {
-        async function fetchCookies() {
-          try {
-            fetch("https://cse.buffalo.edu/~jderosa3/auth/login_form")
-            .then(response => response.json())
-            .then(json => {
-              console.log(json);
-              if (json["response"] == 200) {
-                console.log("user is logged in");
-                // redirect to another page
-              } else if (json["response"] == -1){
-                console.log("no user is logged in");
-              }
-            });
-
-            // SEND USER TO MAIN PAGE HERE
-            // navigation.navigate("MainPage")
-        }
-        catch (error){
-          console.log("Error:", error);
-          
-        }
-      }
-      fetchCookies();
-           
-    }, []); 
   return (
     <View style={styles.onboardingBackground}>
       <View style={styles.upperHalfofOnboarding}>
