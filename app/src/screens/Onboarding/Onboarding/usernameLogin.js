@@ -11,6 +11,7 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
+import { CommonActions } from "@react-navigation/native";
 
 const UsernameLogin = ({ navigation }) => {
   const windowWidth = Dimensions.get("window").width;
@@ -19,6 +20,17 @@ const UsernameLogin = ({ navigation }) => {
   const leftIndentation = 0.1 * windowWidth;
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleLoginSuccess = () => {
+    // resets the navigation stack and set HomePageSocial component as the only screen
+    // USE FOR LATER
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "HomePageSocial" }],
+      })
+    );
+  };
 
   // const loginUser = async () => {
   //   try {
