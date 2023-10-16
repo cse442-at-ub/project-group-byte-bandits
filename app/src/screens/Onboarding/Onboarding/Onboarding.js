@@ -4,9 +4,11 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 const Login = ({ navigation }) => {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
     //useEffect will fetch the user Cookies and send them to Main Page if cookies are found
     useEffect(() => {
         async function fetchCookies() {
@@ -34,6 +36,25 @@ const Login = ({ navigation }) => {
       fetchCookies();
            
     }, []); 
+
+    function loginUser () {
+      try {
+          url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
+          var xhr = new XMLHttpRequest();
+          const request = "username=" + username+"&passowrd="+ password;      // forming html post request
+          xhr.addEventListener('load', function (event) {
+              console.log("data sent");
+          });
+          xhr.open('POST', url);
+          xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+          xhr.send(request);
+      }
+      catch (error){
+        console.log("Error", error)
+        
+      }
+    }
+  
   return (
     <View style={styles.onboardingBackground}>
       <View style={styles.upperHalfofOnboarding}>
