@@ -20,30 +20,25 @@ const UsernameLogin = ({ navigation }) => {
   const leftIndentation = 0.1 * windowWidth;
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleLoginSuccess = () => {
-    // resets the navigation stack and set HomePageSocial component as the only screen
-    // USE FOR LATER
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "HomePageSocial" }],
-      })
-    );
-  };
-
-  // const loginUser = async () => {
-  //   try {
-  //     const response = await axios.get("", {
-  //       username: username,
-  //       password: password,
-  //     });
-  //     console.log("Response:", response);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   }
-  // };
-
+  function login_post_request () {
+    try {
+        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
+        var xhr = new XMLHttpRequest();
+        const request = "name="+username+"&pwd="+ password;
+        xhr.addEventListener('load', function (event) {
+            console.log("data sent");
+        });
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(request);
+        xhr.onload = function(){
+          console.log(xhr.response);
+          navigation.navigate("HomePageSocial")
+        }
+    } catch (error){
+      console.log("Error:", error);
+    }
+  }
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -197,7 +192,7 @@ const UsernameLogin = ({ navigation }) => {
             <TouchableOpacity
               // ADD FUNCTION THAT SENDS GET REQUEST
               style={styles.logInButton}
-              onPress={() => navigation.navigate("HomePageSocial")}
+              onPress={() => login_post_request()}
             >
               {/* Login w/ Apple Text*/}
               <View

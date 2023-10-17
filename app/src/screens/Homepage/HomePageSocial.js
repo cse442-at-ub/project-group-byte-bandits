@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-} from "react-native";
+}
+from "react-native";
 import BubbleComponent from "../../svgs/bubbleComponent";
 import { Dimensions } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
