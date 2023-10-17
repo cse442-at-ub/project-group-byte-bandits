@@ -21,6 +21,27 @@ const UsernameRegister = ({ navigation }) => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  function signup_post_request () {
+    try {
+        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_signup";
+        var xhr = new XMLHttpRequest();
+        const request = "username="+username+"&password="+password+"&password_check="+confirmPassword+"&email="+email;
+        xhr.addEventListener('load', function (event) {
+            console.log("data sent");
+        });
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(request);
+        xhr.onload = function(){
+          console.log(xhr.response);
+          navigation.navigate("HomePageSocial")
+        }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -328,7 +349,7 @@ const UsernameRegister = ({ navigation }) => {
               }}
             >
               <TouchableOpacity
-                // ADD FUNCTION THAT SENDS GET REQUEST
+                onpress={signup_post_request()}
                 style={styles.logInButton}
               >
                 {/* Login w/ Apple Text*/}
