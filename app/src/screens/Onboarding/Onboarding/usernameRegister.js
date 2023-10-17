@@ -22,32 +22,28 @@ const UsernameRegister = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  function signup_post_request() {
+  function signup_post_request () {
     try {
-      url = "https://cse.buffalo.edu/~jderosa3/auth/validate_signup";
-      var xhr = new XMLHttpRequest();
-      const request =
-        "username=" +
-        username +
-        "&password=" +
-        password +
-        "&password_check=" +
-        confirmPassword +
-        "&email=" +
-        email;
-      xhr.addEventListener("load", function (event) {
-        console.log("data sent");
-      });
-      xhr.open("POST", url);
-      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr.send(request);
-      xhr.onload = function () {
-        console.log(xhr.response);
-        navigation.navigate("HomePageSocial");
-      };
+        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_signup";
+        var xhr = new XMLHttpRequest();
+        const request = "username="+username+"&password="+password+"&password_check="+confirmPassword+"&email="+email;
+        xhr.addEventListener('load', function (event) {
+            console.log("data sent");
+        });
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(request);
+        xhr.onload = function(){
+          console.log(xhr.response);
+          navigation.navigate("HomePageSocial")
+        }
     } catch (error) {
       console.log("Error:", error);
     }
+  }
+
+  function test_function() {
+    console.log("poopy");
   }
 
   return (
@@ -132,8 +128,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={email}
-                  onChangeText={(text) => setEmail(text)}
+                  value={username}
+                  onChangeText={(text) => setUserName(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -193,8 +189,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={username}
-                  onChangeText={(text) => setUserName(text)}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -313,8 +309,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={confirmPassword}
-                  onChangeText={(text) => setConfirmPassword(text)}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -357,7 +353,6 @@ const UsernameRegister = ({ navigation }) => {
               }}
             >
               <TouchableOpacity
-                onpress={signup_post_request()}
                 style={styles.logInButton}
               >
                 {/* Login w/ Apple Text*/}
@@ -369,7 +364,8 @@ const UsernameRegister = ({ navigation }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <Text style={styles.buttonText}>Create Account</Text>
+                  <Text 
+                  style={styles.buttonText}>Create Account</Text>
                 </View>
               </TouchableOpacity>
             </View>
