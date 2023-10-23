@@ -7,6 +7,8 @@ import UsernameLogin from "./src/screens/Onboarding/Onboarding/usernameLogin";
 import UsernameRegister from "./src/screens/Onboarding/Onboarding/usernameRegister";
 import HomePageSocial from "./src/screens/Homepage/HomePageSocial";
 import HomePageNearby from "./src/screens/Homepage/HomePageNearby";
+import Settings from './src/screens/Settings/Settings'
+import UserDashboard from "./src/screens/Settings/UserDashboard";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,7 +18,7 @@ const App = () => {
     // <UserContext.Provider value={{ /* your value here */ }}>
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Login"
           options={{ headerShown: false }}
           component={Login}
@@ -45,7 +47,9 @@ const App = () => {
           name="UsernameRegister"
           options={{ headerShown: false }}
           component={UsernameRegister}
-        />
+        /> */}
+        <Stack.Screen name = "UserDashboard.js" options = {{headerShown: false}} component = {UserDashboard} />
+        <Stack.Screen name = "Settings" options = {{headerShown: false}} component = {Settings} />
       </Stack.Navigator>
     </NavigationContainer>
     // </UserContext.Provider>
