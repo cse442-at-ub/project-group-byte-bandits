@@ -124,8 +124,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={username}
-                  onChangeText={(text) => setUserName(text)}
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -185,8 +185,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={password}
-                  onChangeText={(text) => setPassword(text)}
+                  value={username}
+                  onChangeText={(text) => setUserName(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -305,8 +305,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={password}
-                  onChangeText={(text) => setPassword(text)}
+                  value={confirmPassword}
+                  onChangeText={(text) => setConfirmPassword(text)}
                   fontWeight={"bold"}
                 />
               </View>
