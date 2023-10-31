@@ -18,7 +18,7 @@ const App = () => {
     // <UserContext.Provider value={{ /* your value here */ }}>
     <NavigationContainer>
       <Stack.Navigator>
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Login"
           options={{ headerShown: false }}
           component={Login}
@@ -47,7 +47,7 @@ const App = () => {
           name="UsernameRegister"
           options={{ headerShown: false }}
           component={UsernameRegister}
-        /> */}
+        />
         <Stack.Screen name = "UserDashboard.js" options = {{headerShown: false}} component = {UserDashboard} />
         <Stack.Screen name = "Settings" options = {{headerShown: false}} component = {Settings} />
       </Stack.Navigator>

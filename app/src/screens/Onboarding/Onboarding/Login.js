@@ -13,7 +13,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import LineComponent from "../../../svgs/lineComponent";
 import BubbleComponent from "../../../svgs/bubbleComponent";
-import { useEffect } from "react"; // It's important to import React
+import { useEffect } from "react";
 
 const Login = ({ navigation }) => {
   useEffect(() => {
