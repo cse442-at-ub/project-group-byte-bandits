@@ -22,21 +22,29 @@ const UsernameRegister = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  function signup_post_request () {
+  function signup_post_request() {
     try {
-        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_signup";
-        var xhr = new XMLHttpRequest();
-        const request = "username="+username+"&password="+password+"&password_check="+confirmPassword+"&email="+email;
-        xhr.addEventListener('load', function (event) {
-            console.log("data sent");
-        });
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(request);
-        xhr.onload = function(){
-          console.log(xhr.response);
-          navigation.navigate("HomePageSocial")
-        }
+      url = "https://cse.buffalo.edu/~jjalessi/auth/validate_signup";
+      var xhr = new XMLHttpRequest();
+      const request =
+        "username=" +
+        username +
+        "&password=" +
+        password +
+        "&password_check=" +
+        confirmPassword +
+        "&email=" +
+        email;
+      xhr.addEventListener("load", function (event) {
+        console.log("Creating Account For User");
+      });
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr.send(request);
+      xhr.onload = function () {
+        console.log(xhr.response);
+        navigation.navigate("HomePageSocial");
+      };
     } catch (error) {
       console.log("Error:", error);
     }
@@ -124,8 +132,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={username}
-                  onChangeText={(text) => setUserName(text)}
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -185,8 +193,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={password}
-                  onChangeText={(text) => setPassword(text)}
+                  value={username}
+                  onChangeText={(text) => setUserName(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -305,8 +313,8 @@ const UsernameRegister = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={password}
-                  onChangeText={(text) => setPassword(text)}
+                  value={confirmPassword}
+                  onChangeText={(text) => setConfirmPassword(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -349,7 +357,7 @@ const UsernameRegister = ({ navigation }) => {
               }}
             >
               <TouchableOpacity
-                onpress={signup_post_request()}
+                onPress={() => signup_post_request()}
                 style={styles.logInButton}
               >
                 {/* Login w/ Apple Text*/}

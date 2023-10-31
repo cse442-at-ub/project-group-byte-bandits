@@ -2,6 +2,7 @@
 include "utility.php";
 
 if($_SERVER["REQUEST_METHOD"] === "POST") {
+    echo 'CREATING ACCOUNT'
     check_post_record($_POST);
 
     $uname = $_POST['username'];

@@ -16,27 +16,27 @@ import BubbleComponent from "../../../svgs/bubbleComponent";
 import { useEffect } from "react"; // It's important to import React
 
 const Login = ({ navigation }) => {
-  useEffect(() => {
-    async function fetchCookies() {
-      try {
-        fetch("https://cse.buffalo.edu/~jderosa3/auth/login_form")
-        .then(response => response.json())
-        .then(json => {
-          console.log(json);
-          if (json["response"] == 200) {
-            console.log("user is logged in");
-            navigation.navigate("HomePageSocial")
-          } else if (json["response"] == -1){
-            console.log("no user is logged in");
-          }
-        });
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  }
-  fetchCookies();
-      
-  }, []); 
+  //   useEffect(() => {
+  //     async function fetchCookies() {
+  //       try {
+  //         fetch("https://cse.buffalo.edu/~jderosa3/auth/login_form")
+  //         .then(response => response.json())
+  //         .then(json => {
+  //           console.log(json);
+  //           if (json["response"] == 200) {
+  //             console.log("user is logged in");
+  //             navigation.navigate("HomePageSocial")
+  //           } else if (json["response"] == -1){
+  //             console.log("no user is logged in");
+  //           }
+  //         });
+  //     } catch (error) {
+  //       console.log("Error:", error);
+  //     }
+  //   }
+  //   fetchCookies();
+
+  //   }, []);
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
