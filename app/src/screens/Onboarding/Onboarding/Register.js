@@ -17,38 +17,26 @@ import LineComponent from "../../../svgs/lineComponent";
 import AppleRegister from "../Onboarding/appleRegister";
 import * as AppleAuthentication from "expo-apple-authentication";
 const Register = ({ navigation }) => {
-  const [isRegisteringWithApple, setIsRegisteringWithApple] = useState(false);
-  const translateY = useRef(new Animated.Value(500)).current;
-
   // fetching user APPLE ID
-  useEffect(() => {
-    const fetchAppleInfo = async () => {
-      try {
-        const credential = await AppleAuthentication.signInAsync({
-          requestedScopes: [
-            AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-            AppleAuthentication.AppleAuthenticationScope.EMAIL,
-          ],
-        });
-        // signed in
-      } catch (e) {
-        if (e.code === "ERR_REQUEST_CANCELED") {
-          // handle that the user canceled the sign-in flow
-        } else {
-          // handle other errors
-        }
-      }
-    };
-  }, []);
 
-  // animation for AppleRegister, AppleLogin, GoogleRegister, GoogleLogin components
-  useEffect(() => {
-    Animated.timing(translateY, {
-      toValue: isRegisteringWithApple ? 0 : 500,
-      duration: 275,
-      useNativeDriver: true,
-    }).start();
-  }, [isRegisteringWithApple]);
+  const fetchAppleInfo = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      console.log("CREDENTIAL", credential);
+      // signed in
+    } catch (e) {
+      if (e.code === "ERR_REQUEST_CANCELED") {
+        // handle that the user canceled the sign-in flow
+      } else {
+        // handle other errors
+      }
+    }
+  };
 
   return (
     <View style={styles.onboardingBackground}>
@@ -99,8 +87,8 @@ const Register = ({ navigation }) => {
             <View style={styles.buttonDiv}>
               <TouchableOpacity
                 onPress={() => {
-                  console.log("VALUE", isRegisteringWithApple);
-                  setIsRegisteringWithApple(true);
+                  fetchAppleInfo();
+                  // setIsRegisteringWithApple(true);
                 }}
                 style={styles.appleButton}
               >
