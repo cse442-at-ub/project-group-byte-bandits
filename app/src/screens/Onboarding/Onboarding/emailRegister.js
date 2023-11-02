@@ -26,10 +26,6 @@ const EmailRegister = ({ navigation }) => {
 
   const send_email_signup_request = async () => {
     try {
-      console.log("EMAIL", email);
-      console.log("PASSWORD", password);
-      console.log("CONFIRMPASSWORD", confirmPassword);
-
       const data = qs.stringify({
         user_email: email,
         user_password: password,
@@ -46,10 +42,11 @@ const EmailRegister = ({ navigation }) => {
         }
       );
 
-      console.log("GOOD:", response.data);
+      console.log("Reponse: ", response.data);
       navigation.navigate("HomePageSocial");
     } catch (error) {
-      console.log("BAD: \n", error.response.data);
+      console.log("Error: ", error.response.data.error);
+      setErrorMessage(error.response.data.error);
     }
   };
 
@@ -88,7 +85,7 @@ const EmailRegister = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "25%",
+              height: "20%",
               justifyContent: "space-between",
             }}
           >
@@ -150,7 +147,7 @@ const EmailRegister = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "25%",
+              height: "20%",
               alignItems: "flex-start",
             }}
           >
@@ -211,7 +208,7 @@ const EmailRegister = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "25%",
+              height: "20%",
               alignItems: "flex-start",
             }}
           >
@@ -265,6 +262,26 @@ const EmailRegister = ({ navigation }) => {
                 />
               </View>
             </View>
+          </View>
+
+          {/* ERROR MESSAGE DISPLAY */}
+          <View
+            style={{
+              height: "10%",
+              width: "100%",
+              justifyContent: "justify-center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
           </View>
 
           <View style={styles.logInDiv}>
