@@ -38,7 +38,10 @@ const EmailOrUsernameLogin = ({ navigation }) => {
           },
         }
       );
+
+      // if valid data was entered, navigate user to HomePage
       console.log("Response", response.data);
+      navigation.navigate("HomePageSocial");
     } catch (error) {
       console.log("Error:", error.response.data.error);
       setErrorMessage(error.response.data.error);

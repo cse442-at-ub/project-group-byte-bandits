@@ -42,6 +42,7 @@ const EmailRegister = ({ navigation }) => {
         }
       );
 
+      // if valid data was entered, navigate user to HomePage
       console.log("Reponse: ", response.data);
       navigation.navigate("HomePageSocial");
     } catch (error) {
