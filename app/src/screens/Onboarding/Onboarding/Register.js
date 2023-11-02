@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"; // It's important to import React
+import React, { useState } from "react"; // It's important to import React
 import {
   Text,
   View,
@@ -6,16 +6,62 @@ import {
   TouchableOpacity,
   Button,
   SafeAreaView,
-  Animated,
-  TouchableWithoutFeedback,
 } from "react-native";
 import Oticons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
+import * as AppleAuthentication from "expo-apple-authentication";
+import axios from "axios";
+import qs from "qs";
 
 const Register = ({ navigation }) => {
+  const [errorMessage, setErrorMessage] = useState("");
+  // function for fetching apple info
+  const fetchAppleInfo = async () => {
+    try {
+      const response = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      // IF APPLE RETURNS INFORMATION WE SEND INFO TO DATABASE TO CREATE USER
+      const apple_user = response.user;
+      const email = response.email;
+
+      console.log("RESPONE", response.data);
+
+      try {
+        const data = qs.stringify({
+          user_email: email,
+          apple_user: apple_user,
+        });
+        const response = await axios.post(
+          "https://cse.buffalo.edu/~jjalessi/auth/apple_register",
+          data,
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+        // if apple account was created in database navigate to homepage
+        navigation.navigate("HomePageSocial");
+      } catch (error) {
+        setErrorMessage(error.response.data.error);
+      }
+    } catch (error) {
+      if (error.code === "ERR_REQUEST_CANCELED") {
+        console.log("Error while fetching apple data");
+        // handle that the user canceled the sign-in flow
+      } else {
+        // handle other errors
+      }
+    }
+  };
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -48,7 +94,14 @@ const Register = ({ navigation }) => {
         <View style={styles.bottomHalfofOnboarding}>
           {/* BUTTON ONE */}
           <View style={styles.buttonDiv}>
-            <TouchableOpacity style={styles.appleButton}>
+            <TouchableOpacity
+              onPress={() => {
+                fetchAppleInfo().then((response) => {
+                  console.log(response);
+                });
+              }}
+              style={styles.appleButton}
+            >
               <View style={styles.logoDiv}>
                 <AntDesign name="apple-o" size={44} color={"white"} />
               </View>
@@ -114,7 +167,27 @@ const Register = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Area to switch to Register */}
+          {/* ERROR MESSAGE DISPLAYED HERE */}
+          <View
+            style={{
+              height: "8%",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
+          </View>
+
+          {/* Area to switch to Login */}
           <View style={styles.changeToRegister}>
             <View style={styles.orDesign}>
               <Oticons
@@ -207,10 +280,11 @@ const styles = StyleSheet.create({
   },
   buttonDiv: {
     display: "flex",
-    height: "22%",
+    height: "20%",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
+    // backgroundColor: "red",
   },
   buttonText: {
     color: "white",
