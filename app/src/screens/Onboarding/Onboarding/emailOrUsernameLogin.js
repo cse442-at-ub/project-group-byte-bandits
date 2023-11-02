@@ -12,6 +12,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
 import axios from "axios";
+import qs from "qs";
 
 const EmailOrUsernameLogin = ({ navigation }) => {
   const windowWidth = Dimensions.get("window").width;
@@ -20,18 +21,27 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const leftIndentation = 0.1 * windowWidth;
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const send_email_login_request = async () => {
     try {
+      const data = qs.stringify({
+        user_emailorusername: emailOrUsername,
+        user_password: password,
+      });
       const response = await axios.post(
         "https://cse.buffalo.edu/~jjalessi/auth/emailorusername_login",
+        data,
         {
-          user_emailorusername: emailOrUsername,
-          user_password: password,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         }
       );
+      console.log("Response", response.data);
     } catch (error) {
-      console.log("Error:", error);
+      console.log("Error:", error.response.data.error);
+      setErrorMessage(error.response.data.error);
     }
   };
   return (
@@ -69,7 +79,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "30%",
+              height: "25%",
               alignItems: "space-between",
             }}
           >
@@ -129,7 +139,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "30%",
+              height: "25%",
               alignItems: "space-between",
             }}
           >
@@ -182,6 +192,26 @@ const EmailOrUsernameLogin = ({ navigation }) => {
                 />
               </View>
             </View>
+          </View>
+
+          {/* ERROR MESSAGE DISPLAY */}
+          <View
+            style={{
+              height: "10%",
+              width: "100%",
+              justifyContent: "justify-center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
           </View>
 
           <View style={styles.logInDiv}>
