@@ -176,6 +176,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
                 <TextInput
                   style={styles.textBox}
                   value={password}
+                  secureTextEntry={true}
                   onChangeText={(text) => setPassword(text)}
                   fontWeight={"bold"}
                 />
