@@ -9,6 +9,7 @@ import HomePageSocial from "./src/screens/Homepage/HomePageSocial";
 import HomePageNearby from "./src/screens/Homepage/HomePageNearby";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
+import GetUsername from "./src/screens/Onboarding/GetUsername";
 
 const Stack = createNativeStackNavigator();
 
@@ -54,7 +55,12 @@ const App = () => {
         <Stack.Screen
           name="EmailRegister"
           options={{ headerShown: false, gestureEnabled: false }}
-          component={EmailRegister}
+          component={UsernameRegister}
+        />
+                <Stack.Screen
+          name="GetUsername"
+          options={{ headerShown: false, gestureEnabled: false }}
+          component={GetUsername}
         />
         <Stack.Screen
           name="UserDashboard.js"

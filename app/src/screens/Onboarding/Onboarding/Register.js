@@ -15,6 +15,7 @@ import LineComponent from "../../../svgs/lineComponent";
 import * as AppleAuthentication from "expo-apple-authentication";
 import axios from "axios";
 import qs from "qs";
+// import {GoogleSignIn, statusCodes} from '@react-native-google-signin/google-signin'
 
 const Register = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -62,6 +63,33 @@ const Register = ({ navigation }) => {
       }
     }
   };
+
+  useEffect(() => {
+    GoogleSignIn.configure({
+      webClientID: 'YOUR_WEB_CLIENT_ID',
+      offlineAccess: true,
+    })
+  }, []);
+
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     console.log(userInfo);
+  
+  //     // Call your API to register this user with Google
+  //     // userInfo.user.email, userInfo.idToken, userInfo.user.name, etc.
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       // sign in was cancelled
+  //     } else {
+  //       // handle other errors
+  //     }
+  //   }
+  // };
+
+  
+
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
