@@ -14,183 +14,139 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
-import AppleRegister from "../Onboarding/appleRegister";
-import * as AppleAuthentication from "expo-apple-authentication";
+
 const Register = ({ navigation }) => {
-  // fetching user APPLE ID
-
-  const fetchAppleInfo = async () => {
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      console.log("CREDENTIAL", credential);
-      // signed in
-    } catch (e) {
-      if (e.code === "ERR_REQUEST_CANCELED") {
-        // handle that the user canceled the sign-in flow
-      } else {
-        // handle other errors
-      }
-    }
-  };
-
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            setIsRegisteringWithApple(false);
-            console.log("CLICKYYY", isRegisteringWithApple);
-          }}
-        >
-          <View style={styles.upperHalfofOnboarding}>
-            <View style={styles.lowerOfUpper}>
-              {/* View for Bubble Logo and Motto*/}
-              <View style={styles.bubbleLogo}>
-                <BubbleComponent />
-              </View>
-              {/* View for Underline */}
-              <View style={styles.underLineArea}>
-                <LineComponent />
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: "white",
-                    position: "absolute",
-                    top: 18,
-                    fontSize: 18,
-                  }}
-                >
-                  where conversation pops
-                </Text>
-              </View>
+        <View style={styles.upperHalfofOnboarding}>
+          <View style={styles.lowerOfUpper}>
+            {/* View for Bubble Logo and Motto*/}
+            <View style={styles.bubbleLogo}>
+              <BubbleComponent />
+            </View>
+            {/* View for Underline */}
+            <View style={styles.underLineArea}>
+              <LineComponent />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  position: "absolute",
+                  top: 18,
+                  fontSize: 18,
+                }}
+              >
+                where conversation pops
+              </Text>
             </View>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
 
         {/* View for Login and Register Buttons*/}
 
         <View style={styles.bottomHalfofOnboarding}>
-          {isRegisteringWithApple && (
-            <Animated.View style={{ transform: [{ translateY: translateY }] }}>
-              <AppleRegister
-                setIsRegisteringWithApple={setIsRegisteringWithApple}
-              />
-            </Animated.View>
-          )}
-          <>
-            {/* BUTTON ONE */}
-            <View style={styles.buttonDiv}>
-              <TouchableOpacity
-                onPress={() => {
-                  fetchAppleInfo();
-                  // setIsRegisteringWithApple(true);
+          {/* BUTTON ONE */}
+          <View style={styles.buttonDiv}>
+            <TouchableOpacity style={styles.appleButton}>
+              <View style={styles.logoDiv}>
+                <AntDesign name="apple-o" size={44} color={"white"} />
+              </View>
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
                 }}
-                style={styles.appleButton}
               >
-                <View style={styles.logoDiv}>
-                  <AntDesign name="apple-o" size={44} color={"white"} />
-                </View>
-                <View
-                  style={{
-                    height: "100%",
-                    width: "80%",
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={styles.buttonText}>Register with Apple</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+                <Text style={styles.buttonText}>Register with Apple</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
-            {/* BUTTON TWO */}
-            <View style={styles.buttonDiv}>
-              <TouchableOpacity style={styles.googleButton}>
-                <View style={styles.logoDiv}>
-                  <MaterialCommunityIcons
-                    name="google"
-                    size={44}
-                    color={"white"}
-                  />
-                </View>
-                <View
-                  style={{
-                    height: "100%",
-                    width: "80%",
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={styles.buttonText}>Register with Google</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            {/* BUTTON THREE */}
-            <View style={styles.buttonDiv}>
-              <TouchableOpacity
-                style={styles.accountButton}
-                onPress={() => navigation.navigate("UsernameRegister")}
-              >
-                <View style={styles.logoDiv}>
-                  <MaterialCommunityIcons
-                    name="account-outline"
-                    size={44}
-                    color={"white"}
-                  />
-                </View>
-                <View
-                  style={{
-                    height: "100%",
-                    width: "80%",
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={styles.buttonText}>Create Account</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            {/* Area to switch to Register */}
-            <View style={styles.changeToRegister}>
-              <View style={styles.orDesign}>
-                <Oticons
-                  name="horizontal-rule"
-                  size={35}
-                  color={"darkslategrey"}
-                />
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    paddingLeft: 3,
-                    paddingRight: 3,
-                    color: "darkslategrey",
-                  }}
-                >
-                  OR
-                </Text>
-                <Oticons
-                  name="horizontal-rule"
-                  size={35}
-                  color={"darkslategrey"}
+          {/* BUTTON TWO */}
+          <View style={styles.buttonDiv}>
+            <TouchableOpacity style={styles.googleButton}>
+              <View style={styles.logoDiv}>
+                <MaterialCommunityIcons
+                  name="google"
+                  size={44}
+                  color={"white"}
                 />
               </View>
-              <View style={styles.registerHere}>
-                <Button
-                  onPress={() => navigation.navigate("Login")}
-                  title="Login Here"
-                  color={"royalblue"}
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.buttonText}>Register with Google</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* BUTTON THREE */}
+          <View style={styles.buttonDiv}>
+            <TouchableOpacity
+              style={styles.accountButton}
+              onPress={() => navigation.navigate("EmailRegister")}
+            >
+              <View style={styles.logoDiv}>
+                <MaterialCommunityIcons
+                  name="account-outline"
+                  size={44}
+                  color={"white"}
                 />
               </View>
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.buttonText}>Create Account</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Area to switch to Register */}
+          <View style={styles.changeToRegister}>
+            <View style={styles.orDesign}>
+              <Oticons
+                name="horizontal-rule"
+                size={35}
+                color={"darkslategrey"}
+              />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 18,
+                  paddingLeft: 3,
+                  paddingRight: 3,
+                  color: "darkslategrey",
+                }}
+              >
+                OR
+              </Text>
+              <Oticons
+                name="horizontal-rule"
+                size={35}
+                color={"darkslategrey"}
+              />
             </View>
-          </>
+            <View style={styles.registerHere}>
+              <Button
+                onPress={() => navigation.navigate("Login")}
+                title="Login Here"
+                color={"royalblue"}
+              />
+            </View>
+          </View>
         </View>
       </SafeAreaView>
     </View>

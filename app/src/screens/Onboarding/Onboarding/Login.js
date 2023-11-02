@@ -14,6 +14,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import LineComponent from "../../../svgs/lineComponent";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import { useEffect } from "react"; // It's important to import React
+import { fetchAppleInfo } from "../../../utils/fetchAppleInfo";
 
 const Login = ({ navigation }) => {
   //   useEffect(() => {
@@ -37,6 +38,7 @@ const Login = ({ navigation }) => {
   //   fetchCookies();
 
   //   }, []);
+
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -69,7 +71,14 @@ const Login = ({ navigation }) => {
           {/* BUTTON ONE */}
           <View style={styles.buttonDiv}>
             {/* ADD ONCLICK FUNCTIONALITY HERE */}
-            <TouchableOpacity style={styles.appleButton}>
+            <TouchableOpacity
+              onPress={() => {
+                fetchAppleInfo().then((response) => {
+                  console.log(response);
+                });
+              }}
+              style={styles.appleButton}
+            >
               {/* Apple Logo */}
               <View style={styles.logoDiv}>
                 <AntDesign name="apple-o" size={44} color={"white"} />
@@ -121,7 +130,7 @@ const Login = ({ navigation }) => {
             {/* ADD ONCLICK FUNCTIONALITY HERE */}
             <TouchableOpacity
               style={styles.accountButton}
-              onPress={() => navigation.navigate("UsernameLogin")}
+              onPress={() => navigation.navigate("EmailorUsernameLogin")}
             >
               {/* Account Logo */}
               <View style={styles.logoDiv}>
@@ -141,7 +150,7 @@ const Login = ({ navigation }) => {
                   justifyContent: "center",
                 }}
               >
-                <Text style={styles.buttonText}>Login with Username</Text>
+                <Text style={styles.buttonText}>Login with Email</Text>
               </View>
             </TouchableOpacity>
           </View>

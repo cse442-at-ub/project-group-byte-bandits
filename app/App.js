@@ -3,13 +3,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
-import UsernameLogin from "./src/screens/Onboarding/Onboarding/usernameLogin";
-import UsernameRegister from "./src/screens/Onboarding/Onboarding/usernameRegister";
+import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
+import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
 import HomePageSocial from "./src/screens/Homepage/HomePageSocial";
 import HomePageNearby from "./src/screens/Homepage/HomePageNearby";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
-import AppleRegister from "./src/screens/Onboarding/Onboarding/appleRegister";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,7 +28,7 @@ const App = () => {
           options={{
             headerShown: false,
             animation: "none",
-            gestureEnabled: false,
+            gestureEnabled: true,
           }}
           component={HomePageSocial}
         />
@@ -48,19 +47,14 @@ const App = () => {
           component={Register}
         />
         <Stack.Screen
-          name="UsernameLogin"
+          name="EmailorUsernameLogin"
           options={{ headerShown: false, gestureEnabled: false }}
-          component={UsernameLogin}
+          component={EmailorUsernameLogin}
         />
         <Stack.Screen
-          name="UsernameRegister"
+          name="EmailRegister"
           options={{ headerShown: false, gestureEnabled: false }}
-          component={UsernameRegister}
-        />
-        <Stack.Screen
-          name="AppleRegister"
-          options={{ headerShown: false, gestureEnabled: false }}
-          component={AppleRegister}
+          component={EmailRegister}
         />
         <Stack.Screen
           name="UserDashboard.js"

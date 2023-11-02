@@ -1,9 +1,9 @@
 <?php
-$connection = new mysqli("oceanus.cse.buffalo.edu", 'jderosa3', 'byte-bandits','jderosa3_db');
+$connection = new mysqli("oceanus.cse.buffalo.edu", 'jjalessi', '50383277','cse442_2023_fall_team_a_db');
 if($connection->connect_error)
     die("connection failed: " . $connection->connect_error);
 
-$errc = Array(
+global $errc = Array(
     'form' => 197,
     'cookies' => 150,
     'sql' => -1,
@@ -23,7 +23,7 @@ function check_post_record($post) {
 }
 
 function get_with_sid($session_id,$connection) {
-    $result = $connection->query("SELECT * FROM `user_data` WHERE `session` = '$session_id'");
+    $result = $connection->query("SELECT * FROM `authentication_data` WHERE `session` = '$session_id'");
     if($connection->connect_error)
         die("connection failed: " . $connection->connect_error);
     return $result->fetch_assoc();

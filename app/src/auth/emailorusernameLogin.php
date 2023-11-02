@@ -4,19 +4,22 @@ include "utility.php";
 if($_SERVER['REQUEST_METHOD'] === 'POST') {
     check_post_record($_POST);
     
-    $uname = $_POST['username'];
-    $pword = $_POST['password'];
+    $unameoremail = $_POST['user_emailorusername'];
+    $pword = $_POST['user_password'];
     $hashed_pword = hash("sha256", $pword);
     try {
-        if(!$row = get_with_name($uname,$connection)) {
-            if(!$row = get_with_email($uname,$connection))
-                throw new Exception('no record found in database');
+        if(!$row = get_with_name($unameoremail,$connection)) {
+            if(!$row = get_with_email($unameoremail,$connection))
+                throw new Exception('Incorrect Email or Username.');
         }
-        if(!hash_equals($row['password'], $hashed_pword))
-            throw new Exception('password does not match record');
-
+        $user_id = check_password($hashed_pword, $connection);
+        if ($user_id != $row['user_id']) {
+            throw new Exception('Incorrect Passord.');
+        }
+ 
     } catch( Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
+        // error code 197
         exit($errc['form']);
     }
 
@@ -25,7 +28,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     session_id($session_id);
 
     try {
-        $connection->query("UPDATE `user_data` SET `session` = '$session_id' WHERE `name` = '$uname'");
+        $connection->query("UPDATE `authentication_data` SET `session` = '$session_id' WHERE `user_id` = '$user_id'" );
         if($connection->connect_error) 
             throw new Exception("connection failed: " . $connection->connect_error);
         
@@ -35,5 +38,4 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     session_start();
-    header("Location: ../send_messages/send_xhr");
 }

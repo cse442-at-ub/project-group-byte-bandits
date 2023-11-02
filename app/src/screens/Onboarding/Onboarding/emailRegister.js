@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // It's important to import React
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -11,34 +11,48 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
-import { CommonActions } from "@react-navigation/native";
+import axios from "axios";
+import qs from "qs";
 
-const UsernameLogin = ({ navigation }) => {
-  const windowWidth = Dimensions.get("window").width;
-
+const EmailRegister = ({ navigation }) => {
   // Calculating width of phone screen to dynamically change position of text
+  const windowWidth = Dimensions.get("window").width;
   const leftIndentation = 0.1 * windowWidth;
-  const [username, setUserName] = useState("");
+
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  function login_post_request () {
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const send_email_signup_request = async () => {
     try {
-        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
-        var xhr = new XMLHttpRequest();
-        const request = "name="+username+"&pwd="+ password;
-        xhr.addEventListener('load', function (event) {
-            console.log("data sent");
-        });
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(request);
-        xhr.onload = function(){
-          console.log(xhr.response);
-          navigation.navigate("HomePageSocial")
+      console.log("EMAIL", email);
+      console.log("PASSWORD", password);
+      console.log("CONFIRMPASSWORD", confirmPassword);
+
+      const data = qs.stringify({
+        user_email: email,
+        user_password: password,
+        user_password_check: confirmPassword,
+      });
+
+      const response = await axios.post(
+        "https://cse.buffalo.edu/~jjalessi/auth/email_register",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         }
-    } catch (error){
-      console.log("Error:", error);
+      );
+
+      console.log("GOOD:", response.data);
+      navigation.navigate("HomePageSocial");
+    } catch (error) {
+      console.log("BAD: \n", error.response.data);
     }
-  }
+  };
+
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -74,8 +88,8 @@ const UsernameLogin = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "30%",
-              alignItems: "space-between",
+              height: "25%",
+              justifyContent: "space-between",
             }}
           >
             <View
@@ -106,7 +120,7 @@ const UsernameLogin = ({ navigation }) => {
                     paddingLeft: leftIndentation,
                   }}
                 >
-                  Username or Email
+                  Email
                 </Text>
               </View>
 
@@ -121,21 +135,23 @@ const UsernameLogin = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={username}
-                  onChangeText={(text) => setUserName(text)}
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
                   fontWeight={"bold"}
                 />
               </View>
             </View>
           </View>
+
           {/* TEXT INPUT FOR PASSWORD */}
+
           <View
             style={{
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "30%",
-              alignItems: "space-between",
+              height: "25%",
+              alignItems: "flex-start",
             }}
           >
             <View
@@ -155,6 +171,7 @@ const UsernameLogin = ({ navigation }) => {
                   justifyContent: "center",
                   width: "80%",
                   height: "20%",
+                  marginBottom: 3,
                 }}
               >
                 <Text
@@ -181,6 +198,7 @@ const UsernameLogin = ({ navigation }) => {
                 <TextInput
                   style={styles.textBox}
                   value={password}
+                  secureTextEntry={true}
                   onChangeText={(text) => setPassword(text)}
                   fontWeight={"bold"}
                 />
@@ -188,69 +206,118 @@ const UsernameLogin = ({ navigation }) => {
             </View>
           </View>
 
-          <View style={styles.logInDiv}>
-            <TouchableOpacity
-              // ADD FUNCTION THAT SENDS GET REQUEST
-              style={styles.logInButton}
-              onPress={() => login_post_request()}
-            >
-              {/* Login w/ Apple Text*/}
-              <View
-                style={{
-                  height: "100%",
-                  width: "80%",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={styles.buttonText}>Log In</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
           <View
             style={{
               display: "flex",
               flexDirection: "row",
-              height: "35%",
               width: "100%",
+              height: "25%",
+              alignItems: "flex-start",
             }}
           >
             <View
               style={{
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-end",
-                height: "80%",
-                width: "30%",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
               }}
             >
               <View
                 style={{
                   display: "flex",
+                  alignItems: "flex-start",
                   justifyContent: "center",
-                  height: "50%",
-                  width: "100%",
+                  width: "80%",
+                  height: "20%",
+                  marginBottom: 3,
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Login")}
+                <Text
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: leftIndentation,
                   }}
                 >
-                  <Ionicons name="caret-back-outline" size={32} />
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Back
-                  </Text>
-                </TouchableOpacity>
+                  Confirm Password
+                </Text>
               </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={confirmPassword}
+                  secureTextEntry={true}
+                  onChangeText={(text) => setConfirmPassword(text)}
+                  fontWeight={"bold"}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.logInDiv}>
+            <View
+              style={{
+                height: "100%",
+                width: "25%",
+                justifyContent: "flex-end",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Register")}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons name="caret-back-outline" size={32} />
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  Back
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: "50%",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => send_email_signup_request()}
+                style={styles.logInButton}
+              >
+                {/* Login w/ Apple Text*/}
+                <View
+                  style={{
+                    height: "100%",
+                    width: "80%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={styles.buttonText}>Create Account</Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -259,7 +326,7 @@ const UsernameLogin = ({ navigation }) => {
   );
 };
 
-export default UsernameLogin;
+export default EmailRegister;
 
 const styles = StyleSheet.create({
   logInButton: {
@@ -267,7 +334,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 40,
-    width: 200,
+    width: 180,
     backgroundColor: "royalblue",
     borderRadius: 15,
     shadowColor: "#000",
@@ -275,15 +342,17 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   logInDiv: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    height: "15%",
+    height: "20%",
     width: "100%",
-    paddingTop: 10,
   },
   textBox: {
     shadowColor: "#000",
@@ -294,7 +363,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    height: 60,
+    height: 41,
     width: 300,
     borderRadius: 20,
     borderColor: "black",
@@ -302,9 +371,10 @@ const styles = StyleSheet.create({
     backgroundColor: "gray",
     paddingLeft: 15,
   },
+
   buttonText: {
     color: "white",
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
   },
 
@@ -324,8 +394,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 20,
+    paddingTop: 5,
     height: "50%",
     backgroundColor: "darkslategrey",
     borderRadius: 30,
