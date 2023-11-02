@@ -14,8 +14,9 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
-import AppleRegister from "../Onboarding/appleRegister";
 import * as AppleAuthentication from "expo-apple-authentication";
+// import {GoogleSignIn, statusCodes} from '@react-native-google-signin/google-signin'
+
 const Register = ({ navigation }) => {
   // fetching user APPLE ID
 
@@ -37,6 +38,32 @@ const Register = ({ navigation }) => {
       }
     }
   };
+
+  useEffect(() => {
+    GoogleSignIn.configure({
+      webClientID: 'YOUR_WEB_CLIENT_ID',
+      offlineAccess: true,
+    })
+  }, []);
+
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     console.log(userInfo);
+  
+  //     // Call your API to register this user with Google
+  //     // userInfo.user.email, userInfo.idToken, userInfo.user.name, etc.
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       // sign in was cancelled
+  //     } else {
+  //       // handle other errors
+  //     }
+  //   }
+  // };
+
+  
 
   return (
     <View style={styles.onboardingBackground}>
@@ -77,9 +104,6 @@ const Register = ({ navigation }) => {
         <View style={styles.bottomHalfofOnboarding}>
           {isRegisteringWithApple && (
             <Animated.View style={{ transform: [{ translateY: translateY }] }}>
-              <AppleRegister
-                setIsRegisteringWithApple={setIsRegisteringWithApple}
-              />
             </Animated.View>
           )}
           <>
@@ -109,8 +133,13 @@ const Register = ({ navigation }) => {
             </View>
 
             {/* BUTTON TWO */}
-            <View style={styles.buttonDiv}>
-              <TouchableOpacity style={styles.googleButton}>
+            {/* <View style={styles.buttonDiv}>
+            <TouchableOpacity
+              onPress={() => {
+                signInWithGoogle();
+              }}
+              style={styles.googleButton}
+            >
                 <View style={styles.logoDiv}>
                   <MaterialCommunityIcons
                     name="google"
@@ -129,7 +158,7 @@ const Register = ({ navigation }) => {
                   <Text style={styles.buttonText}>Register with Google</Text>
                 </View>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             {/* BUTTON THREE */}
             <View style={styles.buttonDiv}>

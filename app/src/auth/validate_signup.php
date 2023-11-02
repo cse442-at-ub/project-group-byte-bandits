@@ -2,6 +2,10 @@
 include "utility.php";
 
 if($_SERVER["REQUEST_METHOD"] === "POST") {
+    //code for google login:
+    $google_id = $_POST['google_id'] ?? null;
+
+    $apple_id = $_POST['apple_id'] ?? null; 
     echo 'CREATING ACCOUNT'
     check_post_record($_POST);
 
@@ -16,7 +20,12 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         if(get_with_email($email,$connection))
             throw new Exception('email record already exists in database');
         if($pword != $pword_chk)
-            throw new Exception('passwords do not match');        
+            throw new Exception('passwords do not match');  
+        if ($google_id) {
+            if (get_with_google_id ($google_id, $connection)) 
+                throw new Exception('Google ID record already exists in database')
+            
+        }      
     } catch (Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";
         exit($errc['form']);

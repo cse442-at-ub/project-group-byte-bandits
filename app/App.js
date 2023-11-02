@@ -9,7 +9,7 @@ import HomePageSocial from "./src/screens/Homepage/HomePageSocial";
 import HomePageNearby from "./src/screens/Homepage/HomePageNearby";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
-import AppleRegister from "./src/screens/Onboarding/Onboarding/appleRegister";
+import GetUsername from "./src/screens/Onboarding/GetUsername";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,8 +46,8 @@ const App = () => {
           name="Register"
           options={{ headerShown: false, gestureEnabled: false }}
           component={Register}
-        />
-        <Stack.Screen
+        /> 
+       <Stack.Screen
           name="UsernameLogin"
           options={{ headerShown: false, gestureEnabled: false }}
           component={UsernameLogin}
@@ -57,10 +57,10 @@ const App = () => {
           options={{ headerShown: false, gestureEnabled: false }}
           component={UsernameRegister}
         />
-        <Stack.Screen
-          name="AppleRegister"
+                <Stack.Screen
+          name="GetUsername"
           options={{ headerShown: false, gestureEnabled: false }}
-          component={AppleRegister}
+          component={GetUsername}
         />
         <Stack.Screen
           name="UserDashboard.js"
