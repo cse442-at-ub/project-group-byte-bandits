@@ -1,4 +1,5 @@
-import React, { useState } from "react"; // It's important to import React
+import React, { useState, useEffect } from "react"; // It's important to import React
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -16,9 +17,12 @@ import BubbleComponent from "../../../svgs/bubbleComponent";
 import * as AppleAuthentication from "expo-apple-authentication";
 import axios from "axios";
 import qs from "qs";
+import { logIn } from "../../../../redux/user";
 
 const Login = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
+  const [userID, setUserID] = useState();
+  const dispatch = useDispatch();
 
   //   useEffect(() => {
   //     async function fetchCookies() {
@@ -66,9 +70,23 @@ const Login = ({ navigation }) => {
             },
           }
         );
-        // if apple account was found in database navigate to HomePage
-        navigation.navigate("HomePageSocial");
+        // if valid data was entered, navigate user to HomePage
+        console.log("Response", response.data.user_info);
+        dispatch(logIn(response.data.user_info.id));
+
+        if (response.data.user_info.name === null) {
+          navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
+        } else {
+          navigation.navigate("HomePageSocial"); // else send them to HomePageSocial
+        }
       } catch (error) {
+        // If user prematurely exited login screen, send them to GetUsername to make username
+        if (error.response.data.error === "No Username Found") {
+          console.log("USERID: ", response.data.user_info);
+          // dispatch(logIn(response.data.user_info.user_id));
+          setErrorMessage("");
+          navigation.navigate("GetUsername");
+        }
         setErrorMessage(error.response.data.error);
       }
     } catch (error) {

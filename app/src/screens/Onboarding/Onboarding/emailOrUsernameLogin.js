@@ -1,4 +1,5 @@
 import React, { useState } from "react"; // It's important to import React
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -13,6 +14,7 @@ import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
 import axios from "axios";
 import qs from "qs";
+import { logIn } from "../../../../redux/user";
 
 const EmailOrUsernameLogin = ({ navigation }) => {
   const windowWidth = Dimensions.get("window").width;
@@ -22,6 +24,8 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [userID, setUserID] = useState();
+  const dispatch = useDispatch();
 
   const send_email_login_request = async () => {
     try {
@@ -40,10 +44,16 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       );
 
       // if valid data was entered, navigate user to HomePage
-      console.log("Response", response.data);
-      navigation.navigate("HomePageSocial");
+      console.log("Response", response.data.user_info);
+      dispatch(logIn(response.data.user_info.id));
+
+      if (response.data.user_info.name === null) {
+        navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
+      } else {
+        navigation.navigate("HomePageSocial"); // else send them to HomePageSocial
+      }
     } catch (error) {
-      console.log("Error:", error.response.data.error);
+      setErrorMessage("");
       setErrorMessage(error.response.data.error);
     }
   };

@@ -1,4 +1,5 @@
 import React, { useState } from "react"; // It's important to import React
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -15,10 +16,12 @@ import LineComponent from "../../../svgs/lineComponent";
 import * as AppleAuthentication from "expo-apple-authentication";
 import axios from "axios";
 import qs from "qs";
-// import {GoogleSignIn, statusCodes} from '@react-native-google-signin/google-signin'
+import { logIn } from "../../../../redux/user";
 
 const Register = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
+
   // function for fetching apple info
   const fetchAppleInfo = async () => {
     try {
@@ -28,12 +31,9 @@ const Register = ({ navigation }) => {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-
       // IF APPLE RETURNS INFORMATION WE SEND INFO TO DATABASE TO CREATE USER
       const apple_user = response.user;
       const email = response.email;
-
-      console.log("RESPONE", response.data);
 
       try {
         const data = qs.stringify({
@@ -49,8 +49,13 @@ const Register = ({ navigation }) => {
             },
           }
         );
-        // if apple account was created in database navigate to homepage
-        navigation.navigate("HomePageSocial");
+        // if apple information was successfully updated in database, send user to GetUsername
+
+        // SETTING USERID into REDUX
+        dispatch(logIn(response.data.user_info.user_id));
+
+        setErrorMessage("");
+        navigation.navigate("GetUsername");
       } catch (error) {
         setErrorMessage(error.response.data.error);
       }
@@ -64,34 +69,10 @@ const Register = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    GoogleSignIn.configure({
-      webClientID: 'YOUR_WEB_CLIENT_ID',
-      offlineAccess: true,
-    })
-  }, []);
-
-  // const signInWithGoogle = async () => {
-  //   try {
-  //     await GoogleSignin.hasPlayServices();
-  //     const userInfo = await GoogleSignin.signIn();
-  //     console.log(userInfo);
-  
-  //     // Call your API to register this user with Google
-  //     // userInfo.user.email, userInfo.idToken, userInfo.user.name, etc.
-  //   } catch (error) {
-  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-  //       // sign in was cancelled
-  //     } else {
-  //       // handle other errors
-  //     }
-  //   }
-  // };
-
-  
-
   return (
     <View style={styles.onboardingBackground}>
+      {/* render creatingUsername */}
+
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.upperHalfofOnboarding}>
           <View style={styles.lowerOfUpper}>

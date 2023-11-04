@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -13,11 +14,13 @@ import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
 import axios from "axios";
 import qs from "qs";
+import { logIn } from "../../../../redux/user";
 
 const EmailRegister = ({ navigation }) => {
   // Calculating width of phone screen to dynamically change position of text
   const windowWidth = Dimensions.get("window").width;
   const leftIndentation = 0.1 * windowWidth;
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,11 +45,14 @@ const EmailRegister = ({ navigation }) => {
         }
       );
 
-      // if valid data was entered, navigate user to HomePage
-      console.log("Reponse: ", response.data);
-      navigation.navigate("HomePageSocial");
+      // if user information successfully sent to database, send them to GetUsername
+
+      // SETTING USERID into REDUX
+      dispatch(logIn(response.data.user_info.user_id));
+
+      setErrorMessage("");
+      navigation.navigate("GetUsername");
     } catch (error) {
-      console.log("Error: ", error.response.data.error);
       setErrorMessage(error.response.data.error);
     }
   };
@@ -272,6 +278,9 @@ const EmailRegister = ({ navigation }) => {
               width: "100%",
               justifyContent: "justify-center",
               alignItems: "center",
+              fontWeight: "bold",
+              color: "red",
+              fontSize: 12,
             }}
           >
             <Text
