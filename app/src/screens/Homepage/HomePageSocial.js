@@ -153,7 +153,7 @@ const HomePageSocial = ({ navigation }) => {
           {/* Settings Icon */}
           <View style={styles.bottomIconDiv}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("UserDashboardp")}
+              onPress={() => navigation.navigate("UserDashboard")}
             >
               <MaterialCommunityIcons
                 name="account-circle-outline"

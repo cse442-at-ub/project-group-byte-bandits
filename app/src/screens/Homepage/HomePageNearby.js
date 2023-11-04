@@ -7,7 +7,6 @@ import {
   SafeAreaView,
 } from "react-native";
 import BubbleComponent from "../../svgs/bubbleComponent";
-import { Dimensions } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
