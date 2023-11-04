@@ -1,4 +1,5 @@
-import React, { useState } from "react"; // It's important to import React
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -11,36 +12,50 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
+import axios from "axios";
+import qs from "qs";
+import { logIn } from "../../../../redux/user";
 
-const UsernameRegister = ({ navigation }) => {
+const EmailRegister = ({ navigation }) => {
   // Calculating width of phone screen to dynamically change position of text
   const windowWidth = Dimensions.get("window").width;
   const leftIndentation = 0.1 * windowWidth;
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
-  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  function signup_post_request () {
+  const send_email_signup_request = async () => {
     try {
-        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_signup";
-        var xhr = new XMLHttpRequest();
-        const request = "username="+username+"&password="+password+"&password_check="+confirmPassword+"&email="+email;
-        xhr.addEventListener('load', function (event) {
-            console.log("data sent");
-        });
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(request);
-        xhr.onload = function(){
-          console.log(xhr.response);
-          navigation.navigate("HomePageSocial")
+      const data = qs.stringify({
+        user_email: email,
+        user_password: password,
+        user_password_check: confirmPassword,
+      });
+
+      const response = await axios.post(
+        "https://cse.buffalo.edu/~jjalessi/auth/email_register",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         }
+      );
+
+      // if user information successfully sent to database, send them to GetUsername
+
+      // SETTING USERID into REDUX
+      dispatch(logIn(response.data.user_info.user_id));
+
+      setErrorMessage("");
+      navigation.navigate("GetUsername");
     } catch (error) {
-      console.log("Error:", error);
+      setErrorMessage(error.response.data.error);
     }
-  }
+  };
 
   return (
     <View style={styles.onboardingBackground}>
@@ -133,65 +148,6 @@ const UsernameRegister = ({ navigation }) => {
           </View>
 
           {/* TEXT INPUT FOR PASSWORD */}
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              height: "20%",
-              alignItems: "flex-start",
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <View
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "center",
-                  width: "80%",
-                  height: "20%",
-                  marginBottom: 3,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    paddingLeft: leftIndentation,
-                  }}
-                >
-                  Username
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  display: "flex",
-                  width: "90%",
-                  height: "80%",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                }}
-              >
-                <TextInput
-                  style={styles.textBox}
-                  value={username}
-                  onChangeText={(text) => setUserName(text)}
-                  fontWeight={"bold"}
-                />
-              </View>
-            </View>
-          </View>
 
           <View
             style={{
@@ -246,6 +202,7 @@ const UsernameRegister = ({ navigation }) => {
                 <TextInput
                   style={styles.textBox}
                   value={password}
+                  secureTextEntry={true}
                   onChangeText={(text) => setPassword(text)}
                   fontWeight={"bold"}
                 />
@@ -306,11 +263,35 @@ const UsernameRegister = ({ navigation }) => {
                 <TextInput
                   style={styles.textBox}
                   value={confirmPassword}
+                  secureTextEntry={true}
                   onChangeText={(text) => setConfirmPassword(text)}
                   fontWeight={"bold"}
                 />
               </View>
             </View>
+          </View>
+
+          {/* ERROR MESSAGE DISPLAY */}
+          <View
+            style={{
+              height: "10%",
+              width: "100%",
+              justifyContent: "justify-center",
+              alignItems: "center",
+              fontWeight: "bold",
+              color: "red",
+              fontSize: 12,
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
           </View>
 
           <View style={styles.logInDiv}>
@@ -349,7 +330,7 @@ const UsernameRegister = ({ navigation }) => {
               }}
             >
               <TouchableOpacity
-                onpress={signup_post_request()}
+                onPress={() => send_email_signup_request()}
                 style={styles.logInButton}
               >
                 {/* Login w/ Apple Text*/}
@@ -372,7 +353,7 @@ const UsernameRegister = ({ navigation }) => {
   );
 };
 
-export default UsernameRegister;
+export default EmailRegister;
 
 const styles = StyleSheet.create({
   logInButton: {

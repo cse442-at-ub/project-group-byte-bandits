@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +32,7 @@
         "projectId": "0794ce02-7bc2-435e-b2b2-ab8d2cc1ac5c"
       }
     },
-    "owner": "joehchen"
+    "plugins": ["expo-apple-authentication"],
+    "owner": "bubbles"
   }
 }

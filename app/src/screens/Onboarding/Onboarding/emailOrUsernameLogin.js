@@ -1,4 +1,5 @@
 import React, { useState } from "react"; // It's important to import React
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -11,34 +12,51 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
-import { CommonActions } from "@react-navigation/native";
+import axios from "axios";
+import qs from "qs";
+import { logIn } from "../../../../redux/user";
 
-const UsernameLogin = ({ navigation }) => {
+const EmailOrUsernameLogin = ({ navigation }) => {
   const windowWidth = Dimensions.get("window").width;
 
   // Calculating width of phone screen to dynamically change position of text
   const leftIndentation = 0.1 * windowWidth;
-  const [username, setUserName] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-  function login_post_request () {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [userID, setUserID] = useState();
+  const dispatch = useDispatch();
+
+  const send_email_login_request = async () => {
     try {
-        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
-        var xhr = new XMLHttpRequest();
-        const request = "name="+username+"&pwd="+ password;
-        xhr.addEventListener('load', function (event) {
-            console.log("data sent");
-        });
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send(request);
-        xhr.onload = function(){
-          console.log(xhr.response);
-          navigation.navigate("HomePageSocial")
+      const data = qs.stringify({
+        user_emailorusername: emailOrUsername,
+        user_password: password,
+      });
+      const response = await axios.post(
+        "https://cse.buffalo.edu/~jjalessi/auth/emailorusername_login",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         }
-    } catch (error){
-      console.log("Error:", error);
+      );
+
+      // if valid data was entered, navigate user to HomePage
+      console.log("Response", response.data.user_info);
+      dispatch(logIn(response.data.user_info.id));
+
+      if (response.data.user_info.name === null) {
+        navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
+      } else {
+        navigation.navigate("HomePageSocial"); // else send them to HomePageSocial
+      }
+    } catch (error) {
+      setErrorMessage("");
+      setErrorMessage(error.response.data.error);
     }
-  }
+  };
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -74,7 +92,7 @@ const UsernameLogin = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "30%",
+              height: "25%",
               alignItems: "space-between",
             }}
           >
@@ -106,7 +124,7 @@ const UsernameLogin = ({ navigation }) => {
                     paddingLeft: leftIndentation,
                   }}
                 >
-                  Username or Email
+                  Email or Username
                 </Text>
               </View>
 
@@ -121,8 +139,8 @@ const UsernameLogin = ({ navigation }) => {
               >
                 <TextInput
                   style={styles.textBox}
-                  value={username}
-                  onChangeText={(text) => setUserName(text)}
+                  value={emailOrUsername}
+                  onChangeText={(text) => setEmailOrUsername(text)}
                   fontWeight={"bold"}
                 />
               </View>
@@ -134,7 +152,7 @@ const UsernameLogin = ({ navigation }) => {
               display: "flex",
               flexDirection: "row",
               width: "100%",
-              height: "30%",
+              height: "25%",
               alignItems: "space-between",
             }}
           >
@@ -181,6 +199,7 @@ const UsernameLogin = ({ navigation }) => {
                 <TextInput
                   style={styles.textBox}
                   value={password}
+                  secureTextEntry={true}
                   onChangeText={(text) => setPassword(text)}
                   fontWeight={"bold"}
                 />
@@ -188,11 +207,31 @@ const UsernameLogin = ({ navigation }) => {
             </View>
           </View>
 
+          {/* ERROR MESSAGE DISPLAY */}
+          <View
+            style={{
+              height: "10%",
+              width: "100%",
+              justifyContent: "justify-center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
+          </View>
+
           <View style={styles.logInDiv}>
             <TouchableOpacity
               // ADD FUNCTION THAT SENDS GET REQUEST
               style={styles.logInButton}
-              onPress={() => login_post_request()}
+              onPress={() => send_email_login_request()}
             >
               {/* Login w/ Apple Text*/}
               <View
@@ -259,7 +298,7 @@ const UsernameLogin = ({ navigation }) => {
   );
 };
 
-export default UsernameLogin;
+export default EmailOrUsernameLogin;
 
 const styles = StyleSheet.create({
   logInButton: {
