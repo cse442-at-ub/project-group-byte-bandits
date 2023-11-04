@@ -147,7 +147,9 @@ const HomePageNearby = ({ navigation }) => {
           </View>
           {/* Settings Icon */}
           <View style={styles.bottomIconDiv}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("UserDashboard")}
+            >
               <MaterialCommunityIcons
                 name="account-circle-outline"
                 size={60}

@@ -6,10 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-}
-from "react-native";
+} from "react-native";
 import BubbleComponent from "../../svgs/bubbleComponent";
-import { Dimensions } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -154,7 +152,9 @@ const HomePageSocial = ({ navigation }) => {
           </View>
           {/* Settings Icon */}
           <View style={styles.bottomIconDiv}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("UserDashboard")}
+            >
               <MaterialCommunityIcons
                 name="account-circle-outline"
                 size={60}
