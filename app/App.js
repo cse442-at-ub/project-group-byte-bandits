@@ -30,7 +30,7 @@ const App = () => {
             options={{
               headerShown: false,
               animation: "none",
-              gestureEnabled: true,
+              gestureEnabled: false,
             }}
             component={HomePageSocial}
           />
@@ -60,12 +60,12 @@ const App = () => {
           />
           <Stack.Screen
             name="GetUsername"
-            options={{ headerShown: false, gestureEnabled: true }}
+            options={{ headerShown: false, gestureEnabled: false }}
             component={GetUsername}
           />
           <Stack.Screen
             name="UserDashboard"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{ headerShown: false, gestureEnabled: true }}
             component={UserDashboard}
           />
           <Stack.Screen
