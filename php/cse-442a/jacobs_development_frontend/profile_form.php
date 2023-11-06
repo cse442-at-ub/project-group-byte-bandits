@@ -1,11 +1,11 @@
 <?php
-include "utility.php";
-session_start();
-if(session_status() === 2) {
-    if($session_id = $_COOKIE['PHPSESSID']) {
-        $result = $connection->query("SELECT * FROM `user_data` WHERE `session` = '$session_id'");
-        if($result->fetch_assoc())
-            header("Location: ../send_messages/send_xhr");
+include "../auth/utility.php";
+
+$session_id = $_COOKIE['PHPSESSID'];
+if($session_id) {
+    $rows = get_user_with_sid($session_id);
+    if (count($rows) > 0) {
+        header("Location: ../chatroom/message_board"); 
     }
 }
 ?>
@@ -19,6 +19,5 @@ if(session_status() === 2) {
         <br>
         <input type="submit" value="login"/>
     </form>
-    <a href="../auth/logout.php">logout</a>
 </body>
 </html>

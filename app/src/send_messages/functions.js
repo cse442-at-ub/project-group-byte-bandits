@@ -1,4 +1,4 @@
-const url = "https://cse.buffalo.edu/~jderosa3/send_messages/recieve_xhr.php"
+const url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/message_handler"
 
 function xhr_post_request() {
     var xhr = new XMLHttpRequest();

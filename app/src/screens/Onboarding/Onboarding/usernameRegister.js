@@ -24,7 +24,7 @@ const UsernameRegister = ({ navigation }) => {
 
   function signup_post_request () {
     try {
-        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_signup";
+        url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup";
         var xhr = new XMLHttpRequest();
         const request = "username="+username+"&password="+password+"&password_check="+confirmPassword+"&email="+email;
         xhr.addEventListener('load', function (event) {

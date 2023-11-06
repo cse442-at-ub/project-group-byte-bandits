@@ -6,7 +6,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     reset_username($_POST['username'],
                     $session_id,
                     $connection);
-    $rows = get_with_sid($session_id, $connection);
+    $rows = get_user_with_sid($session_id);
     reset_password($rows[0]['password'],
                     $_POST['password'],
                     $session_id,

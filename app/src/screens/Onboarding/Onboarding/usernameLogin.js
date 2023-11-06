@@ -22,7 +22,7 @@ const UsernameLogin = ({ navigation }) => {
   const [password, setPassword] = useState("");
   function login_post_request () {
     try {
-        url = "https://cse.buffalo.edu/~jderosa3/auth/validate_login";
+        url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login";
         var xhr = new XMLHttpRequest();
         const request = "name="+username+"&pwd="+ password;
         xhr.addEventListener('load', function (event) {
