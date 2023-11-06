@@ -6,6 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import BubbleComponent from "../../svgs/bubbleComponent";
 import Feather from "react-native-vector-icons/Feather";
@@ -20,10 +22,20 @@ const HomePageSocial = ({ navigation }) => {
   return (
     <View style={styles.HomePageBackground}>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* CONDITIONAL RENDER OF CREATE BUBBLE */}
-        {creatingBubble && (
-          <CreateBubble setCreatingBubble={setCreatingBubble} />
-        )}
+        {/* CREATE BUBBLE MODAL */}
+        <Modal transparent={true} animationType="fade" visible={creatingBubble}>
+          <TouchableWithoutFeedback onPress={() => setCreatingBubble(false)}>
+            <View style={styles.invisibleScreen}>
+              <TouchableWithoutFeedback>
+                {/* intercepting outer TouchableWithoutFeedback to prevent setCreateBubble(false) when clicking within CreateBubble */}
+                <View style={styles.createBubble}>
+                  <View style={styles.topBar}></View>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+
         <View style={styles.topOfHomePage}>
           {/* Top Icon Bar */}
           <View style={styles.topBar}>
@@ -62,7 +74,11 @@ const HomePageSocial = ({ navigation }) => {
 
                 <View style={styles.BubbleText}>
                   <Text
-                    style={{ fontWeight: "bold", color: "white", fontSize: 16 }}
+                    style={{
+                      fontWeight: "bold",
+                      color: "white",
+                      fontSize: 16,
+                    }}
                   >
                     Bubble
                   </Text>
@@ -85,7 +101,11 @@ const HomePageSocial = ({ navigation }) => {
 
               <View style={styles.iconTextDiv}>
                 <Text
-                  style={{ fontWeight: "bold", fontSize: 18, color: "#93B8DA" }}
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    color: "#93B8DA",
+                  }}
                 >
                   Social
                 </Text>
@@ -180,6 +200,23 @@ const HomePageSocial = ({ navigation }) => {
 export default HomePageSocial;
 
 const styles = StyleSheet.create({
+  invisibleScreen: {
+    display: "flex",
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  createBubble: {
+    display: "flex",
+    position: "absolute",
+    width: "90%",
+    height: "65%",
+    backgroundColor: "#1B1B1B",
+    borderRadius: 30,
+    shadowOpacity: 0.5,
+  },
   recentUsersDiv: {
     display: "flex",
     height: "63%",

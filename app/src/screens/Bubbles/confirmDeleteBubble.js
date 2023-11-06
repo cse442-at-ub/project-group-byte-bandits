@@ -8,7 +8,9 @@ export const ConfirmDeleteBubble = ({
   return (
     <View style={styles.deleteBubble}>
       <View style={styles.topHalf}>
-        <Text style={styles.warningText}>Are you sure?</Text>
+        <Text style={styles.warningText}>
+          Pressing Confirm will Delete Bubble
+        </Text>
       </View>
 
       <View style={styles.bottomHalf}>
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
   warningText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 14,
   },
   topHalf: {
     display: "flex",

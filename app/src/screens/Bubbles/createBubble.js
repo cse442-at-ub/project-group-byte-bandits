@@ -11,20 +11,17 @@ import { ConfirmDeleteBubble } from "../Bubbles/confirmDeleteBubble";
 export const CreateBubble = ({ setCreatingBubble }) => {
   const [confirmDeleteBubble, setConfirmDeleteBubble] = useState(false);
   return (
-    <TouchableOpacity
-      onPress={() => setConfirmDeleteBubble(true)}
-      style={styles.invisibleScreen}
-    >
-      {confirmDeleteBubble && (
-        <ConfirmDeleteBubble
-          setConfirmDeleteBubble={setConfirmDeleteBubble}
-          setCreatingBubble={setCreatingBubble}
-        />
-      )}
-      <TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={() => setConfirmDeleteBubble(true)}>
+      <View style={styles.invisibleScreen}>
+        {confirmDeleteBubble && (
+          <ConfirmDeleteBubble
+            setConfirmDeleteBubble={setConfirmDeleteBubble}
+            setCreatingBubble={setCreatingBubble}
+          />
+        )}
         <View style={styles.createBubble}></View>
-      </TouchableWithoutFeedback>
-    </TouchableOpacity>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -32,9 +29,11 @@ const styles = StyleSheet.create({
   createBubble: {
     display: "flex",
     position: "absolute",
-    width: "70%",
-    height: "60%",
-    backgroundColor: "black",
+    width: "90%",
+    height: "75%",
+    backgroundColor: "#1B1B1B",
+    borderRadius: 30,
+    shadowOpacity: 0.5,
   },
   invisibleScreen: {
     display: "flex",
