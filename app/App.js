@@ -20,11 +20,11 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
+          {/* <Stack.Screen
             name="Login"
             options={{ headerShown: false, gestureEnabled: false }}
             component={Login}
-          />
+          /> */}
           <Stack.Screen
             name="HomePageSocial"
             options={{

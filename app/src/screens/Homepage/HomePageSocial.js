@@ -13,11 +13,17 @@ import Octicons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { CreateBubble } from "../Bubbles/createBubble";
 
 const HomePageSocial = ({ navigation }) => {
+  const [creatingBubble, setCreatingBubble] = useState(false);
   return (
     <View style={styles.HomePageBackground}>
       <SafeAreaView style={{ flex: 1 }}>
+        {/* CONDITIONAL RENDER OF CREATE BUBBLE */}
+        {creatingBubble && (
+          <CreateBubble setCreatingBubble={setCreatingBubble} />
+        )}
         <View style={styles.topOfHomePage}>
           {/* Top Icon Bar */}
           <View style={styles.topBar}>
@@ -46,7 +52,10 @@ const HomePageSocial = ({ navigation }) => {
 
           <View style={styles.bottomBar}>
             <View style={styles.addBubbleDiv}>
-              <TouchableOpacity style={styles.addBubbleIcon}>
+              <TouchableOpacity
+                onPress={() => setCreatingBubble(true)}
+                style={styles.addBubbleIcon}
+              >
                 <View style={styles.plusLogoIcon}>
                   <AntDesign name="pluscircleo" size={20} color={"white"} />
                 </View>
