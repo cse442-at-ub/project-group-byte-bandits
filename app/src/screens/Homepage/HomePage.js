@@ -2,105 +2,141 @@ import React, { useState } from "react"; // It's important to import React
 import {
   Text,
   View,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
+import BubbleComponent from "../../svgs/bubbleComponent";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import HomePageSocial from "../Homepage/HomePageSocial";
+import HomePageNearby from "../Homepage/HomePageNearby";
 
-const HomePageSocial = ({ setNearbyTab, setSocialTab }) => {
+const HomePage = ({ navigation }) => {
+  const [creatingBubble, setCreatingBubble] = useState(false);
+  const [socialTab, setSocialTab] = useState(true);
+  const [nearbyTab, setNearbyTab] = useState(false);
+  const [exploreTab, setExploreTab] = useState(false);
+
   return (
-    <View style={styles.contentOfHomePage}>
-      {/* Div for Main Three Tabs */}
-      <View style={styles.mainTabs}>
-        {/* Social Icon */}
-        <View style={styles.topIconDiv}>
-          <View style={styles.iconDiv}>
-            <TouchableOpacity>
-              <Ionicons name="people-outline" size={60} color={"#93B8DA"} />
-            </TouchableOpacity>
+    <View style={styles.HomePageBackground}>
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* CREATE BUBBLE MODAL */}
+        <Modal transparent={true} animationType="fade" visible={creatingBubble}>
+          <TouchableWithoutFeedback onPress={() => setCreatingBubble(false)}>
+            <View style={styles.invisibleScreen}>
+              <TouchableWithoutFeedback>
+                {/* intercepting outer TouchableWithoutFeedback to prevent setCreateBubble(false) when clicking within CreateBubble */}
+                <View style={styles.createBubble}>
+                  <View style={styles.topBar}></View>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+
+        <View style={styles.topOfHomePage}>
+          {/* Top Icon Bar */}
+          <View style={styles.topBar}>
+            {/* Bubble Logo */}
+            <View style={styles.bubbleLogo}>
+              <BubbleComponent width={120} height={40} />
+            </View>
+            {/* Padding Div*/}
+            <View style={styles.paddingDiv}></View>
+            {/* Div for Notifcations and DM Icons */}
+            <View style={styles.topIcons}>
+              {/* Notifcation Icon */}
+              <View style={styles.notiDiv}>
+                <TouchableOpacity>
+                  <Feather name="bell" size={34} color={"#56585B"} />
+                </TouchableOpacity>
+              </View>
+              {/* DM Icon */}
+              <View style={styles.dmDiv}>
+                <TouchableOpacity>
+                  <Octicons name="paper-airplane" size={28} color={"#56585B"} />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
 
-          <View style={styles.iconTextDiv}>
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 18,
-                color: "#93B8DA",
-              }}
-            >
-              Social
-            </Text>
+          <View style={styles.bottomBar}>
+            <View style={styles.addBubbleDiv}>
+              <TouchableOpacity
+                onPress={() => setCreatingBubble(true)}
+                style={styles.addBubbleIcon}
+              >
+                <View style={styles.plusLogoIcon}>
+                  <AntDesign name="pluscircleo" size={20} color={"white"} />
+                </View>
+
+                <View style={styles.BubbleText}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: "white",
+                      fontSize: 16,
+                    }}
+                  >
+                    Bubble
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
-        {/* Nearby Icon */}
-        <View style={styles.topIconDiv}>
-          <View style={styles.iconDiv}>
+        {/* ====================================SOCIAL TAB======================================== */}
+
+        {socialTab && (
+          <HomePageSocial
+            setSocialTab={setSocialTab}
+            setNearbyTab={setNearbyTab}
+          />
+        )}
+
+        {/* ====================================NEARBY TAB======================================== */}
+
+        {nearbyTab && (
+          <HomePageNearby
+            setNearbyTab={setNearbyTab}
+            setSocialTab={setSocialTab}
+          />
+        )}
+
+        {/* ===================================EXPLORE TAB========================================== */}
+
+        <View style={styles.bottomNavBar}>
+          {/* Home Icon */}
+          <View style={styles.bottomIconDiv}>
+            <TouchableOpacity>
+              <Octicons name="home" size={54} color={"#628CD1"} />
+            </TouchableOpacity>
+          </View>
+          {/* Settings Icon */}
+          <View style={styles.bottomIconDiv}>
             <TouchableOpacity
-              onPress={() => {
-                setSocialTab(false);
-                setNearbyTab(true);
-              }}
+              onPress={() => navigation.navigate("UserDashboard")}
             >
-              <Feather name="map-pin" size={50} color={"#56585B"} />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.iconTextDiv}>
-            <Text style={styles.iconText}>Nearby</Text>
-          </View>
-        </View>
-
-        {/* Explore Icon */}
-        <View style={styles.topIconDiv}>
-          <View style={styles.iconDiv}>
-            <TouchableOpacity>
               <MaterialCommunityIcons
-                name="map-search-outline"
-                size={50}
-                color={"#56585B"}
+                name="account-circle-outline"
+                size={60}
+                color={"white"}
               />
             </TouchableOpacity>
           </View>
-
-          <View style={styles.iconTextDiv}>
-            <Text style={styles.iconText}>Explore</Text>
-          </View>
         </View>
-      </View>
-
-      {/* Search Bar Div */}
-      <View style={styles.searchBarDiv}>
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Add a Friend..."
-          placeholderTextColor={"#56585B"}
-        />
-      </View>
-
-      {/* Recent Users Text */}
-      <View style={styles.recentUserTextDiv}>
-        <View style={styles.infoIcon}>
-          <Octicons name="info" size={20} color={"#93B8DA"} />
-        </View>
-
-        <View style={styles.recentUserText}>
-          <Text style={{ fontWeight: "bold", color: "white", fontSize: 14 }}>
-            Recent Users You've Chatted With
-          </Text>
-        </View>
-      </View>
-      {/* WHERE TO ADD RECENT USERS YOU'VE CHAT WITH */}
-      <View style={styles.recentUsersDiv}></View>
+      </SafeAreaView>
     </View>
   );
 };
 
-export default HomePageSocial;
+export default HomePage;
 
 const styles = StyleSheet.create({
   invisibleScreen: {

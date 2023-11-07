@@ -1,163 +1,94 @@
-import React, { useState } from "react"; // It's important to import React
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-} from "react-native";
-import BubbleComponent from "../../svgs/bubbleComponent";
+import React from "react"; // It's important to import React
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const HomePageNearby = ({ navigation }) => {
+const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   return (
-    <View style={styles.HomePageBackground}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.topOfHomePage}>
-          {/* Top Icon Bar */}
-          <View style={styles.topBar}>
-            {/* Bubble Logo */}
-            <View style={styles.bubbleLogo}>
-              <BubbleComponent width={120} height={40} />
-            </View>
-            {/* Padding Div*/}
-            <View style={styles.paddingDiv}></View>
-            {/* Div for Notifcations and DM Icons */}
-            <View style={styles.topIcons}>
-              {/* Notifcation Icon */}
-              <View style={styles.notiDiv}>
-                <TouchableOpacity>
-                  <Feather name="bell" size={34} color={"#56585B"} />
-                </TouchableOpacity>
-              </View>
-              {/* DM Icon */}
-              <View style={styles.dmDiv}>
-                <TouchableOpacity>
-                  <Octicons name="paper-airplane" size={28} color={"#56585B"} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.bottomBar}>
-            <View style={styles.addBubbleDiv}>
-              <TouchableOpacity style={styles.addBubbleIcon}>
-                <View style={styles.plusLogoIcon}>
-                  <AntDesign name="pluscircleo" size={20} color={"white"} />
-                </View>
-
-                <View style={styles.BubbleText}>
-                  <Text
-                    style={{ fontWeight: "bold", color: "white", fontSize: 16 }}
-                  >
-                    Bubble
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.contentOfHomePage}>
-          {/* Div for Main Three Tabs */}
-          <View style={styles.mainTabs}>
-            {/* Social Icon */}
-            <View style={styles.topIconDiv}>
-              <View style={styles.iconDiv}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("HomePageSocial")}
-                >
-                  <Ionicons name="people-outline" size={60} color={"#56585B"} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.iconTextDiv}>
-                <Text
-                  style={{ fontWeight: "bold", fontSize: 18, color: "#56585B" }}
-                >
-                  Social
-                </Text>
-              </View>
-            </View>
-
-            {/* Nearby Icon */}
-            <View style={styles.topIconDiv}>
-              <View style={styles.iconDiv}>
-                <TouchableOpacity>
-                  <Feather name="map-pin" size={50} color={"#93B8DA"} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.iconTextDiv}>
-                <Text
-                  style={{ fontWeight: "bold", fontSize: 18, color: "#93B8DA" }}
-                >
-                  Nearby
-                </Text>
-              </View>
-            </View>
-
-            {/* Explore Icon */}
-            <View style={styles.topIconDiv}>
-              <View style={styles.iconDiv}>
-                <TouchableOpacity>
-                  <MaterialCommunityIcons
-                    name="map-search-outline"
-                    size={50}
-                    color={"#56585B"}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.iconTextDiv}>
-                <Text style={styles.iconText}>Explore</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Recent Users Text */}
-          <View style={styles.recentUserTextDiv}>
-            <View style={styles.infoIcon}>
-              <Octicons name="info" size={20} color={"#93B8DA"} />
-            </View>
-
-            <View style={styles.recentUserText}>
-              <Text
-                style={{ fontWeight: "bold", color: "white", fontSize: 14 }}
-              >
-                Tap a Bubble to Join
-              </Text>
-            </View>
-          </View>
-          {/* WHERE TO ADD BUBBLES NEARBY */}
-          <View style={styles.nearbyBubblesDiv}></View>
-        </View>
-
-        <View style={styles.bottomNavBar}>
-          {/* Home Icon */}
-          <View style={styles.bottomIconDiv}>
-            <TouchableOpacity>
-              <Octicons name="home" size={54} color={"#628CD1"} />
+    <View style={styles.contentOfHomePage}>
+      {/* Div for Main Three Tabs */}
+      <View style={styles.mainTabs}>
+        {/* Social Icon */}
+        <View style={styles.topIconDiv}>
+          <View style={styles.iconDiv}>
+            <TouchableOpacity
+              onPress={() => {
+                setNearbyTab(false);
+                setSocialTab(true);
+              }}
+            >
+              <Ionicons name="people-outline" size={60} color={"#56585B"} />
             </TouchableOpacity>
           </View>
-          {/* Settings Icon */}
-          <View style={styles.bottomIconDiv}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("UserDashboard")}
+
+          <View style={styles.iconTextDiv}>
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 18,
+                color: "#56585B",
+              }}
             >
+              Social
+            </Text>
+          </View>
+        </View>
+
+        {/* Nearby Icon */}
+        <View style={styles.topIconDiv}>
+          <View style={styles.iconDiv}>
+            <TouchableOpacity>
+              <Feather name="map-pin" size={50} color={"#93B8DA"} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.iconTextDiv}>
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 18,
+                color: "#93B8DA",
+              }}
+            >
+              Nearby
+            </Text>
+          </View>
+        </View>
+
+        {/* Explore Icon */}
+        <View style={styles.topIconDiv}>
+          <View style={styles.iconDiv}>
+            <TouchableOpacity>
               <MaterialCommunityIcons
-                name="account-circle-outline"
-                size={60}
-                color={"white"}
+                name="map-search-outline"
+                size={50}
+                color={"#56585B"}
               />
             </TouchableOpacity>
           </View>
+
+          <View style={styles.iconTextDiv}>
+            <Text style={styles.iconText}>Explore</Text>
+          </View>
         </View>
-      </SafeAreaView>
+      </View>
+
+      {/* Recent Users Text */}
+      <View style={styles.recentUserTextDiv}>
+        <View style={styles.infoIcon}>
+          <Octicons name="info" size={20} color={"#93B8DA"} />
+        </View>
+
+        <View style={styles.recentUserText}>
+          <Text style={{ fontWeight: "bold", color: "white", fontSize: 14 }}>
+            Tap a Bubble to Join
+          </Text>
+        </View>
+      </View>
+      {/* WHERE TO ADD BUBBLES NEARBY */}
+      <View style={styles.nearbyBubblesDiv}></View>
     </View>
   );
 };

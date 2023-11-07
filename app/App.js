@@ -4,8 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
-import HomePageSocial from "./src/screens/Homepage/HomePageSocial";
-import HomePageNearby from "./src/screens/Homepage/HomePageNearby";
+import HomePage from "./src/screens/Homepage/HomePage";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
@@ -26,22 +25,13 @@ const App = () => {
             component={Login}
           /> */}
           <Stack.Screen
-            name="HomePageSocial"
+            name="HomePage"
             options={{
               headerShown: false,
               animation: "none",
               gestureEnabled: false,
             }}
-            component={HomePageSocial}
-          />
-          <Stack.Screen
-            name="HomePageNearby"
-            options={{
-              headerShown: false,
-              animation: "none",
-              gestureEnabled: false,
-            }}
-            component={HomePageNearby}
+            component={HomePage}
           />
           <Stack.Screen
             name="Register"

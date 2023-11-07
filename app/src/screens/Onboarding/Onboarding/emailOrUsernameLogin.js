@@ -50,7 +50,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       if (response.data.user_info.name === null) {
         navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
       } else {
-        navigation.navigate("HomePageSocial"); // else send them to HomePageSocial
+        navigation.navigate("HomePage"); // else send them to HomePageSocial
       }
     } catch (error) {
       setErrorMessage("");
