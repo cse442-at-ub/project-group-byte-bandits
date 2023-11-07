@@ -8,7 +8,12 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Ionicons, Entypo, AntDesign } from "@expo/vector-icons";
-// import { VictoryBar, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
+import {
+  VictoryBar,
+  VictoryChart,
+  VictoryTheme,
+  VictoryAxis,
+} from "victory-native";
 import * as Haptics from "expo-haptics";
 
 const UserDashboard = ({ navigation }) => {
