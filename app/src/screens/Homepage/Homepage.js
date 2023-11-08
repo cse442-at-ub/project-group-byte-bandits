@@ -144,7 +144,7 @@ const HomePage = ({ navigation }) => {
                         placeholder="Add a description..."
                         placeholderTextColor={"#3D3C3C"}
                         onChangeText={(text) => setBubbleDescription(text)}
-                        value={bubbleDescription}
+                        value={bubbleDescription && bubbleDescription.length + "/80"}
                         maxLength={80}
                         multiline={true}
                         textAlignVertical="top"
@@ -152,9 +152,6 @@ const HomePage = ({ navigation }) => {
                           Keyboard.dismiss;
                         }}
                       />
-                      <Text style={styles.descriptionCounter}>
-                        {bubbleDescription.length + "/80"}
-                      </Text>
                     </View>
 
                     <View style={styles.createBubbleSettings}>
