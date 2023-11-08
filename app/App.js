@@ -10,6 +10,7 @@ import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
+import { Chatroom } from "./src/screens/Chatroom/Chatroom";
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
 
@@ -26,23 +27,23 @@ const App = () => {
             component={Login}
           />
           <Stack.Screen
-            name="HomePageSocial"
+            name="Chatroom"
             options={{
               headerShown: false,
               animation: "none",
               gestureEnabled: false,
             }}
-            component={HomePageSocial}
+            component={Chatroom}
           />
-          <Stack.Screen
-            name="HomePageNearby"
+          {/* <Stack.Screen
+            name="HomePage"
             options={{
               headerShown: false,
               animation: "none",
               gestureEnabled: false,
             }}
-            component={HomePageNearby}
-          />
+            component={HomePage}
+          /> */}
           <Stack.Screen
             name="Register"
             options={{ headerShown: false, gestureEnabled: false }}

@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // It's important to import React
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   Text,
