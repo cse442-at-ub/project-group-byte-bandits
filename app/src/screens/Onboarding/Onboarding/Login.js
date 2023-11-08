@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // It's important to import React
 import { useDispatch } from "react-redux";
 import {
   Text,
@@ -33,7 +33,7 @@ const Login = ({ navigation }) => {
   //           console.log(json);
   //           if (json["response"] == 200) {
   //             console.log("user is logged in");
-  //             navigation.navigate("HomePage")
+  //             navigation.navigate("HomePageSocial")
   //           } else if (json["response"] == -1){
   //             console.log("no user is logged in");
   //           }
@@ -77,7 +77,7 @@ const Login = ({ navigation }) => {
         if (response.data.user_info.name === null) {
           navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
         } else {
-          navigation.navigate("HomePage"); // else send them to HomePageSocial
+          navigation.navigate("HomePageSocial"); // else send them to HomePageSocial
         }
       } catch (error) {
         // If user prematurely exited login screen, send them to GetUsername to make username

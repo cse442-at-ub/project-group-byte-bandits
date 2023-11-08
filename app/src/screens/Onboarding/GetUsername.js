@@ -37,7 +37,7 @@ export const GetUsername = ({ navigation }) => {
       // if username is unique fill in db table and send to HomePageSocial
       setErrorMessage("");
       console.log("RESPONSE", response.data);
-      navigation.navigate("HomePage");
+      navigation.navigate("HomePageSocial");
     } catch (error) {
       console.log("ERROR: ", error.response.data);
       setErrorMessage(error.response.data.error);

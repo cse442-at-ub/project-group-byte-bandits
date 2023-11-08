@@ -4,13 +4,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
-import HomePage from "./src/screens/Homepage/HomePage";
+import HomePageSocial from "./src/components/HomePageSocial";
+import HomePageNearby from "./src/components/HomePageNearby";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
-import { Chatroom } from "./src/screens/Chatroom/Chatroom";
-import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers";
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
 
@@ -21,39 +20,29 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen
+          <Stack.Screen
             name="Login"
             options={{ headerShown: false, gestureEnabled: false }}
             component={Login}
-          /> */}
+          />
           <Stack.Screen
-            name="HomePage"
+            name="HomePageSocial"
             options={{
               headerShown: false,
               animation: "none",
               gestureEnabled: false,
             }}
-            component={HomePage}
+            component={HomePageSocial}
           />
           <Stack.Screen
-            name="Chatroom"
+            name="HomePageNearby"
             options={{
               headerShown: false,
-              animation: "slide_from_left",
+              animation: "none",
               gestureEnabled: false,
             }}
-            component={Chatroom}
+            component={HomePageNearby}
           />
-          <Stack.Screen
-            name="ChatroomUsers"
-            options={{
-              headerShown: false,
-              animation: "slide_from_right",
-              gestureEnabled: true,
-            }}
-            component={ChatroomUsers}
-          />
-
           <Stack.Screen
             name="Register"
             options={{ headerShown: false, gestureEnabled: false }}
@@ -76,20 +65,12 @@ const App = () => {
           />
           <Stack.Screen
             name="UserDashboard"
-            options={{
-              headerShown: false,
-              gestureEnabled: true,
-              animation: "slide_from_left",
-            }}
+            options={{ headerShown: false, gestureEnabled: true }}
             component={UserDashboard}
           />
           <Stack.Screen
             name="Settings"
-            options={{
-              headerShown: false,
-              gestureEnabled: true,
-              animation: "slide_from_right",
-            }}
+            options={{ headerShown: false, gestureEnabled: false }}
             component={Settings}
           />
         </Stack.Navigator>

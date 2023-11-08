@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
-
 import BubbleComponent from "../../svgs/bubbleComponent";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";

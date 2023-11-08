@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; // It's important to import React
 import { useDispatch } from "react-redux";
 import {
   Text,
@@ -8,9 +8,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Dimensions,
-  TouchableWithoutFeedback,
-  Keyboard,
-  KeyboardAvoidingView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
@@ -53,7 +50,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       if (response.data.user_info.name === null) {
         navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
       } else {
-        navigation.navigate("HomePage"); // else send them to HomePageSocial
+        navigation.navigate("HomePageSocial"); // else send them to HomePageSocial
       }
     } catch (error) {
       setErrorMessage("");
@@ -61,264 +58,249 @@ const EmailOrUsernameLogin = ({ navigation }) => {
     }
   };
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
-      <View style={styles.onboardingBackground}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.upperHalfofOnboarding}>
-            <View style={styles.lowerOfUpper}>
-              {/* View for Bubble Logo and Motto*/}
-              <View style={styles.bubbleLogo}>
-                <BubbleComponent />
-              </View>
-              {/* View for Underline */}
-              <View style={styles.underLineArea}>
-                <LineComponent />
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    color: "white",
-                    position: "absolute",
-                    top: 18,
-                    fontSize: 18,
-                  }}
-                >
-                  where conversation pops
-                </Text>
-              </View>
+    <View style={styles.onboardingBackground}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.upperHalfofOnboarding}>
+          <View style={styles.lowerOfUpper}>
+            {/* View for Bubble Logo and Motto*/}
+            <View style={styles.bubbleLogo}>
+              <BubbleComponent />
             </View>
-          </View>
-
-          {/* View for Login and Register Buttons*/}
-          {/* <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.keyboardAvoid}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-          > */}
-          <View style={styles.bottomHalfofOnboarding}>
-            {/* TEXT INPUT FOR USERNAME OR EMAIL */}
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                height: "25%",
-                alignItems: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <View
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                    width: "80%",
-                    height: "20%",
-                    marginBottom: 3,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize: 18,
-                      paddingLeft: leftIndentation,
-                    }}
-                  >
-                    Email or Username
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    display: "flex",
-                    width: "90%",
-                    height: "80%",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                  }}
-                >
-                  <TextInput
-                    style={styles.textBox}
-                    value={emailOrUsername}
-                    onChangeText={(text) => setEmailOrUsername(text)}
-                    fontWeight={"bold"}
-                  />
-                </View>
-              </View>
-            </View>
-            {/* TEXT INPUT FOR PASSWORD */}
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                height: "25%",
-                alignItems: "space-between",
-              }}
-            >
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
-                <View
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                    width: "80%",
-                    height: "20%",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize: 18,
-                      paddingLeft: leftIndentation,
-                    }}
-                  >
-                    Password
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    display: "flex",
-                    width: "90%",
-                    height: "80%",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                  }}
-                >
-                  <TextInput
-                    style={styles.textBox}
-                    value={password}
-                    secureTextEntry={true}
-                    onChangeText={(text) => setPassword(text)}
-                    fontWeight={"bold"}
-                  />
-                </View>
-              </View>
-            </View>
-
-            {/* ERROR MESSAGE DISPLAY */}
-            <View
-              style={{
-                height: "10%",
-                width: "100%",
-                justifyContent: "justify-center",
-                alignItems: "center",
-              }}
-            >
+            {/* View for Underline */}
+            <View style={styles.underLineArea}>
+              <LineComponent />
               <Text
                 style={{
                   fontWeight: "bold",
-                  fontSize: 12,
-                  color: "red",
+                  color: "white",
+                  position: "absolute",
+                  top: 18,
+                  fontSize: 18,
                 }}
               >
-                {errorMessage}
+                where conversation pops
               </Text>
             </View>
+          </View>
+        </View>
 
-            <View style={styles.logInDiv}>
-              <TouchableOpacity
-                // ADD FUNCTION THAT SENDS GET REQUEST
-                style={styles.logInButton}
-                onPress={() => send_email_login_request()}
-              >
-                {/* Login w/ Apple Text*/}
-                <View
-                  style={{
-                    height: "100%",
-                    width: "80%",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Text style={styles.buttonText}>Log In</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-
+        {/* View for Login and Register Buttons*/}
+        <View style={styles.bottomHalfofOnboarding}>
+          {/* TEXT INPUT FOR USERNAME OR EMAIL */}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "25%",
+              alignItems: "space-between",
+            }}
+          >
             <View
               style={{
                 display: "flex",
-                flexDirection: "row",
-                height: "35%",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "center",
                 width: "100%",
+                height: "100%",
               }}
             >
               <View
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                  height: "80%",
-                  width: "30%",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  width: "80%",
+                  height: "20%",
+                  marginBottom: 3,
                 }}
               >
-                <View
+                <Text
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    height: "50%",
-                    width: "100%",
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: leftIndentation,
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Login")}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Ionicons name="caret-back-outline" size={32} />
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Back
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                  Email or Username
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={emailOrUsername}
+                  onChangeText={(text) => setEmailOrUsername(text)}
+                  fontWeight={"bold"}
+                />
               </View>
             </View>
           </View>
-          {/* </KeyboardAvoidingView> */}
-        </SafeAreaView>
-      </View>
-    </TouchableWithoutFeedback>
+          {/* TEXT INPUT FOR PASSWORD */}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "25%",
+              alignItems: "space-between",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                  width: "80%",
+                  height: "20%",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: 18,
+                    paddingLeft: leftIndentation,
+                  }}
+                >
+                  Password
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  display: "flex",
+                  width: "90%",
+                  height: "80%",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textBox}
+                  value={password}
+                  secureTextEntry={true}
+                  onChangeText={(text) => setPassword(text)}
+                  fontWeight={"bold"}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* ERROR MESSAGE DISPLAY */}
+          <View
+            style={{
+              height: "10%",
+              width: "100%",
+              justifyContent: "justify-center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
+          </View>
+
+          <View style={styles.logInDiv}>
+            <TouchableOpacity
+              // ADD FUNCTION THAT SENDS GET REQUEST
+              style={styles.logInButton}
+              onPress={() => send_email_login_request()}
+            >
+              {/* Login w/ Apple Text*/}
+              <View
+                style={{
+                  height: "100%",
+                  width: "80%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={styles.buttonText}>Log In</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              height: "35%",
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+                height: "80%",
+                width: "30%",
+              }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  height: "50%",
+                  width: "100%",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Login")}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Ionicons name="caret-back-outline" size={32} />
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Back
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 export default EmailOrUsernameLogin;
 
 const styles = StyleSheet.create({
-  // keyboardAvoid: {
-  //   flex: 1,
-  // },
   logInButton: {
     display: "flex",
     justifyContent: "center",
@@ -378,7 +360,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   bottomHalfofOnboarding: {
-    flex: 1,
+    display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-between",
