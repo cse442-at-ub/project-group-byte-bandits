@@ -18,100 +18,22 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons";
 
-export const Chatroom = ({ navigation }) => {
-  const [showConfirm, setShowConfirm] = useState(false);
+export const ChatroomUsers = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.ChatroomBackground}>
-      {/* CONFIRMATION TO LEAVE ROOM */}
-      <Modal transparent={true} animationType="fade" visible={showConfirm}>
-        <View style={styles.showConfirmBackground}>
-          <View style={styles.showConfirmPopup}>
-            {/* TOP WARNING LABEL */}
-            <View style={styles.topWarning}>
-              <Text style={styles.topWarningText}>Warning</Text>
-            </View>
-            <View style={styles.bodyWarning}>
-              <Text style={styles.bodyWarningText}>
-                Are you sure you want to to leave this Bubble?
-              </Text>
-            </View>
-            <View style={styles.continueAndcancelButtons}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("HomePage");
-                  setShowConfirm(false);
-                }}
-                style={styles.buttonDiv}
-              >
-                <Text style={styles.buttonText}>Continue</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setShowConfirm(false)}
-                style={styles.buttonDiv}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
       <View style={styles.topBar}>
         <TouchableOpacity
-          onPress={() => setShowConfirm(true)}
+          onPress={() => navigation.navigate("Chatroom")}
           style={styles.leaveButton}
         >
-          <Entypo name="chevron-left" size={32} color="red" />
-          <Text style={styles.leaveText}>Leave</Text>
+          <Entypo name="chevron-left" size={36} color="white" />
         </TouchableOpacity>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ChatroomUsers")}
-          style={styles.leaveButton}
-        >
-          <FontAwesome5 name="user-friends" size={32} color="#555454" />
-        </TouchableOpacity>
+        <View />
       </View>
 
       <View style={styles.chatroomTitle}>
         <Text style={styles.chatroomTitleText}>Machine Learning Bubble</Text>
       </View>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoid}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-      >
-        <ScrollView style={styles.chatroomBody}>
-          {/* Chat messages will go here */}
-        </ScrollView>
-
-        <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.mapIcon}>
-            <MaterialCommunityIcons
-              name="map-search-outline"
-              size={50}
-              color={"#56585B"}
-            />
-          </TouchableOpacity>
-          <View style={styles.textBox}>
-            <TextInput
-              style={styles.searchBar}
-              placeholder="Type a message..."
-              placeholderTextColor={"#3D3C3C"}
-              maxLength={40}
-            />
-          </View>
-          <TouchableOpacity style={styles.sendMessage}>
-            <Feather
-              name="send"
-              size={42}
-              color={"#555454"}
-              style={{ transform: [{ rotate: "45deg" }] }}
-            />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
