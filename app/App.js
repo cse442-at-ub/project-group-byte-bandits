@@ -9,6 +9,7 @@ import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
+import { Chatroom } from "./src/screens/Chatroom/Chatroom";
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
 
@@ -25,6 +26,15 @@ const App = () => {
             component={Login}
           /> */}
           <Stack.Screen
+            name="Chatroom"
+            options={{
+              headerShown: false,
+              animation: "none",
+              gestureEnabled: false,
+            }}
+            component={Chatroom}
+          />
+          {/* <Stack.Screen
             name="HomePage"
             options={{
               headerShown: false,
@@ -32,7 +42,7 @@ const App = () => {
               gestureEnabled: false,
             }}
             component={HomePage}
-          />
+          /> */}
           <Stack.Screen
             name="Register"
             options={{ headerShown: false, gestureEnabled: false }}

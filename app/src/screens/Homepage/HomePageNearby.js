@@ -1,4 +1,4 @@
-import React from "react"; // It's important to import React
+import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
