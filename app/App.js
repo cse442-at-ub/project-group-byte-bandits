@@ -28,6 +28,15 @@ const App = () => {
             component={Login}
           />
           <Stack.Screen
+            name="HomePage"
+            options={{
+              headerShown: false,
+              animation: "none",
+              gestureEnabled: false,
+            }}
+            component={HomePage}
+          />
+          <Stack.Screen
             name="Chatroom"
             options={{
               headerShown: false,
@@ -45,15 +54,7 @@ const App = () => {
             }}
             component={ChatroomUsers}
           />
-          <Stack.Screen
-            name="HomePage"
-            options={{
-              headerShown: false,
-              animation: "none",
-              gestureEnabled: false,
-            }}
-            component={HomePage}
-          />
+
           <Stack.Screen
             name="Register"
             options={{ headerShown: false, gestureEnabled: false }}

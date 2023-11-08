@@ -20,8 +20,8 @@ import Octicons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import HomePageSocial from "../Homepage/HomePageSocial";
-import HomePageNearby from "../Homepage/HomePageNearby";
+import HomePageSocial from "../../components/HomePageSocial";
+import HomePageNearby from "../../components/HomePageNearby";
 
 const HomePage = ({ navigation }) => {
   const [creatingBubble, setCreatingBubble] = useState(false);
@@ -333,7 +333,10 @@ const HomePage = ({ navigation }) => {
                     </View>
                     <View style={styles.createBubbleButton}>
                       <TouchableOpacity
-                        onPress={() => navigation.navigate("Chatroom")}
+                        onPress={() => {
+                          navigation.navigate("Chatroom");
+                          setCreatingBubble(false);
+                        }}
                       >
                         <View style={styles.newBubble}>
                           <Text style={styles.newBubbleText}>Create</Text>
