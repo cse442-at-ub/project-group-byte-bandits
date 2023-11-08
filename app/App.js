@@ -49,7 +49,7 @@ const App = () => {
             options={{
               headerShown: false,
               animation: "slide_from_right",
-              gestureEnabled: false,
+              gestureEnabled: true,
             }}
             component={ChatroomUsers}
           />
