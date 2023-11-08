@@ -129,7 +129,7 @@ const HomePage = ({ navigation }) => {
                           shadowOpacity: 0.23,
                           shadowRadius: 2.62,
                           elevation: 4,
-                          height: "75%%",
+                          padding: 20,
                           width: "80%%",
                           borderRadius: 20,
                           borderColor: "#3D3C3C",
@@ -144,14 +144,18 @@ const HomePage = ({ navigation }) => {
                         placeholder="Add a description..."
                         placeholderTextColor={"#3D3C3C"}
                         onChangeText={(text) => setBubbleDescription(text)}
-                        value={bubbleDescription && bubbleDescription.length + "/80"}
+                        value={bubbleDescription}
                         maxLength={80}
                         multiline={true}
                         textAlignVertical="top"
                         onSubmitEditing={() => {
                           Keyboard.dismiss;
                         }}
+                        
                       />
+                      <Text style={styles.descriptionCounter}>
+                        {bubbleDescription.length + "/80"}
+                      </Text>
                     </View>
 
                     <View style={styles.createBubbleSettings}>
@@ -611,10 +615,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   descriptionCounter: {
-    position: "absolute",
-    right: 65,
-    bottom: 40,
     color: "#3D3C3C",
+    textAlign: 'right'
   },
   searchBarDivDescription: {
     display: "flex",
@@ -638,9 +640,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   titleCounter: {
-    position: "absolute",
-    right: 65,
-    bottom: 25,
+    textAlign:'right',
     color: "#3D3C3C",
   },
   searchBarDiv: {
@@ -784,8 +784,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    height: "75%%",
-    width: "80%%",
+    padding: 15,
+    width: "80%",
     borderRadius: 20,
     borderColor: "#3D3C3C",
     borderWidth: 1,
