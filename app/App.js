@@ -11,6 +11,7 @@ import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
 import { Chatroom } from "./src/screens/Chatroom/Chatroom";
+import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers";
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
 
@@ -30,12 +31,21 @@ const App = () => {
             name="Chatroom"
             options={{
               headerShown: false,
-              animation: "none",
+              animation: "slide_from_left",
               gestureEnabled: false,
             }}
             component={Chatroom}
           />
-          {/* <Stack.Screen
+          <Stack.Screen
+            name="ChatroomUsers"
+            options={{
+              headerShown: false,
+              animation: "slide_from_right",
+              gestureEnabled: true,
+            }}
+            component={ChatroomUsers}
+          />
+          <Stack.Screen
             name="HomePage"
             options={{
               headerShown: false,
@@ -43,7 +53,7 @@ const App = () => {
               gestureEnabled: false,
             }}
             component={HomePage}
-          /> */}
+          />
           <Stack.Screen
             name="Register"
             options={{ headerShown: false, gestureEnabled: false }}
@@ -66,12 +76,20 @@ const App = () => {
           />
           <Stack.Screen
             name="UserDashboard"
-            options={{ headerShown: false, gestureEnabled: true }}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+              animation: "slide_from_left",
+            }}
             component={UserDashboard}
           />
           <Stack.Screen
             name="Settings"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+              animation: "slide_from_right",
+            }}
             component={Settings}
           />
         </Stack.Navigator>
