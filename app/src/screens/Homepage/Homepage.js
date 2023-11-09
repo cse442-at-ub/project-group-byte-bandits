@@ -11,6 +11,7 @@ import {
   Keyboard,
   Switch,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 
@@ -34,6 +35,16 @@ const HomePage = ({ navigation }) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
+
+  const userID = useSelector((state) => state.user.userID);
+
+  const createBubble = () => {
+    try {
+      const data = qs.stringify({
+        chatroom_radius: selectedRadius,
+      });
+    } catch {}
+  };
 
   return (
     <TouchableWithoutFeedback
@@ -151,7 +162,6 @@ const HomePage = ({ navigation }) => {
                         onSubmitEditing={() => {
                           Keyboard.dismiss;
                         }}
-                        
                       />
                       <Text style={styles.descriptionCounter}>
                         {bubbleDescription.length + "/80"}
@@ -616,7 +626,7 @@ const styles = StyleSheet.create({
   },
   descriptionCounter: {
     color: "#3D3C3C",
-    textAlign: 'right'
+    textAlign: "right",
   },
   searchBarDivDescription: {
     display: "flex",
@@ -640,7 +650,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   titleCounter: {
-    textAlign:'right',
+    textAlign: "right",
     color: "#3D3C3C",
   },
   searchBarDiv: {
@@ -712,9 +722,10 @@ const styles = StyleSheet.create({
   },
   bodyWarningText: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
     color: "white",
     padding: 5,
+    textAlign: "center",
   },
   bodyWarning: {
     display: "flex",
