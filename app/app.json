@@ -16,7 +16,13 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your explanation here...",
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show you nearby bubbles.",
+        "NSLocationAlwaysUsageDescription": "This app uses your location to show you nearby bubbles even when the app is not in use."
+      }
+
     },
     "android": {
       "adaptiveIcon": {
