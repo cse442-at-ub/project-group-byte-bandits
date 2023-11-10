@@ -26,9 +26,9 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     return csrf_data.csrf_token;
   }
 
-  const update_location = async () => {
+  async function update_location(loc) {
     const data = qs.stringify({
-      location: "still working"
+      location: loc
     });
     const response = await axios.post(
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
@@ -41,11 +41,10 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
       }
     );
     setErrorMsg(response.data);
-    // else send them to HomePageSocial
-
     console.log(response.data);
+    // else send them to HomePageSocial
   };
-  update_location();
+  update_location("boobies");
 
   useEffect(() => {
     const getLocation = async () => {
@@ -74,21 +73,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
           (newLocation) => {
             setLocation(newLocation);
             console.log("User's location:", newLocation);
-
-            const data = qs.stringify({
-              long: newLocation.coords.longitude,
-              lat: newLocation.coords.latitude,
-            });
-
-            const response = axios.post(
-              "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
-              data,
-              {
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-              }
-            );
+            update_location();
           }
         );
       } catch (error) {
@@ -97,12 +82,12 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     };
 
     //getLocation();
-    // Clean up the location subscription when the component unmounts
-    //return () => {
-    //  if (locationSubscription) {
-    //    locationSubscription.remove();
-    //  }
-    //};
+   //  Clean up the location subscription when the component unmounts
+    return () => {
+      //if (locationSubscription) {
+      //  locationSubscription.remove();
+      //}
+    };
   }, []);
 
   
