@@ -18,6 +18,35 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  async function csrf_token() {
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf"
+    );
+    csrf_data = response.data;
+    return csrf_data.csrf_token;
+  }
+
+  const update_location = async () => {
+    const data = qs.stringify({
+      location: "still working"
+    });
+    const response = await axios.post(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Csrf-token" : csrf_token()
+        },
+      }
+    );
+    setErrorMsg(response.data);
+    // else send them to HomePageSocial
+
+    console.log(response.data);
+  };
+  update_location();
+
   useEffect(() => {
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -67,16 +96,16 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
       }
     };
 
-    getLocation();
-
+    //getLocation();
     // Clean up the location subscription when the component unmounts
-    return () => {
-      if (locationSubscription) {
-        locationSubscription.remove();
-      }
-    };
+    //return () => {
+    //  if (locationSubscription) {
+    //    locationSubscription.remove();
+    //  }
+    //};
   }, []);
 
+  
   return (
     <View style={styles.contentOfHomePage}>
       {/* Div for Main Three Tabs */}
