@@ -4,7 +4,7 @@ if($connection->connect_error)
     die("connection failed: " . $connection->connect_error);
 
 $time_seconds = 3600*24;    # 1 day
-$errc = array(
+$errc = Array(
     'form' => 197,
     'cookies' => 150,
     'sql' => -1,
@@ -149,18 +149,6 @@ function create_new_user($uname,
         if(!mysqli_stmt_execute($stmt))
             throw new Exception("failed to execute query");
 
-    } catch (Exception $e) {
-        echo "Caught exception: ", $e->getMessage(),"\n";
-        exit($errc["sql"]);
-    }
-}
-function delete_user($session_id, $connection) {
-    $sql = "DELETE FROM `user_data`WHERE `session` = ?";
-    try {
-        $stmt = $connection->prepare($sql);
-        $stmt->bind_param("s", $session_id);
-        if(!mysqli_stmt_execute($stmt))
-            throw new Exception("failed to execute query");
     } catch (Exception $e) {
         echo "Caught exception: ", $e->getMessage(),"\n";
         exit($errc["sql"]);

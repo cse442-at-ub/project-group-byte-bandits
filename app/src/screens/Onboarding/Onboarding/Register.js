@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React from "react"; // It's important to import React
 import {
   Text,
   View,
@@ -13,66 +12,10 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BubbleComponent from "../../../svgs/bubbleComponent";
 import LineComponent from "../../../svgs/lineComponent";
-import * as AppleAuthentication from "expo-apple-authentication";
-import axios from "axios";
-import qs from "qs";
-import { logIn } from "../../../../redux/user";
 
 const Register = ({ navigation }) => {
-  const [errorMessage, setErrorMessage] = useState("");
-  const dispatch = useDispatch();
-
-  // function for fetching apple info
-  const fetchAppleInfo = async () => {
-    try {
-      const response = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      // IF APPLE RETURNS INFORMATION WE SEND INFO TO DATABASE TO CREATE USER
-      const apple_user = response.user;
-      const email = response.email;
-
-      try {
-        const data = qs.stringify({
-          user_email: email,
-          apple_user: apple_user,
-        });
-        const response = await axios.post(
-          "https://cse.buffalo.edu/~jjalessi/auth/apple_register",
-          data,
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-        // if apple information was successfully updated in database, send user to GetUsername
-
-        // SETTING USERID into REDUX
-        dispatch(logIn(response.data.user_info.user_id));
-
-        setErrorMessage("");
-        navigation.navigate("GetUsername");
-      } catch (error) {
-        setErrorMessage(error.response.data.error);
-      }
-    } catch (error) {
-      if (error.code === "ERR_REQUEST_CANCELED") {
-        console.log("Error while fetching apple data");
-        // handle that the user canceled the sign-in flow
-      } else {
-        // handle other errors
-      }
-    }
-  };
-
   return (
     <View style={styles.onboardingBackground}>
-      {/* render creatingUsername */}
-
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.upperHalfofOnboarding}>
           <View style={styles.lowerOfUpper}>
@@ -99,21 +42,17 @@ const Register = ({ navigation }) => {
         </View>
 
         {/* View for Login and Register Buttons*/}
-
         <View style={styles.bottomHalfofOnboarding}>
           {/* BUTTON ONE */}
           <View style={styles.buttonDiv}>
-            <TouchableOpacity
-              onPress={() => {
-                fetchAppleInfo().then((response) => {
-                  console.log(response);
-                });
-              }}
-              style={styles.appleButton}
-            >
+            {/* ADD ONCLICK FUNCTIONALITY HERE */}
+            <TouchableOpacity style={styles.appleButton}>
+              {/* Apple Logo */}
               <View style={styles.logoDiv}>
                 <AntDesign name="apple-o" size={44} color={"white"} />
               </View>
+
+              {/* Login w/ Apple Text*/}
               <View
                 style={{
                   height: "100%",
@@ -129,7 +68,9 @@ const Register = ({ navigation }) => {
 
           {/* BUTTON TWO */}
           <View style={styles.buttonDiv}>
+            {/* ADD ONCLICK FUNCTIONALITY HERE */}
             <TouchableOpacity style={styles.googleButton}>
+              {/* Google Logo */}
               <View style={styles.logoDiv}>
                 <MaterialCommunityIcons
                   name="google"
@@ -137,6 +78,8 @@ const Register = ({ navigation }) => {
                   color={"white"}
                 />
               </View>
+
+              {/* Login w/ Google Text*/}
               <View
                 style={{
                   height: "100%",
@@ -152,10 +95,12 @@ const Register = ({ navigation }) => {
 
           {/* BUTTON THREE */}
           <View style={styles.buttonDiv}>
+            {/* ADD ONCLICK FUNCTIONALITY HERE */}
             <TouchableOpacity
               style={styles.accountButton}
-              onPress={() => navigation.navigate("EmailRegister")}
+              onPress={() => navigation.navigate("UsernameRegister")}
             >
+              {/* Account Logo */}
               <View style={styles.logoDiv}>
                 <MaterialCommunityIcons
                   name="account-outline"
@@ -163,6 +108,8 @@ const Register = ({ navigation }) => {
                   color={"white"}
                 />
               </View>
+
+              {/* Login w/ Email/Password Text*/}
               <View
                 style={{
                   height: "100%",
@@ -176,28 +123,9 @@ const Register = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          {/* ERROR MESSAGE DISPLAYED HERE */}
-          <View
-            style={{
-              height: "8%",
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 12,
-                color: "red",
-              }}
-            >
-              {errorMessage}
-            </Text>
-          </View>
-
-          {/* Area to switch to Login */}
+          {/* Area to switch to Register */}
           <View style={styles.changeToRegister}>
+            {/* -- OR -- */}
             <View style={styles.orDesign}>
               <Oticons
                 name="horizontal-rule"
@@ -221,6 +149,8 @@ const Register = ({ navigation }) => {
                 color={"darkslategrey"}
               />
             </View>
+
+            {/* REGISTER HERE BUTTON */}
             <View style={styles.registerHere}>
               <Button
                 onPress={() => navigation.navigate("Login")}
@@ -289,11 +219,10 @@ const styles = StyleSheet.create({
   },
   buttonDiv: {
     display: "flex",
-    height: "20%",
+    height: "22%",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: "red",
   },
   buttonText: {
     color: "white",
