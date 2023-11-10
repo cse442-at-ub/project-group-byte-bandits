@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
+  StatusBar,
+  FlatList,
+} from 'react-native';
+import {
   Text,
   View,
   StyleSheet,
   TouchableOpacity,
   Platform,
+
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -17,14 +22,31 @@ import qs from "qs";
 const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [chatroom_data, setChatroomData] = useState(null);
 
-  async function csrf_token() {
+  async function connect_to_chatroom() {
     const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf"
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom"
     );
-    csrf_data = response.data;
-    return csrf_data.csrf_token;
+    console.log(response.data);
   }
+
+  async function load_chatrooms() {
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms"
+    );
+    let chatrooms = [];
+    const data = await response.data;
+    data.forEach(element => {
+      element = JSON.parse(element);
+      id = element.id;
+      loc = element.location;
+      host = element.host;
+      chatrooms.push([id, loc, host]);
+    });
+    setChatroomData(chatrooms);
+  }
+  load_chatrooms();
 
   async function update_location(loc) {
     const data = qs.stringify({
@@ -36,7 +58,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-token" : csrf_token()
+          "X-Csrf-Token": csrf_token(),
         },
       }
     );
@@ -44,7 +66,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     console.log(response.data);
     // else send them to HomePageSocial
   };
-  update_location("boobies");
 
   useEffect(() => {
     const getLocation = async () => {
@@ -73,7 +94,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
           (newLocation) => {
             setLocation(newLocation);
             console.log("User's location:", newLocation);
-            update_location();
           }
         );
       } catch (error) {
@@ -83,14 +103,13 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
 
     //getLocation();
    //  Clean up the location subscription when the component unmounts
-    return () => {
+    //return () => {
       //if (locationSubscription) {
       //  locationSubscription.remove();
       //}
-    };
+    //};
   }, []);
 
-  
   return (
     <View style={styles.contentOfHomePage}>
       {/* Div for Main Three Tabs */}
@@ -107,7 +126,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
               <Ionicons name="people-outline" size={60} color={"#56585B"} />
             </TouchableOpacity>
           </View>
-
           <View style={styles.iconTextDiv}>
             <Text
               style={{
@@ -173,7 +191,18 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
         </View>
       </View>
       {/* WHERE TO ADD BUBBLES NEARBY */}
-      <View style={styles.nearbyBubblesDiv}></View>
+      <View style={styles.nearbyBubblesDiv}>
+        <View>  
+          <View style={styles.container_style}>
+          <Text style={styles.header}> FLat List Example
+          </Text> 
+            <FlatList 
+              data={chatroom_data}
+              renderItem={({item}) => <Text style={{color : 'white'}} onPress={connect_to_chatroom}>{item}</Text> }
+            />
+          </View>
+        </View>
+      </View>
     </View>
   );
 };
@@ -181,6 +210,13 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
 export default HomePageNearby;
 
 const styles = StyleSheet.create({
+  chatroom_list_box: {
+    backgroundColor: '#B591FF',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+
   nearbyBubblesDiv: {
     display: "flex",
     height: "73%",
