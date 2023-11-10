@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   Text,
   View,
@@ -14,37 +15,37 @@ import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
 
-const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
+const HomePageNearby = ({ userID, setNearbyTab, setSocialTab }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  async function csrf_token() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf"
-    );
-    csrf_data = response.data;
-    return csrf_data.csrf_token;
-  }
+  // async function csrf_token() {
+  //   const response = await axios.get(
+  //     "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf"
+  //   );
+  //   csrf_data = response.data;
+  //   return csrf_data.csrf_token;
+  // }
 
-  async function update_location(loc) {
-    const data = qs.stringify({
-      location: loc
-    });
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-token" : csrf_token()
-        },
-      }
-    );
-    setErrorMsg(response.data);
-    console.log(response.data);
-    // else send them to HomePageSocial
-  };
-  update_location("boobies");
+  // async function update_location(loc) {
+  //   const data = qs.stringify({
+  //     location: loc
+  //   });
+  //   const response = await axios.post(
+  //     "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
+  //     data,
+  //     {
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //         "X-Csrf-token" : csrf_token()
+  //       },
+  //     }
+  //   );
+  //   setErrorMsg(response.data);
+  //   console.log(response.data);
+  //   // else send them to HomePageSocial
+  // };
+  // update_location("boobies");
 
   useEffect(() => {
     const getLocation = async () => {
@@ -70,10 +71,28 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
             timeInterval: 1000,
             distanceInterval: 1,
           },
-          (newLocation) => {
+          async (newLocation) => {
             setLocation(newLocation);
             console.log("User's location:", newLocation);
-            update_location();
+
+            const data = qs.stringify({
+              user_id: userID,
+              long: newLocation.coords.longitude,
+              lat: newLocation.coords.latitude,
+            });
+
+            console.log("USER_ID: ", userID);
+
+            const response = await axios.post(
+              "https://cse.buffalo.edu/~jjalessi/auth/update_user_location",
+              data,
+              {
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+              }
+            );
+            console.log("\nRESPONSE: ", response.data, "\n");
           }
         );
       } catch (error) {
@@ -81,16 +100,15 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
       }
     };
 
-    //getLocation();
-   //  Clean up the location subscription when the component unmounts
+    getLocation();
+    //  Clean up the location subscription when the component unmounts
     return () => {
-      //if (locationSubscription) {
-      //  locationSubscription.remove();
-      //}
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
     };
   }, []);
 
-  
   return (
     <View style={styles.contentOfHomePage}>
       {/* Div for Main Three Tabs */}
