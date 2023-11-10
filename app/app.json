@@ -15,7 +15,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your explanation here...",
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show you nearby bubbles.",
+        "NSLocationAlwaysUsageDescription": "This app uses your location to show you nearby bubbles even when the app is not in use."
+      }
+
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +38,7 @@
         "projectId": "0794ce02-7bc2-435e-b2b2-ab8d2cc1ac5c"
       }
     },
-    "owner": "joehchen"
+    "plugins": ["expo-apple-authentication"],
+    "owner": "bubbles"
   }
 }
