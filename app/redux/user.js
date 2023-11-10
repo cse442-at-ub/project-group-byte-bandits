@@ -4,10 +4,17 @@ export const userSlice = createSlice({
   name: "user",
   initialState: {
     userID: null,
+    location: {
+      longitude: null,
+      latitude: null,
+    },
   },
   reducers: {
     logIn: (state, action) => {
       state.userID = action.payload;
+    },
+    getLocation: (state, action) => {
+      state.location = action.payload;
     },
     logOut: (state) => {
       state.userID = null;

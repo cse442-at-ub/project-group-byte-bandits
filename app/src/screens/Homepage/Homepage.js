@@ -11,6 +11,7 @@ import {
   Keyboard,
   Switch,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import BubbleComponent from "../../svgs/bubbleComponent";
@@ -33,6 +34,16 @@ const HomePage = ({ navigation }) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
+
+  const userID = useSelector((state) => state.user.userID);
+
+  const createBubble = () => {
+    try {
+      const data = qs.stringify({
+        chatroom_radius: selectedRadius,
+      });
+    } catch {}
+  };
 
   return (
     <TouchableWithoutFeedback
@@ -128,7 +139,7 @@ const HomePage = ({ navigation }) => {
                           shadowOpacity: 0.23,
                           shadowRadius: 2.62,
                           elevation: 4,
-                          height: "75%%",
+                          padding: 20,
                           width: "80%%",
                           borderRadius: 20,
                           borderColor: "#3D3C3C",
@@ -613,10 +624,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   descriptionCounter: {
-    position: "absolute",
-    right: 65,
-    bottom: 40,
     color: "#3D3C3C",
+    textAlign: "right",
   },
   searchBarDivDescription: {
     display: "flex",
@@ -640,9 +649,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   titleCounter: {
-    position: "absolute",
-    right: 65,
-    bottom: 25,
+    textAlign: "right",
     color: "#3D3C3C",
   },
   searchBarDiv: {
@@ -714,9 +721,10 @@ const styles = StyleSheet.create({
   },
   bodyWarningText: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
     color: "white",
     padding: 5,
+    textAlign: "center",
   },
   bodyWarning: {
     display: "flex",
@@ -786,8 +794,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    height: "75%%",
-    width: "80%%",
+    padding: 15,
+    width: "80%",
     borderRadius: 20,
     borderColor: "#3D3C3C",
     borderWidth: 1,

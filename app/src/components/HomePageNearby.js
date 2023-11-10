@@ -1,11 +1,67 @@
-import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Location from "expo-location";
 
 const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    let locationSubscription;
+
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log("STATUS", status);
+
+      if (status !== "granted") {
+        console.log("Location permission not granted");
+        return;
+      }
+
+      try {
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+      } catch (error) {
+        console.error("Error getting the initial position:", error);
+      }
+
+      try {
+        locationSubscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 1000,
+            distanceInterval: 1,
+          },
+          (newLocation) => {
+            setLocation(newLocation);
+            console.log("User's location:", newLocation);
+          }
+        );
+      } catch (error) {
+        console.error("Error starting location monitoring:", error);
+      }
+    };
+
+    getLocation();
+
+    // Clean up the location subscription when the component unmounts
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, []);
+
   return (
     <View style={styles.contentOfHomePage}>
       {/* Div for Main Three Tabs */}
