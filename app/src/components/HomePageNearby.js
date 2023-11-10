@@ -12,6 +12,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Location from "expo-location";
 import axios from "axios";
+import qs from "qs";
 
 const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [location, setLocation] = useState(null);
@@ -45,11 +46,18 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
             setLocation(newLocation);
             console.log("User's location:", newLocation);
 
+            const data = qs.stringify({
+              long: newLocation.coords.longitude,
+              lat: newLocation.coords.latitude,
+            });
+
             const response = axios.post(
               "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
+              data,
               {
-                long: newLocation.coords.longitude,
-                lat: newLocation.coords.latitude,
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
               }
             );
           }
