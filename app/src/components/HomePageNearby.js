@@ -11,14 +11,13 @@ import Octicons from "react-native-vector-icons/Octicons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Location from "expo-location";
+import axios from "axios";
 
 const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
-    let locationSubscription;
-
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       console.log("STATUS", status);
@@ -45,6 +44,14 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
           (newLocation) => {
             setLocation(newLocation);
             console.log("User's location:", newLocation);
+
+            const response = axios.post(
+              "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
+              {
+                long: newLocation.coords.longitude,
+                lat: newLocation.coords.latitude,
+              }
+            );
           }
         );
       } catch (error) {
