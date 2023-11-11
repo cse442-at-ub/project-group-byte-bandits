@@ -77,16 +77,10 @@ const Login = ({ navigation }) => {
         if (response.data.user_info.name === null) {
           navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
         } else {
-          navigation.navigate("HomePage"); // else send them to HomePageSocial
+          await axios.post("https://cse.buffalo.edu/~jjalessi/auth/set_cookie");
+          navigation.navigate("HomePage"); // else set cookie and send to HomePage
         }
       } catch (error) {
-        // If user prematurely exited login screen, send them to GetUsername to make username
-        if (error.response.data.error === "No Username Found") {
-          console.log("USERID: ", response.data.user_info);
-          // dispatch(logIn(response.data.user_info.user_id));
-          setErrorMessage("");
-          navigation.navigate("GetUsername");
-        }
         setErrorMessage(error.response.data.error);
       }
     } catch (error) {
@@ -190,7 +184,10 @@ const Login = ({ navigation }) => {
             {/* ADD ONCLICK FUNCTIONALITY HERE */}
             <TouchableOpacity
               style={styles.accountButton}
-              onPress={() => navigation.navigate("EmailorUsernameLogin")}
+              onPress={() => {
+                navigation.navigate("EmailorUsernameLogin");
+                setErrorMessage("");
+              }}
             >
               {/* Account Logo */}
               <View style={styles.logoDiv}>

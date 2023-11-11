@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
-import HomePage from "./src/screens/Homepage/HomePage";
+import HomePage from "./src/screens/Homepage/Homepage";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
@@ -31,7 +31,7 @@ const App = () => {
             options={{
               headerShown: false,
               animation: "none",
-              gestureEnabled: false,
+              gestureEnabled: true,
             }}
             component={HomePage}
           />
@@ -71,7 +71,7 @@ const App = () => {
           />
           <Stack.Screen
             name="GetUsername"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{ headerShown: false, gestureEnabled: true }}
             component={GetUsername}
           />
           <Stack.Screen
