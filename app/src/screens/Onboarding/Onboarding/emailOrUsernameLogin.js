@@ -30,6 +30,41 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
 
+  const send_email_login_request = async () => {
+    try {
+      const data = qs.stringify({
+        user_emailorusername: emailOrUsername,
+        user_password: password,
+      });
+      const response = await axios.post(
+        "https://cse.buffalo.edu/~jjalessi/auth/emailorusername_login",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      console.log("\nRESPONSE: ", response);
+      // userID = response.data.user_info.id;
+
+      // if valid data was entered, navigate user to HomePage
+      console.log("Response", response.data.user_info);
+      dispatch(logIn(response.data.user_info.id));
+
+      if (response.data.user_info.name === null) {
+        navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
+      } else {
+        await axios.post("https://cse.buffalo.edu/~jjalessi/auth/set_cookie", {
+          // user_id: userID,
+        });
+        navigation.navigate("HomePage"); // else send them to HomePageSocial
+      }
+    } catch (error) {
+      setErrorMessage(error.response.data.error);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -214,7 +249,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
               <TouchableOpacity
                 // ADD FUNCTION THAT SENDS GET REQUEST
                 style={styles.logInButton}
-                onPress={() => secure_login()}
+                onPress={() => send_email_login_request()}
               >
                 {/* Login w/ Apple Text*/}
                 <View

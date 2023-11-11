@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   Text,
@@ -24,27 +24,25 @@ const Login = ({ navigation }) => {
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
 
-  //   useEffect(() => {
-  //     async function fetchCookies() {
-  //       try {
-  //         fetch("https://cse.buffalo.edu/~jderosa3/auth/login_form")
-  //         .then(response => response.json())
-  //         .then(json => {
-  //           console.log(json);
-  //           if (json["response"] == 200) {
-  //             console.log("user is logged in");
-  //             navigation.navigate("HomePage")
-  //           } else if (json["response"] == -1){
-  //             console.log("no user is logged in");
-  //           }
-  //         });
-  //     } catch (error) {
-  //       console.log("Error:", error);
-  //     }
-  //   }
-  //   fetchCookies();
+  // RUNS ON COMPONENT MOUNT, will immediately check if user cookies exist
+  useEffect(() => {
+    const fetchCookies = async () => {
+      try {
+        const response = await axios.post(
+          "https://cse.buffalo.edu/~jjalessi/auth/fetch_cookies"
+        );
+        // if cookie found, send to Homepage
+        console.log("\nRESPONSE: ", response);
 
-  //   }, []);
+        navigation.navigate("HomePage");
+        console.log("RESPONSE", response.data);
+      } catch (error) {
+        console.log("ERROR: ", error);
+      }
+    };
+
+    fetchCookies();
+  }, []);
 
   const fetchAppleInfo = async () => {
     try {
