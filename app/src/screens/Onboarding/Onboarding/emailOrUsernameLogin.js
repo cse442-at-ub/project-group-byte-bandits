@@ -30,42 +30,6 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
 
-  async function handle_login_state() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
-    );
-    login_state_data = response.data;
-    if (login_state_data.login_state == null) {
-      navigation.navigate("HomePage");
-    }
-  }
-  handle_login_state();
-
-  const secure_login = async () => {
-    const data = qs.stringify({
-      username: emailOrUsername,
-      password: password,
-    });
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    console.log(csrf_data.csrf_token);
-
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_data.csrf_token,
-        },
-      }
-    );
-    setErrorMessage(response.data);
-    // else send them to HomePageSocial
-
-    // console.log(response.data);
-  };
-
   return (
     <TouchableWithoutFeedback
       onPress={() => {
