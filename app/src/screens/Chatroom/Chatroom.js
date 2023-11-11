@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import {
+  StatusBar,
+  FlatList,
+} from 'react-native';
+import {
   View,
   StyleSheet,
   SafeAreaView,
@@ -17,9 +21,58 @@ import {
   MaterialCommunityIcons,
   FontAwesome5,
 } from "@expo/vector-icons";
+import axios from "axios";
+import qs from "qs";
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [message_data, setMessageData] = useState(null);
+  const [message_contents, setMessageContents] = useState(null);
+  const [errMessage, setErrorMsg] = useState(null);
+
+  async function make_csrf_token() {
+    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    csrf_data = csrf_response.data;
+    return csrf_data.csrf_token;
+  }
+
+  async function send_text_message(content) {
+    const data = qs.stringify({
+      content: content
+    });
+    const token = await make_csrf_token();
+
+    const response = await axios.post(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Csrf-Token": token,
+        },
+      }
+    );
+    setErrorMsg(response.data);
+    console.log(response.data);
+  };
+
+  async function load_messages() {
+    const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request");
+    let text_messages = [];
+    const data = await response.data;
+    const json_data = JSON.parse(data.slice(5));
+
+    json_data.forEach(element => {
+      const text_data = JSON.parse(element);
+      const user = text_data.user;
+      const content = text_data.content;
+      text_messages.push([user, content]);
+    });
+
+    setMessageData(text_messages);
+  }
+  load_messages();
+
   return (
     <SafeAreaView style={styles.ChatroomBackground}>
       {/* CONFIRMATION TO LEAVE ROOM */}
@@ -82,9 +135,16 @@ export const Chatroom = ({ navigation }) => {
         style={styles.keyboardAvoid}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
-        <ScrollView style={styles.chatroomBody}>
-          {/* Chat messages will go here */}
-        </ScrollView>
+        <View style={styles.chatroomBody}>
+          <View>  
+            <View style={styles.container_style}>
+              <FlatList 
+                data={message_data}
+                renderItem={({item}) => <Text style={{color : 'white'}}>{item[0]}  -  {item[1]}</Text> }
+              />
+            </View>
+          </View>
+        </View>
 
         <View style={styles.bottomBar}>
           <TouchableOpacity style={styles.mapIcon}>
@@ -95,14 +155,14 @@ export const Chatroom = ({ navigation }) => {
             />
           </TouchableOpacity>
           <View style={styles.textBox}>
-            <TextInput
+            <TextInput onChangeText={(text) => setMessageContents(text)}
               style={styles.searchBar}
               placeholder="Type a message..."
               placeholderTextColor={"#3D3C3C"}
               maxLength={40}
             />
           </View>
-          <TouchableOpacity style={styles.sendMessage}>
+          <TouchableOpacity style={styles.sendMessage} onPress={() => send_text_message(message_contents)}>
             <Feather
               name="send"
               size={42}
