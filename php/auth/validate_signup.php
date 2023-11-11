@@ -3,6 +3,7 @@ include "utility.php";
 
 if($_SERVER["REQUEST_METHOD"] === "POST") {
     check_post_record($_POST);
+    validate_csrf_token();
     $uname = $_POST['username'];
     $pword = $_POST['password'];
     $pword_chk = $_POST['password_check'];
@@ -10,25 +11,28 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'];
     $email_hashed = hash("sha256", $email);
     try {
-        $rows = get_with_name($uname,$connection);
+        $rows = $userQuery->get_user_with_name($uname);
         if(count($rows) > 0)
             throw new Exception('username record already exists in database');
         
-        $rows = get_with_email($email_hashed,$connection);
+        $rows = $userQuery->get_user_with_email($email_hashed);
         if(count($rows) > 0)
             throw new Exception('email record already exists in database');
         if($pword != $pword_chk)
             throw new Exception('passwords do not match');
 
     } catch (Exception $e) {
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
-        exit($errc['form']);
+        handle_exception($e, "form", $rows[0]['id']);
     }
     
-    $session_id = session_create_id('auth-');
-    session_id($session_id);
-    create_new_user($uname,$pword_hashed,$email_hashed,$session_id,$connection);
+    $new_session_id = session_create_id('auth-');
+    session_id($new_session_id);
+    echo $new_session_id;
+    $userQuery->create_new_user($uname,
+                    $pword_hashed,
+                    $email_hashed,
+                    $new_session_id);
     session_start();
 } else {
-    echo "<h1>access not permitted!! (╯°□°）╯︵ ┻━┻</h1>";
+    forbidden_response();
 }
