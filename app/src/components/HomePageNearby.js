@@ -58,6 +58,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
     let chatrooms = [];
     const data = await response.data;
     data.forEach(element => {
+      //console.log(data);
       element = JSON.parse(element);
       id = element.id;
       loc = element.location;
