@@ -60,9 +60,8 @@ export const Chatroom = ({ navigation }) => {
     const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request");
     let text_messages = [];
     const data = await response.data;
-    const json_data = JSON.parse(data.slice(5));
 
-    json_data.forEach(element => {
+    data.forEach(element => {
       const text_data = JSON.parse(element);
       const user = text_data.user;
       const content = text_data.content;

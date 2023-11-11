@@ -35,7 +35,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
     );
     login_state_data = response.data;
-    if (login_state_data.login_state == "success") {
+    if (login_state_data.login_state == null) {
       navigation.navigate("HomePage");
     }
   }
