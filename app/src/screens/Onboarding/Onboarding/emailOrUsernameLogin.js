@@ -41,66 +41,30 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   }
   handle_login_state();
 
-  async function csrf_token() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf"
-    );
-    csrf_data = response.data;
-    return csrf_data.csrf_token;
-  }
-
   const secure_login = async () => {
     const data = qs.stringify({
       username: emailOrUsername,
       password: password,
     });
+    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    csrf_data = csrf_response.data;
+    console.log(csrf_data.csrf_token);
+
     const response = await axios.post(
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login",
       data,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_token(),
+          "X-Csrf-Token": csrf_data.csrf_token,
         },
       }
     );
-    // setErrorMessage(response.data);
-    console.log("RESPONSE", response);
+    setErrorMessage(response.data);
     // else send them to HomePageSocial
 
     // console.log(response.data);
   };
-
-  // const send_email_login_request = async () => {
-  //   try {
-  //     const data = qs.stringify({
-  //       user_emailorusername: emailOrUsername,
-  //       user_password: password,
-  //     });
-  //     const response = await axios.post(
-  //       "https://cse.buffalo.edu/~jjalessi/auth/emailorusername_login",
-  //       data,
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/x-www-form-urlencoded",
-  //         },
-  //       }
-  //     );
-
-  //     // if valid data was entered, navigate user to HomePage
-  //     console.log("Response", response.data.user_info);
-  //     dispatch(logIn(response.data.user_info.id));
-
-  //     if (response.data.user_info.name === null) {
-  //       navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
-  //     } else {
-  //       navigation.navigate("HomePage"); // else send them to HomePageSocial
-  //     }
-  //   } catch (error) {
-  //     setErrorMessage("");
-  //     setErrorMessage(error.response.data.error);
-  //   }
-  // };
 
   return (
     <TouchableWithoutFeedback

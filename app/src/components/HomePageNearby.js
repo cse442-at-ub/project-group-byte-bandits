@@ -24,10 +24,25 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
 
-  async function connect_to_chatroom() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom"
+  async function connect_to_chatroom(chatroom_id) {
+    console.log(chatroom_id)
+    const data = qs.stringify({
+      id: chatroom_id
+    });
+    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    csrf_data = csrf_response.data;
+    console.log(csrf_data.csrf_token);
+    const response = await axios.post(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Csrf-Token": csrf_data.csrf_token,
+        },
+      }
     );
+    setErrorMsg(response.data);
     console.log(response.data);
   }
 
@@ -194,11 +209,9 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
       <View style={styles.nearbyBubblesDiv}>
         <View>  
           <View style={styles.container_style}>
-          <Text style={styles.header}> FLat List Example
-          </Text> 
             <FlatList 
               data={chatroom_data}
-              renderItem={({item}) => <Text style={{color : 'white'}} onPress={connect_to_chatroom}>{item}</Text> }
+              renderItem={({item}) => <Text style={{color : 'white'}} onPress={() => connect_to_chatroom(item[0])}>{item}</Text> }
             />
           </View>
         </View>
