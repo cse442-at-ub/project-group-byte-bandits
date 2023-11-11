@@ -4,11 +4,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
-import HomePage from "./src/screens/Homepage/HomePage";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
+// import HomePage from "./src/screens/Homepage/HomePage";
+import { HomePage } from "./src/screens/Homepage/HomePage";
 import { Chatroom } from "./src/screens/Chatroom/Chatroom";
 import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers";
 import store from "./redux/configureStore";
@@ -31,6 +32,15 @@ const App = () => {
             options={{
               headerShown: false,
               animation: "none",
+              gestureEnabled: false,
+            }}
+            component={HomePage}
+          />
+          <Stack.Screen
+            name="joe"
+            options={{
+              headerShown: false,
+              animation: "slide_from_left",
               gestureEnabled: false,
             }}
             component={HomePage}
