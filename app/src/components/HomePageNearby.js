@@ -19,37 +19,42 @@ import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
 
-const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
+const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
 
+  async function make_csrf_token() {
+    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    csrf_data = csrf_response.data;
+    return csrf_data.csrf_token;
+  }
   async function connect_to_chatroom(chatroom_id) {
     console.log(chatroom_id)
     const data = qs.stringify({
       id: chatroom_id
     });
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    console.log(csrf_data.csrf_token);
+    
+    const token = await make_csrf_token();
     const response = await axios.post(
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom",
       data,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_data.csrf_token,
+          "X-Csrf-Token": token,
         },
       }
     );
     setErrorMsg(response.data);
     console.log(response.data);
+    if (response.data == null) {
+      navigation.navigate("../Chatroom/Chatroom")
+    }
   }
 
   async function load_chatrooms() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms"
-    );
+    const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms");
     let chatrooms = [];
     const data = await response.data;
     data.forEach(element => {
@@ -67,13 +72,15 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     const data = qs.stringify({
       location: loc
     });
+    const token = await make_csrf_token();
+
     const response = await axios.post(
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
       data,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_token(),
+          "X-Csrf-Token": token,
         },
       }
     );
