@@ -1,0 +1,1 @@
+scp -r jderosa3@cheshire.cse.buffalo.edu:/web/CSE442-542/2023-Fall/cse-442a/* C:\Users\deros\project-group-byte-bandits\php
