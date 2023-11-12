@@ -11,6 +11,7 @@ import {
   Platform,
 
 } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -21,6 +22,7 @@ import qs from "qs";
 
 
 const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
+  const navigation = useNavigation();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
@@ -49,7 +51,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     setErrorMsg(response.data);
     console.log(response.data);
     if (response.data == '') {
-      //navigation.navigate("Chatroom")
+      navigation.navigate("Chatroom")
     }
   }
 
