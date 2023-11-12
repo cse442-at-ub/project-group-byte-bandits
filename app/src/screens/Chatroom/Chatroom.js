@@ -23,6 +23,7 @@ import {
 } from "@expo/vector-icons";
 import axios from "axios";
 import qs from "qs";
+import { Header } from 'react-native-elements'
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -108,22 +109,30 @@ export const Chatroom = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => setShowConfirm(true)}
-          style={styles.leaveButton}
-        >
-          <Entypo name="chevron-left" size={32} color="red" />
-          <Text style={styles.leaveText}>Leave</Text>
-        </TouchableOpacity>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity
-          onPress={() => navigation.navigate("ChatroomUsers")}
-          style={styles.leaveButton}
-        >
-          <FontAwesome5 name="user-friends" size={32} color="#555454" />
-        </TouchableOpacity>
-      </View>
+      <Header
+  leftComponent={{ 
+    icon: 'chevron-left', 
+    color: '#fff', 
+    type: 'entypo', 
+    onPress: () => {
+      setShowConfirm(true);
+      navigation.goBack();
+    }
+  }}
+  rightComponent={(
+    <TouchableOpacity
+      onPress={() => navigation.navigate("ChatroomUsers")}
+      style={styles.leaveButton}
+    >
+      <FontAwesome5 name="user-friends" size={32} color="#555454" />
+    </TouchableOpacity>
+  )}
+  containerStyle={{
+    backgroundColor: 'transparent',
+    borderBottomWidth: 0,
+    marginTop: Platform.OS === 'ios' ? 0 : -24 
+  }}
+/>
 
       <View style={styles.chatroomTitle}>
         <Text style={styles.chatroomTitleText}>Machine Learning Bubble</Text>
