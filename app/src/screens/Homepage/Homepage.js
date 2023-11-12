@@ -34,7 +34,6 @@ const HomePage = ({ navigation }) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
-  navigation.navigate("Chatroom");
 
   const userID = useSelector((state) => state.user.userID);
 
