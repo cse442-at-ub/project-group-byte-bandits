@@ -16,31 +16,28 @@ export const GetUsername = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const userID = useSelector((state) => state.user.userID);
-
+  
   const create_username = async () => {
-    try {
-      const data = qs.stringify({
-        account_username: username,
-        user_ID: userID,
-      });
-
-      const response = await axios.post(
-        "https://cse.buffalo.edu/~jjalessi/auth/create_username",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-
-      // if username is unique fill in db table and send to HomePageSocial
-      setErrorMessage("");
-      console.log("RESPONSE", response.data);
+    const data = qs.stringify({
+      username:username,
+      initiate:false
+    });
+    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    csrf_data = csrf_response.data;
+    const response = await axios.post(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Csrf-Token": csrf_data.csrf_token,
+        },
+      }
+    );
+    setErrorMessage(response.data);
+    console.log(response.data);
+    if (response.data == '') {
       navigation.navigate("HomePage");
-    } catch (error) {
-      console.log("ERROR: ", error.response.data);
-      setErrorMessage(error.response.data.error);
     }
   };
 

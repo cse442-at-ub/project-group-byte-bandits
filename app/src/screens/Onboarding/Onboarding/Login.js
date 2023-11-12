@@ -24,28 +24,6 @@ const Login = ({ navigation }) => {
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
 
-  //   useEffect(() => {
-  //     async function fetchCookies() {
-  //       try {
-  //         fetch("https://cse.buffalo.edu/~jderosa3/auth/login_form")
-  //         .then(response => response.json())
-  //         .then(json => {
-  //           console.log(json);
-  //           if (json["response"] == 200) {
-  //             console.log("user is logged in");
-  //             navigation.navigate("HomePage")
-  //           } else if (json["response"] == -1){
-  //             console.log("no user is logged in");
-  //           }
-  //         });
-  //     } catch (error) {
-  //       console.log("Error:", error);
-  //     }
-  //   }
-  //   fetchCookies();
-
-  //   }, []);
-
   const fetchAppleInfo = async () => {
     try {
       const response = await AppleAuthentication.signInAsync({
@@ -57,31 +35,26 @@ const Login = ({ navigation }) => {
 
       // IF APPLE RETURNS INFORMATION WE SEND INFO TO DATABASE TO CREATE USER
       const apple_user = response.user;
-      try {
-        const data = qs.stringify({
-          apple_user: apple_user,
-        });
-        const response = await axios.post(
-          "https://cse.buffalo.edu/~jjalessi/auth/apple_login",
-          data,
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          }
-        );
-        // if valid data was entered, navigate user to HomePage
-        console.log("Response", response.data.user_info);
-        dispatch(logIn(response.data.user_info.id));
-
-        if (response.data.user_info.name === null) {
-          navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
-        } else {
-          await axios.post("https://cse.buffalo.edu/~jjalessi/auth/set_cookie");
-          navigation.navigate("HomePage"); // else set cookie and send to HomePage
+      const data = qs.stringify({
+        apple_user: apple_user,
+      });
+      const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+      csrf_data = csrf_response.data;
+      response = await axios.post(
+        "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/apple_login",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": csrf_data.csrf_token,
+          },
         }
-      } catch (error) {
-        setErrorMessage(error.response.data.error);
+      );
+      // if valid data was entered, navigate user to HomePage
+      console.log(response.data);
+
+      if (response.data == '') {
+        navigation.navigate("HomePage")
       }
     } catch (error) {
       if (error.code === "ERR_REQUEST_CANCELED") {

@@ -49,8 +49,6 @@ const EmailOrUsernameLogin = ({ navigation }) => {
     });
     const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
     csrf_data = csrf_response.data;
-    console.log(csrf_data.csrf_token);
-
     const response = await axios.post(
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login",
       data,
@@ -61,8 +59,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
         },
       }
     );
-    setErrorMessage(response.data);
-    console.log(response.data);
+    setErrorMessage(response.data.response);
     if (response.data == '') {
       navigation.navigate("HomePage");
     }

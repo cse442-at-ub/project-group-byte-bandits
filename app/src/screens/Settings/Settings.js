@@ -9,9 +9,21 @@ import React from "react";
 import * as Haptics from "expo-haptics";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
+import axios from "axios";
 
 const Settings = () => {
   const navigation = useNavigation();
+  
+  async function user_logout() {
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/logout"
+    );
+    const data = response.data;
+    console.log(data);
+    if (data == '') {
+      navigation.navigate("Login");
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -79,7 +91,8 @@ const Settings = () => {
           <Entypo name="chevron-right" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.signOutButton}>
+      <TouchableOpacity style={styles.signOutButton}
+                        onPress={() => user_logout()}>
         <View style={styles.gradient}>
           <Text style={styles.signOutButtonText}>Sign Out </Text>
         </View>

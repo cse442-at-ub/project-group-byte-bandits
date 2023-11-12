@@ -28,34 +28,29 @@ const EmailRegister = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const send_email_signup_request = async () => {
-    try {
-      const data = qs.stringify({
-        user_email: email,
-        user_password: password,
-        user_password_check: confirmPassword,
-      });
-
-      const response = await axios.post(
-        "https://cse.buffalo.edu/~jjalessi/auth/email_register",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-
-      // if user information successfully sent to database, send them to GetUsername
-
-      // SETTING USERID into REDUX
-      dispatch(logIn(response.data.user_info.user_id));
-
-      setErrorMessage("");
+  
+  const secure_signup = async () => {
+    const data = qs.stringify({
+      email: email,
+      password: password,
+      password_check: confirmPassword,
+      initiate:true
+    });
+    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    csrf_data = csrf_response.data;
+    const response = await axios.post(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Csrf-Token": csrf_data.csrf_token,
+        },
+      }
+    );
+    setErrorMessage(response.data.response);
+    if (response.data == '') {
       navigation.navigate("GetUsername");
-    } catch (error) {
-      setErrorMessage(error.response.data.error);
     }
   };
 
@@ -337,7 +332,7 @@ const EmailRegister = ({ navigation }) => {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => send_email_signup_request()}
+                  onPress={() => secure_signup()}
                   style={styles.logInButton}
                 >
                   {/* Login w/ Apple Text*/}
