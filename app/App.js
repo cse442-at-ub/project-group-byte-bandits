@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
-import HomePage from "./src/screens/Homepage/Homepage";
+import HomePage from "./src/screens/Homepage/HomePage";
 import Settings from "./src/screens/Settings/Settings";
 import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
