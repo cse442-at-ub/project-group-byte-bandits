@@ -35,7 +35,8 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
     );
     login_state_data = response.data;
-    if (login_state_data.login_state == null) {
+    console.log(login_state_data);
+    if (login_state_data == '') {
       navigation.navigate("HomePage");
     }
   }
@@ -61,9 +62,10 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       }
     );
     setErrorMessage(response.data);
-    // else send them to HomePageSocial
-
-    // console.log(response.data);
+    console.log(response.data);
+    if (response.data == '') {
+      navigation.navigate("HomePage");
+    }
   };
 
   return (

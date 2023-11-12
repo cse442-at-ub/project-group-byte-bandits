@@ -19,7 +19,8 @@ import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
 
-const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
+
+const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
@@ -30,7 +31,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
     return csrf_data.csrf_token;
   }
   async function connect_to_chatroom(chatroom_id) {
-    console.log(chatroom_id)
     const data = qs.stringify({
       id: chatroom_id
     });
@@ -48,8 +48,8 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
     );
     setErrorMsg(response.data);
     console.log(response.data);
-    if (response.data == null) {
-      navigation.navigate("../Chatroom/Chatroom")
+    if (response.data == '') {
+      //navigation.navigate("Chatroom")
     }
   }
 
@@ -58,7 +58,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
     let chatrooms = [];
     const data = await response.data;
     data.forEach(element => {
-      //console.log(data);
       element = JSON.parse(element);
       id = element.id;
       loc = element.location;
@@ -87,7 +86,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
     );
     setErrorMsg(response.data);
     console.log(response.data);
-    // else send them to HomePageSocial
   };
 
   useEffect(() => {
