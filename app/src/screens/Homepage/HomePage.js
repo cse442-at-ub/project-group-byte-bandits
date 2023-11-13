@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
 
 import BubbleComponent from "../../svgs/bubbleComponent";
 import Feather from "react-native-vector-icons/Feather";
