@@ -79,10 +79,12 @@ export const Chatroom = ({ navigation }) => {
     });
     setMessageData(text_messages);
   }
+  
   function init_page() {
     handle_login_state();
     load_messages();
   }
+
   return (
     <SafeAreaView style={styles.ChatroomBackground} onLayout={() => init_page()}>
       {/* CONFIRMATION TO LEAVE ROOM */}

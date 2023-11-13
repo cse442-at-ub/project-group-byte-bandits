@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView} fro
 import { Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 import { VictoryBar, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
 import * as Haptics from 'expo-haptics'
+import axios from "axios";
+import { useState } from "react";
 
 const UserDashboard = ({ navigation }) => {
   const barData = [
@@ -14,8 +16,20 @@ const UserDashboard = ({ navigation }) => {
   ];
   const colorScale = ["gray", "#00a9ff"];
 
+  const [username, setUsername] = useState(null);
+  const [userid, setUserId] = useState(null);
+
+  async function load_profile_data() {
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/profile_data"
+    );
+    profile_data = response.data;
+    setUsername(profile_data.name);
+    setUserId(profile_data.id);
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={() => load_profile_data() }>
             <SafeAreaView style={{ flex: 1 }}>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -25,8 +39,8 @@ const UserDashboard = ({ navigation }) => {
           <View style={styles.profileInfo}>
             <View style={styles.circle}></View>
             <View style={styles.nameInfo}>
-              <Text style={styles.name}>Joe</Text>
-              <Text style={styles.handle}>@joe</Text>
+              <Text style={styles.name}>{ username }</Text>
+              <Text style={styles.handle}>@{ userid }</Text>
             </View>
           </View>
         </View>
