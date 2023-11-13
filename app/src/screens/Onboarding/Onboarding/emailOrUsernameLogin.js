@@ -30,9 +30,9 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
 
-  async function handle_login_state() {
+  async function handle_auto_login() {
     const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/auto_login"
     );
     login_state_data = response.data;
     console.log(login_state_data);
@@ -69,7 +69,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       onPress={() => {
         Keyboard.dismiss();
       }}
-      onLayout={() => handle_login_state()}
+      onLayout={() => handle_auto_login()}
     >
       <View style={styles.onboardingBackground}>
         <SafeAreaView style={{ flex: 1 }}>
