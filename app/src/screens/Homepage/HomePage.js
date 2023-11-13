@@ -38,7 +38,7 @@ const HomePage = ({ navigation }) => {
 
   const userID = useSelector((state) => state.user.userID);
 
-  const createBubble = () => {
+  const create_bubble = () => {
     try {
       const data = qs.stringify({
         chatroom_radius: selectedRadius,
@@ -152,7 +152,7 @@ const HomePage = ({ navigation }) => {
                           shadowRadius: 2.62,
                           elevation: 4,
                           padding: 20,
-                          width: "80%%",
+                          width: "80%",
                           borderRadius: 20,
                           borderColor: "#3D3C3C",
                           borderWidth: 1,
