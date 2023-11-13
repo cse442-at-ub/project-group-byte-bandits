@@ -1,4 +1,5 @@
-import React from "react"; // It's important to import React
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Text,
   View,
@@ -13,30 +14,58 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import LineComponent from "../../../svgs/lineComponent";
 import BubbleComponent from "../../../svgs/bubbleComponent";
-import { useEffect } from "react"; // It's important to import React
+import * as AppleAuthentication from "expo-apple-authentication";
+import axios from "axios";
+import qs from "qs";
+import { logIn } from "../../../../redux/user";
 
 const Login = ({ navigation }) => {
-  useEffect(() => {
-    async function fetchCookies() {
-      try {
-        fetch("https://cse.buffalo.edu/~jderosa3/auth/login_form")
-        .then(response => response.json())
-        .then(json => {
-          console.log(json);
-          if (json["response"] == 200) {
-            console.log("user is logged in");
-            navigation.navigate("HomePageSocial")
-          } else if (json["response"] == -1){
-            console.log("no user is logged in");
-          }
-        });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [userID, setUserID] = useState();
+  const dispatch = useDispatch();
+
+  const fetchAppleInfo = async () => {
+    try {
+      const response = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      // IF APPLE RETURNS INFORMATION WE SEND INFO TO DATABASE TO CREATE USER
+      const apple_user = response.user;
+      const data = qs.stringify({
+        apple_user: apple_user,
+      });
+      const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+      csrf_data = csrf_response.data;
+      response = await axios.post(
+        "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/apple_login",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": csrf_data.csrf_token,
+          },
+        }
+      );
+      // if valid data was entered, navigate user to HomePage
+      console.log(response.data);
+
+      if (response.data == '') {
+        navigation.navigate("HomePage")
+      }
     } catch (error) {
-      console.log("Error:", error);
+      if (error.code === "ERR_REQUEST_CANCELED") {
+        console.log("Error while fetching apple data");
+        // handle that the user canceled the sign-in flow
+      } else {
+        // handle other errors
+      }
     }
-  }
-  fetchCookies();
-      
-  }, []); 
+  };
+
   return (
     <View style={styles.onboardingBackground}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -69,7 +98,14 @@ const Login = ({ navigation }) => {
           {/* BUTTON ONE */}
           <View style={styles.buttonDiv}>
             {/* ADD ONCLICK FUNCTIONALITY HERE */}
-            <TouchableOpacity style={styles.appleButton}>
+            <TouchableOpacity
+              onPress={() => {
+                fetchAppleInfo().then((response) => {
+                  console.log(response);
+                });
+              }}
+              style={styles.appleButton}
+            >
               {/* Apple Logo */}
               <View style={styles.logoDiv}>
                 <AntDesign name="apple-o" size={44} color={"white"} />
@@ -121,7 +157,10 @@ const Login = ({ navigation }) => {
             {/* ADD ONCLICK FUNCTIONALITY HERE */}
             <TouchableOpacity
               style={styles.accountButton}
-              onPress={() => navigation.navigate("UsernameLogin")}
+              onPress={() => {
+                navigation.navigate("EmailorUsernameLogin");
+                setErrorMessage("");
+              }}
             >
               {/* Account Logo */}
               <View style={styles.logoDiv}>
@@ -141,9 +180,29 @@ const Login = ({ navigation }) => {
                   justifyContent: "center",
                 }}
               >
-                <Text style={styles.buttonText}>Login with Username</Text>
+                <Text style={styles.buttonText}>Login with Email</Text>
               </View>
             </TouchableOpacity>
+          </View>
+
+          {/* ERROR MESSAGE DISPLAYED HERE */}
+          <View
+            style={{
+              height: "8%",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: 12,
+                color: "red",
+              }}
+            >
+              {errorMessage}
+            </Text>
           </View>
 
           {/* Area to switch to Register */}
@@ -242,7 +301,7 @@ const styles = StyleSheet.create({
   },
   buttonDiv: {
     display: "flex",
-    height: "22%",
+    height: "20%",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
