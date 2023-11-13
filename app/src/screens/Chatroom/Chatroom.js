@@ -71,15 +71,13 @@ export const Chatroom = ({ navigation }) => {
     const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request");
     let text_messages = [];
     const data = await response.data;
-    if(data != '{"response":"Caught exception: no cookie 150"}') {
-      data.forEach(element => {
-        const text_data = JSON.parse(element);
-        const user = text_data.user;
-        const content = text_data.content;
-        text_messages.push([user, content]);
-      });
-      setMessageData(text_messages);
-    }
+    data.forEach(element => {
+      const text_data = JSON.parse(element);
+      const user = text_data.user;
+      const content = text_data.content;
+      text_messages.push([user, content]);
+    });
+    setMessageData(text_messages);
   }
   function init_page() {
     handle_login_state();

@@ -59,16 +59,14 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms");
     let chatrooms = [];
     const data = await response.data;
-    if(data != '{"response":"Caught exception: no cookie 150"}') {
-      data.forEach(element => {
-        element = JSON.parse(element);
-        id = element.id;
-        loc = element.location;
-        host = element.host;
-        chatrooms.push([id, loc, host]);
-      });
-      setChatroomData(chatrooms);
-    }
+    data.forEach(element => {
+      element = JSON.parse(element);
+      id = element.id;
+      loc = element.location;
+      host = element.host;
+      chatrooms.push([id, loc, host]);
+    });
+    setChatroomData(chatrooms);
   }
 
   async function update_location(loc) {
