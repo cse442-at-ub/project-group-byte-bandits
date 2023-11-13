@@ -58,8 +58,7 @@ const EmailRegister = ({ navigation }) => {
     <TouchableWithoutFeedback
       onPress={() => {
         Keyboard.dismiss();
-      }}
-    >
+      }}>
       <View style={styles.onboardingBackground}>
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.upperHalfofOnboarding}>

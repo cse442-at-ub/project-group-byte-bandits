@@ -59,16 +59,17 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms");
     let chatrooms = [];
     const data = await response.data;
-    data.forEach(element => {
-      element = JSON.parse(element);
-      id = element.id;
-      loc = element.location;
-      host = element.host;
-      chatrooms.push([id, loc, host]);
-    });
-    setChatroomData(chatrooms);
+    if(data != '{"response":"Caught exception: no cookie 150"}') {
+      data.forEach(element => {
+        element = JSON.parse(element);
+        id = element.id;
+        loc = element.location;
+        host = element.host;
+        chatrooms.push([id, loc, host]);
+      });
+      setChatroomData(chatrooms);
+    }
   }
-  load_chatrooms();
 
   async function update_location(loc) {
     const data = qs.stringify({
@@ -134,7 +135,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   }, []);
 
   return (
-    <View style={styles.contentOfHomePage}>
+    <View style={styles.contentOfHomePage} onLayout={() => load_chatrooms()}>
       {/* Div for Main Three Tabs */}
       <View style={styles.mainTabs}>
         {/* Social Icon */}

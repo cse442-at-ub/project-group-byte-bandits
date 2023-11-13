@@ -40,7 +40,6 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       navigation.navigate("HomePage");
     }
   }
-  handle_login_state();
 
   const secure_login = async () => {
     const data = qs.stringify({
@@ -70,6 +69,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       onPress={() => {
         Keyboard.dismiss();
       }}
+      onLayout={() => handle_login_state()}
     >
       <View style={styles.onboardingBackground}>
         <SafeAreaView style={{ flex: 1 }}>

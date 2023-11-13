@@ -55,13 +55,13 @@ const HomePage = ({ navigation }) => {
       navigation.navigate("Login");
     }
   }
-  handle_login_state();
   
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         Keyboard.dismiss();
       }}
+      onLayout={() => handle_login_state()}
     >
       <View style={styles.HomePageBackground}>
         <SafeAreaView style={{ flex: 1 }}>

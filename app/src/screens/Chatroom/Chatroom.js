@@ -31,6 +31,16 @@ export const Chatroom = ({ navigation }) => {
   const [message_contents, setMessageContents] = useState(null);
   const [errMessage, setErrorMsg] = useState(null);
 
+  async function handle_login_state() {
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
+    );
+    login_state_data = response.data;
+    if (login_state_data != '') {
+      navigation.navigate("Login");
+    }
+  }
+
   async function make_csrf_token() {
     const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
     csrf_data = csrf_response.data;
@@ -61,20 +71,22 @@ export const Chatroom = ({ navigation }) => {
     const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request");
     let text_messages = [];
     const data = await response.data;
-
-    data.forEach(element => {
-      const text_data = JSON.parse(element);
-      const user = text_data.user;
-      const content = text_data.content;
-      text_messages.push([user, content]);
-    });
-
-    setMessageData(text_messages);
+    if(data != '{"response":"Caught exception: no cookie 150"}') {
+      data.forEach(element => {
+        const text_data = JSON.parse(element);
+        const user = text_data.user;
+        const content = text_data.content;
+        text_messages.push([user, content]);
+      });
+      setMessageData(text_messages);
+    }
   }
-  load_messages();
-
+  function init_page() {
+    handle_login_state();
+    load_messages();
+  }
   return (
-    <SafeAreaView style={styles.ChatroomBackground}>
+    <SafeAreaView style={styles.ChatroomBackground} onLayout={() => init_page()}>
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
