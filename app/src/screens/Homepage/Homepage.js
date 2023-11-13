@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
 
 import BubbleComponent from "../../svgs/bubbleComponent";
 import Feather from "react-native-vector-icons/Feather";
@@ -44,7 +45,17 @@ const HomePage = ({ navigation }) => {
       });
     } catch {}
   };
-
+  async function handle_login_state() {
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
+    );
+    login_state_data = response.data;
+    console.log(login_state_data);
+    if (login_state_data != '') {
+      navigation.navigate("Login");
+    }
+  }
+  handle_login_state();
   return (
     <TouchableWithoutFeedback
       onPress={() => {
