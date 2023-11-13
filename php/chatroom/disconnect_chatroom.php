@@ -1,8 +1,7 @@
 <?php
 include "../auth/utility.php";
-
 handle_login_state();
-$user_record = $userQuery->get_user_with_sid($_COOKIE['PHPSESSID'])[0];
+$user_record = get_user_with_sid($_COOKIE['PHPSESSID'])[0];
 try {
     if(!isset($_COOKIE['chatroom']))
         throw new Exception("could not retrieve chatroom");
@@ -12,7 +11,7 @@ try {
 
 // check ssid
 $id = $_COOKIE['chatroom'];
-$chatroom_record = $chatroomQuery->get_chatroom_with_id($id)[0];
+$chatroom_record = get_chatroom_with_id($id)[0];
 
 // check if they are already disconnected
 try {
@@ -23,6 +22,6 @@ try {
 }
 
 setcookie("chatroom", '', time() - $_GLOBALS['lifespan'],'/');
-$userQuery->unset_chatroom_connection($user_record['session']);
-$chatroomQuery->set_chatroom_tokens($chatroom_record['max_persons'] + 1,$id);
-$chatroomQuery->delete_chatroom_auth_token($user_record['session']);  // make sure to call these methods before logging out or the sesssion will not match
+unset_chatroom_connection($user_record['session']);
+set_chatroom_tokens($chatroom_record['max_persons'] + 1,$id);
+delete_chatroom_auth_token($user_record['session']);  // make sure to call these methods before logging out or the sesssion will not match

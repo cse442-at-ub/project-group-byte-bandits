@@ -3,25 +3,20 @@ include "../auth/utility.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // check ssid
-    try {
-        if(!isset($_COOKIE['PHPSESSID']))
-            throw new Exception("no cookie");
-        else
-            $rows = $userQuery->get_user_with_name('admin');
-            if(count($rows) == 0) {
-                throw new Exception("no database record not logged in");
-            }
-    } catch( Exception $e) {
-        handle_exception($e, 'cookies');
-    }
+    handle_login_state();
     validate_csrf_token();
     $id = $_POST['id'];
-    $user_record = $userQuery->get_user_with_sid($_COOKIE['PHPSESSID'])[0];
-    $chatroom_record = $chatroomQuery->get_chatroom_with_id($id)[0];
+    $user_record = get_user_with_sid($_COOKIE['PHPSESSID'])[0];
+    $chatroom_record = get_chatroom_with_id($id)[0];
     // check if they are already connected to a chatroom
+    $reconnecting = false;
     try {
-        if($user_record['chatroom_connection'])
-            throw new Exception('already connected to chatroom');
+        if($user_record['chatroom_connection']) {
+            $chatroom_auth_record = get_chatroom_auth_with_token($user_record['chatroom_connection'], $_COOKIE['PHPSESSID'])[0];
+            if($chatroom_auth_record['id'] != $id)
+                throw new Exception('already connected to chatroom ' . $chatroom_auth_record['id']);
+            $reconnecting = true;
+        }
     } catch(Exception $e) {
         handle_exception($e, "chatroom", $user_record['id']);
     }
@@ -47,12 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         handle_exception($e, "chatroom", $user_record['id']);
     }
 
-    setcookie("chatroom", $id, time()+$GLOBALS['lifespan'],'/');
-    // generate new chatroom auth token
-    $chatroom_token = bin2hex(random_bytes(16));
-    $userQuery->set_user_chatroom_connection($chatroom_token, $_COOKIE['PHPSESSID']);
-    $chatroomQuery->create_chatroom_token($id, $chatroom_token, $_COOKIE['PHPSESSID'],$user_record['id']);
-    $chatroomQuery->set_chatroom_tokens($chatroom_record['max_persons'] -1 , $id);
+    if (!$reconnecting) {
+        setcookie("chatroom", $id, time()+$GLOBALS['lifespan'],'/');
+        // generate new chatroom auth token
+        $chatroom_token = bin2hex(random_bytes(16));
+        set_user_chatroom_connection($chatroom_token, $_COOKIE['PHPSESSID']);
+        create_chatroom_token($id, $chatroom_token, $_COOKIE['PHPSESSID'],$user_record['id']);
+        set_chatroom_tokens($chatroom_record['max_persons'] -1 , $id);
+    }
 } else {
     forbidden_response();
 }
