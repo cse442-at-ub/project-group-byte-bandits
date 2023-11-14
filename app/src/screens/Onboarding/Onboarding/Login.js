@@ -18,6 +18,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import axios from "axios";
 import qs from "qs";
 import { logIn } from "../../../../redux/user";
+import { handle_auto_login } from "../../../bubble_api/bubble_api";
 
 const Login = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -65,9 +66,9 @@ const Login = ({ navigation }) => {
       }
     }
   };
-
   return (
-    <View style={styles.onboardingBackground}>
+    <View style={styles.onboardingBackground}
+    onLayout={() => handle_auto_login(navigation)}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.upperHalfofOnboarding}>
           <View style={styles.lowerOfUpper}>

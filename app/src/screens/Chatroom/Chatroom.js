@@ -24,69 +24,31 @@ import {
 import axios from "axios";
 import qs from "qs";
 import { Header } from 'react-native-elements'
+import { handle_login_state, 
+  load_messages, 
+  send_text_message } from "../../bubble_api/bubble_api.js";
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [message_data, setMessageData] = useState(null);
   const [message_contents, setMessageContents] = useState(null);
+  const [message_data, setMessageData] = useState(null);
   const [errMessage, setErrorMsg] = useState(null);
 
-  async function handle_login_state() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
-    );
-    login_state_data = response.data;
-    if (login_state_data != '') {
-      navigation.navigate("Login");
-    }
+  async function send_text() {
+    const data = await send_text_message(message_contents);
+    setErrorMsg(data);
   }
 
-  async function make_csrf_token() {
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    return csrf_data.csrf_token;
+  async function load_page_contents() {
+    const data = await load_messages();
+    setMessageData(data);
   }
 
-  async function send_text_message(content) {
-    const data = qs.stringify({
-      content: content
-    });
-    const token = await make_csrf_token();
-
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": token,
-        },
-      }
-    );
-    setErrorMsg(response.data);
-    console.log(response.data);
-  };
-
-  async function load_messages() {
-    const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request");
-    let text_messages = [];
-    const data = await response.data;
-    data.forEach(element => {
-      const text_data = JSON.parse(element);
-      const user = text_data.user;
-      const content = text_data.content;
-      text_messages.push([user, content]);
-    });
-    setMessageData(text_messages);
-  }
-  
-  function init_page() {
-    handle_login_state();
-    load_messages();
-  }
+  load_page_contents()
 
   return (
-    <SafeAreaView style={styles.ChatroomBackground} onLayout={() => init_page()}>
+    <SafeAreaView 
+    style={styles.ChatroomBackground} onLayout={() => handle_login_state(navigation)}>
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
@@ -182,7 +144,7 @@ export const Chatroom = ({ navigation }) => {
               maxLength={40}
             />
           </View>
-          <TouchableOpacity style={styles.sendMessage} onPress={() => send_text_message(message_contents)}>
+          <TouchableOpacity style={styles.sendMessage} onPress={() => send_text()}>
             <Feather
               name="send"
               size={42}
