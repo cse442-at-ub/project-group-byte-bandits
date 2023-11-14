@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
-
 import BubbleComponent from "../../svgs/bubbleComponent";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -22,6 +21,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import HomePageSocial from "../../components/HomePageSocial";
 import HomePageNearby from "../../components/HomePageNearby";
+import axios from "axios";
+import qs from "qs";
+import { create_csrf } from "../../utils/create_csrf";
 
 const HomePage = ({ navigation }) => {
   const [creatingBubble, setCreatingBubble] = useState(false);
@@ -37,12 +39,30 @@ const HomePage = ({ navigation }) => {
 
   const userID = useSelector((state) => state.user.userID);
 
-  const createBubble = () => {
+  const createBubble = async () => {
     try {
+      token = await create_csrf();
+
       const data = qs.stringify({
         chatroom_radius: selectedRadius,
+        max_people: maxPeople,
+        bubble_title: bubbleTitle,
+        bubble_description: bubbleDescription,
+        user_id: userID,
       });
-    } catch {}
+      const response = await axios.post(
+        "https://cse.buffalo.edu/~jjalessi/auth/create_chatroom",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": token,
+          },
+        }
+      );
+    } catch (error) {
+      console.log("ERROR", error);
+    }
   };
 
   return (

@@ -33,8 +33,8 @@ const Login = ({ navigation }) => {
         );
         // if cookie found, send to Homepage
 
+        dispatch(logIn(response.data.user_info.id));
         navigation.navigate("HomePage");
-        console.log("RESPONSE", response.data);
       } catch (error) {
         console.log("ERROR: ", error.response.data);
       }
