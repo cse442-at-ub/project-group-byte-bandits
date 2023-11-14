@@ -32,12 +32,11 @@ const Login = ({ navigation }) => {
           "https://cse.buffalo.edu/~jjalessi/auth/fetch_cookies"
         );
         // if cookie found, send to Homepage
-        console.log("\nRESPONSE: ", response);
 
         navigation.navigate("HomePage");
         console.log("RESPONSE", response.data);
       } catch (error) {
-        console.log("ERROR: ", error);
+        console.log("ERROR: ", error.response.data);
       }
     };
 

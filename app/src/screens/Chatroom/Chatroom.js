@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  StatusBar,
-  FlatList,
-} from 'react-native';
+import { StatusBar, FlatList } from "react-native";
 import {
   View,
   StyleSheet,
@@ -31,14 +28,14 @@ export const Chatroom = ({ navigation }) => {
   const [errMessage, setErrorMsg] = useState(null);
 
   async function make_csrf_token() {
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+    const csrf_response = await axios.get("");
     csrf_data = csrf_response.data;
     return csrf_data.csrf_token;
   }
 
   async function send_text_message(content) {
     const data = qs.stringify({
-      content: content
+      content: content,
     });
     const token = await make_csrf_token();
 
@@ -54,14 +51,16 @@ export const Chatroom = ({ navigation }) => {
     );
     setErrorMsg(response.data);
     console.log(response.data);
-  };
+  }
 
   async function load_messages() {
-    const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request");
+    const response = await axios.get(
+      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request"
+    );
     let text_messages = [];
     const data = await response.data;
 
-    data.forEach(element => {
+    data.forEach((element) => {
       const text_data = JSON.parse(element);
       const user = text_data.user;
       const content = text_data.content;
@@ -135,11 +134,15 @@ export const Chatroom = ({ navigation }) => {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
         <View style={styles.chatroomBody}>
-          <View>  
+          <View>
             <View style={styles.container_style}>
-              <FlatList 
+              <FlatList
                 data={message_data}
-                renderItem={({item}) => <Text style={{color : 'white'}}>{item[0]}  -  {item[1]}</Text> }
+                renderItem={({ item }) => (
+                  <Text style={{ color: "white" }}>
+                    {item[0]} - {item[1]}
+                  </Text>
+                )}
               />
             </View>
           </View>
@@ -154,14 +157,18 @@ export const Chatroom = ({ navigation }) => {
             />
           </TouchableOpacity>
           <View style={styles.textBox}>
-            <TextInput onChangeText={(text) => setMessageContents(text)}
+            <TextInput
+              onChangeText={(text) => setMessageContents(text)}
               style={styles.searchBar}
               placeholder="Type a message..."
               placeholderTextColor={"#3D3C3C"}
               maxLength={40}
             />
           </View>
-          <TouchableOpacity style={styles.sendMessage} onPress={() => send_text_message(message_contents)}>
+          <TouchableOpacity
+            style={styles.sendMessage}
+            onPress={() => send_text_message(message_contents)}
+          >
             <Feather
               name="send"
               size={42}

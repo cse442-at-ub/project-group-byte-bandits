@@ -17,6 +17,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import axios from "axios";
 import qs from "qs";
 import { logIn } from "../../../../redux/user";
+import { create_csrf } from "../../../utils/create_csrf";
 
 const Register = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -24,6 +25,8 @@ const Register = ({ navigation }) => {
 
   // function for fetching apple info
   const fetchAppleInfo = async () => {
+    const token = await create_csrf();
+    console.log("TOKEN: ", token);
     try {
       const response = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -46,6 +49,7 @@ const Register = ({ navigation }) => {
           {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
+              "X-Csrf-Token": token,
             },
           }
         );

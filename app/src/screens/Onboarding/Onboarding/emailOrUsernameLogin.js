@@ -55,9 +55,6 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       if (response.data.user_info.name === null) {
         navigation.navigate("GetUsername"); // If user prematurely exited login screen, send them to GetUsername to make username
       } else {
-        await axios.post("https://cse.buffalo.edu/~jjalessi/auth/set_cookie", {
-          // user_id: userID,
-        });
         navigation.navigate("HomePage"); // else send them to HomePageSocial
       }
     } catch (error) {
