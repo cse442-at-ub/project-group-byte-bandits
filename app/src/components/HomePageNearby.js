@@ -15,6 +15,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
+import { connect_to_chatroom, load_chatrooms, update_location } from "../bubble_api/bubble_api";
 
 const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const navigation = useNavigation();
@@ -22,55 +23,20 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
 
-  async function make_csrf_token() {
-    const csrf_response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf"
-    );
-    csrf_data = csrf_response.data;
-    return csrf_data.csrf_token;
-  }
-  async function connect_to_chatroom(chatroom_id) {
-    const data = qs.stringify({
-      id: chatroom_id,
-    });
-
-    const token = await make_csrf_token();
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": token,
-        },
-      }
-    );
-    setErrorMsg(response.data);
-    console.log(response.data);
-    if (response.data == "") {
+  async function ConnectToChatroom(id) {
+    const data = await connect_to_chatroom(id);
+    setErrorMsg(data);
+    console.log(data);
+    if (data == '') {
       navigation.navigate("Chatroom");
     }
   }
 
-  async function load_chatrooms() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms"
-    );
-    let chatrooms = [];
-    const data = await response.data;
-    data.forEach((element) => {
-      element = JSON.parse(element);
-      id = element.id;
-      loc = element.location;
-      host = element.host;
-      chatrooms.push([id, loc, host]);
-    });
-    setChatroomData(chatrooms);
+  async function LoadChatrooms() {
+    const data = await load_chatrooms();
+    setChatroomData(data);
+
   }
-
-  // async function update_location(loc) {
-
-  // }
 
   useEffect(() => {
     const getLocation = async () => {
@@ -97,26 +63,11 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
             distanceInterval: 1,
           },
           async (newLocation) => {
-            const token = await make_csrf_token();
             setLocation(newLocation);
             console.log("User's location:", newLocation);
-            const data = qs.stringify({
-              long: newLocation.coords.longitude,
-              lat: newLocation.coords.latitude,
-            });
-
-            const response = await axios.post(
-              "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
-              data,
-              {
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                  "X-Csrf-Token": token,
-                },
-              }
-            );
-            setErrorMsg(response.data);
-            console.log(response.data);
+            const data = await update_location();
+            setErrorMsg(data);
+            console.log(data);
           }
         );
       } catch (error) {
@@ -134,7 +85,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   }, []);
 
   return (
-    <View style={styles.contentOfHomePage} onLayout={() => load_chatrooms()}>
+    <View style={styles.contentOfHomePage} onLayout={() => LoadChatrooms()}>
       {/* Div for Main Three Tabs */}
       <View style={styles.mainTabs}>
         {/* Social Icon */}
@@ -222,7 +173,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
               renderItem={({ item }) => (
                 <Text
                   style={{ color: "white" }}
-                  onPress={() => connect_to_chatroom(item[0])}
+                  onPress={() => ConnectToChatroom(item[0])}
                 >
                   {item}
                 </Text>

@@ -24,6 +24,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import HomePageSocial from "../../components/HomePageSocial";
 import HomePageNearby from "../../components/HomePageNearby";
 
+import { handle_login_state } from "../../bubble_api/bubble_api";
+
 const HomePage = ({ navigation }) => {
   const [creatingBubble, setCreatingBubble] = useState(false);
   const [showDeleteBubble, setShowDeleteBubble] = useState(false);
@@ -45,23 +47,13 @@ const HomePage = ({ navigation }) => {
       });
     } catch {}
   };
-  async function handle_login_state() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
-    );
-    login_state_data = response.data;
-    console.log(login_state_data);
-    if (login_state_data != "") {
-      navigation.navigate("Login");
-    }
-  }
 
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         Keyboard.dismiss();
       }}
-      onLayout={() => handle_login_state()}
+      onLayout={() => handle_login_state(navigation)}
     >
       <View style={styles.HomePageBackground}>
         <SafeAreaView style={{ flex: 1 }}>

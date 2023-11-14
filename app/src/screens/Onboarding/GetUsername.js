@@ -9,37 +9,21 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
-import qs from "qs";
+import { create_username } from "../../bubble_api/bubble_api";
 
 export const GetUsername = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const userID = useSelector((state) => state.user.userID);
   
-  const create_username = async () => {
-    const data = qs.stringify({
-      username:username,
-      initiate:false
-    });
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_data.csrf_token,
-        },
-      }
-    );
-    setErrorMessage(response.data);
-    console.log(response.data);
-    if (response.data == '') {
+  async function CreateUsername() {
+    const data = await create_username();
+    setErrorMessage(data);
+    console.log(data);
+    if (data == '') {
       navigation.navigate("HomePage");
     }
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -78,7 +62,7 @@ export const GetUsername = ({ navigation }) => {
 
         <TouchableOpacity style={styles.createAccountButton}>
           <Text
-            onPress={() => create_username()}
+            onPress={() => CreateUsername()}
             style={styles.createAccountText}
           >
             Create Account

@@ -18,6 +18,7 @@ import LineComponent from "../../../svgs/lineComponent";
 import axios from "axios";
 import qs from "qs";
 import { logIn } from "../../../../redux/user";
+import { secure_login, handle_auto_login } from "../../../bubble_api/bubble_api";
 
 const EmailOrUsernameLogin = ({ navigation }) => {
   const windowWidth = Dimensions.get("window").width;
@@ -30,36 +31,11 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
 
-  async function handle_auto_login() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/auto_login"
-    );
-    login_state_data = response.data;
-    console.log(login_state_data);
-    if (login_state_data == '') {
-      navigation.navigate("HomePage");
-    }
-  }
-
-  const secure_login = async () => {
-    const data = qs.stringify({
-      username: emailOrUsername,
-      password: password,
-    });
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_data.csrf_token,
-        },
-      }
-    );
-    setErrorMessage(response.data.response);
-    if (response.data == '') {
+  async function user_login() {
+    const data = await secure_login(emailOrUsername, password);
+    console.log(data.response);
+    setErrorMessage(data.response);
+    if (data == '') {
       navigation.navigate("HomePage");
     }
   };
@@ -69,9 +45,9 @@ const EmailOrUsernameLogin = ({ navigation }) => {
       onPress={() => {
         Keyboard.dismiss();
       }}
-      onLayout={() => handle_auto_login()}
+      
     >
-      <View style={styles.onboardingBackground}>
+      <View style={styles.onboardingBackground} onLayout={() => handle_auto_login(navigation)}> 
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.upperHalfofOnboarding}>
             <View style={styles.lowerOfUpper}>
@@ -249,7 +225,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
               <TouchableOpacity
                 // ADD FUNCTION THAT SENDS GET REQUEST
                 style={styles.logInButton}
-                onPress={() => secure_login()}
+                onPress={() => user_login()}
               >
                 {/* Login w/ Apple Text*/}
                 <View
