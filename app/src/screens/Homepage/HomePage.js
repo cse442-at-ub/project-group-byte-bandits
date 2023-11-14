@@ -51,11 +51,11 @@ const HomePage = ({ navigation }) => {
     );
     login_state_data = response.data;
     console.log(login_state_data);
-    if (login_state_data != '') {
+    if (login_state_data != "") {
       navigation.navigate("Login");
     }
   }
-  
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -480,6 +480,7 @@ const HomePage = ({ navigation }) => {
 
           {socialTab && (
             <HomePageSocial
+              userID={userID}
               setSocialTab={setSocialTab}
               setNearbyTab={setNearbyTab}
             />
@@ -489,6 +490,7 @@ const HomePage = ({ navigation }) => {
 
           {nearbyTab && (
             <HomePageNearby
+              userID={userID}
               setNearbyTab={setNearbyTab}
               setSocialTab={setSocialTab}
             />
