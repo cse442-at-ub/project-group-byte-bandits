@@ -6,7 +6,6 @@ export const create_csrf = async () => {
       "https://cse.buffalo.edu/~jjalessi/auth/create_csrf"
     );
 
-    console.log("RESPONSE", response.data.csrf_token);
     return response.data.csrf_token;
   } catch (error) {
     console.log("ERROR", error);

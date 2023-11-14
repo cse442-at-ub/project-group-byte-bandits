@@ -468,6 +468,7 @@ const HomePage = ({ navigation }) => {
 
           {socialTab && (
             <HomePageSocial
+              userID={userID}
               setSocialTab={setSocialTab}
               setNearbyTab={setNearbyTab}
             />
@@ -477,6 +478,7 @@ const HomePage = ({ navigation }) => {
 
           {nearbyTab && (
             <HomePageNearby
+              userID={userID}
               setNearbyTab={setNearbyTab}
               setSocialTab={setSocialTab}
             />

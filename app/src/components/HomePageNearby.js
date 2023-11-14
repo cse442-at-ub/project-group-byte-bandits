@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  StatusBar,
-  FlatList,
-} from 'react-native';
+import { StatusBar, FlatList } from "react-native";
 import {
   Text,
   View,
   StyleSheet,
   TouchableOpacity,
   Platform,
-
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -18,77 +14,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
+import { create_csrf } from "../utils/create_csrf";
 
-const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
+const HomePageNearby = ({ userID, setNearbyTab, setSocialTab, navigation }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
-
-  async function make_csrf_token() {
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    return csrf_data.csrf_token;
-  }
-  async function connect_to_chatroom(chatroom_id) {
-    console.log(chatroom_id)
-    const data = qs.stringify({
-      id: chatroom_id
-    });
-    
-    const token = await make_csrf_token();
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": token,
-        },
-      }
-    );
-    setErrorMsg(response.data);
-    console.log(response.data);
-    if (response.data == null) {
-      navigation.navigate("../Chatroom/Chatroom")
-    }
-  }
-
-  async function load_chatrooms() {
-    const response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms");
-    let chatrooms = [];
-    const data = await response.data;
-    data.forEach(element => {
-      //console.log(data);
-      element = JSON.parse(element);
-      id = element.id;
-      loc = element.location;
-      host = element.host;
-      chatrooms.push([id, loc, host]);
-    });
-    setChatroomData(chatrooms);
-  }
-  load_chatrooms();
-
-  async function update_location(loc) {
-    const data = qs.stringify({
-      location: loc
-    });
-    const token = await make_csrf_token();
-
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": token,
-        },
-      }
-    );
-    setErrorMsg(response.data);
-    console.log(response.data);
-    // else send them to HomePageSocial
-  };
 
   useEffect(() => {
     const getLocation = async () => {
@@ -114,9 +45,33 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
             timeInterval: 1000,
             distanceInterval: 1,
           },
-          (newLocation) => {
+          async (newLocation) => {
             setLocation(newLocation);
             console.log("User's location:", newLocation);
+
+            token = await create_csrf();
+
+            const data = qs.stringify({
+              long: newLocation.coords.longitude,
+              lat: newLocation.coords.latitude,
+              user_id: userID,
+            });
+
+            try {
+              const response = await axios.post(
+                "https://cse.buffalo.edu/~jjalessi/auth/update_user_location",
+                data,
+                {
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Csrf-Token": token,
+                  },
+                }
+              );
+              console.log("RESPONSE", response.data);
+            } catch (error) {
+              console.log("ERROR: ", error.response);
+            }
           }
         );
       } catch (error) {
@@ -124,13 +79,13 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
       }
     };
 
-    //getLocation();
-   //  Clean up the location subscription when the component unmounts
-    //return () => {
-      //if (locationSubscription) {
-      //  locationSubscription.remove();
-      //}
-    //};
+    getLocation();
+    // Clean up the location subscription when the component unmounts
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
   }, []);
 
   return (
@@ -215,11 +170,18 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab, navigation }) => {
       </View>
       {/* WHERE TO ADD BUBBLES NEARBY */}
       <View style={styles.nearbyBubblesDiv}>
-        <View>  
+        <View>
           <View style={styles.container_style}>
-            <FlatList 
+            <FlatList
               data={chatroom_data}
-              renderItem={({item}) => <Text style={{color : 'white'}} onPress={() => connect_to_chatroom(item[0])}>{item}</Text> }
+              renderItem={({ item }) => (
+                <Text
+                  style={{ color: "white" }}
+                  onPress={() => connect_to_chatroom(item[0])}
+                >
+                  {item}
+                </Text>
+              )}
             />
           </View>
         </View>
@@ -232,7 +194,7 @@ export default HomePageNearby;
 
 const styles = StyleSheet.create({
   chatroom_list_box: {
-    backgroundColor: '#B591FF',
+    backgroundColor: "#B591FF",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
