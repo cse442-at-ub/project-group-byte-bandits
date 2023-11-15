@@ -10,6 +10,7 @@ const validate_signup_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023
 const join_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom";
 const load_chatrooms_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
 const user_location_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location";
+const user_profile_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/profile_data.php";
 
 export async function make_csrf_token() {
     const csrf_response = await axios.get(generate_csrf_token_url);
@@ -146,15 +147,26 @@ export async function connect_to_chatroom(chatroom_id) {
 }
 
 export async function load_chatrooms() {
+    const user_response = await axios.get(user_profile_url);
+    const user_data = user_response.data;
+    const user_location = JSON.parse(user_data.location);
+    const long = user_location.long;
+    const lat = user_location.lat;
+
     const response = await axios.get(load_chatrooms_url);
     let chatrooms = [];
     const data = await response.data;
     data.forEach((element) => {
       element = JSON.parse(element);
-      id = element.id;
-      loc = element.location;
-      host = element.host;
-      chatrooms.push([id, loc, host]);
+      const id = element.id;
+      const loc = JSON.parse(element.location);
+      const host = element.host;
+      const radius = element.radius;
+      // get distance
+      const distance = Math.sqrt(Math.pow(long-loc.long,2) + Math.pow(lat-loc.lat,2))
+      if (distance <= radius) {
+        chatrooms.push([id, host]);
+      }
     });
     return chatrooms;
 }

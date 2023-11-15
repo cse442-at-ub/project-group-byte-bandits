@@ -64,10 +64,8 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
           },
           async (newLocation) => {
             setLocation(newLocation);
-            console.log("User's location:", newLocation);
-            const data = await update_location();
-            setErrorMsg(data);
-            console.log(data);
+            const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
+            //console.log(data);
           }
         );
       } catch (error) {
