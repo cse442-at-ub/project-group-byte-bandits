@@ -24,7 +24,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import HomePageSocial from "../../components/HomePageSocial";
 import HomePageNearby from "../../components/HomePageNearby";
 
-import { handle_login_state } from "../../bubble_api/bubble_api";
+import { create_chatroom, handle_login_state } from "../../bubble_api/bubble_api";
 
 const HomePage = ({ navigation }) => {
   const [creatingBubble, setCreatingBubble] = useState(false);
@@ -39,14 +39,6 @@ const HomePage = ({ navigation }) => {
   const [maxPeople, setMaxPeople] = useState(1);
 
   const userID = useSelector((state) => state.user.userID);
-
-  const create_bubble = () => {
-    try {
-      const data = qs.stringify({
-        chatroom_radius: selectedRadius,
-      });
-    } catch {}
-  };
 
   return (
     <TouchableWithoutFeedback
@@ -348,7 +340,11 @@ const HomePage = ({ navigation }) => {
                     <View style={styles.createBubbleButton}>
                       <TouchableOpacity
                         onPress={() => {
-                          navigation.navigate("Chatroom");
+                          const response = create_chatroom(isPrivate, selectedRadius, maxPeople);
+                          console.log(response.data);
+                          if(response.data == '') {
+                            navigation.navigate("Chatroom");
+                          }
                           setCreatingBubble(false);
                         }}
                       >
