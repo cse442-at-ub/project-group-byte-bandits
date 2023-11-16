@@ -151,12 +151,7 @@ export async function connect_to_chatroom(chatroom_id) {
     return response.data;
 }
 
-export async function load_chatrooms() {
-    const user_response = await axios.get(user_location_data_url);
-    const user_location = user_response.data;
-    console.log(user_location);
-    const long = user_location.long;
-    const lat = user_location.lat;
+export async function load_chatrooms(long, lat) {
 
     const response = await axios.get(load_chatrooms_url);
     let chatrooms = [];
@@ -171,7 +166,7 @@ export async function load_chatrooms() {
         // get distance
         const distance = Math.sqrt(Math.pow(long-ch_long,2) + Math.pow(lat-ch_lat,2))
         if (distance <= radius) {
-            chatrooms.push([id, distance, host]);
+            chatrooms.push([" id: ",id," , ", "distance: ",distance," , ", "host: ",host]);
         }
     });
     return chatrooms;

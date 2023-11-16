@@ -32,12 +32,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
     }
   }
 
-  async function LoadChatrooms() {
-    const data = await load_chatrooms();
-    setChatroomData(data);
-
-  }
-
   useEffect(() => {
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -65,6 +59,8 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
           async (newLocation) => {
             setLocation(newLocation);
             const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
+            const chatroom_data = await load_chatrooms(newLocation.coords.longitude, newLocation.coords.latitude);
+            setChatroomData(chatroom_data);
           }
         );
       } catch (error) {
@@ -82,7 +78,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
   }, []);
 
   return (
-    <View style={styles.contentOfHomePage} onLayout={() => LoadChatrooms()}>
+    <View style={styles.contentOfHomePage}>
       {/* Div for Main Three Tabs */}
       <View style={styles.mainTabs}>
         {/* Social Icon */}
@@ -170,7 +166,9 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
               renderItem={({ item }) => (
                 <Text
                   style={{ color: "white" }}
-                  onPress={() => ConnectToChatroom(item[0])}
+                  onPress={() => {
+                    ConnectToChatroom(item[1])
+                  }}
                 >
                   {item}
                 </Text>
