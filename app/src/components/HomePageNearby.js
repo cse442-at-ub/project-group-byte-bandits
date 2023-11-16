@@ -65,7 +65,6 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
           async (newLocation) => {
             setLocation(newLocation);
             const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
-            //console.log(data);
           }
         );
       } catch (error) {
