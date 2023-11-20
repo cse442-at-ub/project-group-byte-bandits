@@ -14,7 +14,7 @@ import ExploreLight from '../../assets/explorelight.gif'
 import SocialLight from '../../assets/sociallight.gif'
 import NavBar from '../../components/Navbar';
 import { useSelector } from "react-redux";
-import { connect_to_chatroom, load_chatrooms, update_location } from "../../bubble_api/bubble_api";
+import { connect_to_chatroom, load_chatrooms, search_user, update_location, send_friend_request } from "../../bubble_api/bubble_api";
 import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
@@ -50,11 +50,11 @@ const HomePage = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
+  const [searched_user, setSearchedUser] = useState(null);
 
   async function ConnectToChatroom(id) {
     const data = await connect_to_chatroom(id);
     setErrorMsg(data);
-    console.log(data);
     if (data == '') {
       navigation.navigate("Chatroom");
     }
@@ -63,6 +63,17 @@ const HomePage = ({ navigation }) => {
   async function LoadChatrooms() {
     const data = await load_chatrooms();
     setChatroomData(data);
+  }
+
+  async function SearchUser(username) {
+    const data = await search_user(username);
+    console.log(data);
+    setSearchedUser([data['id'], " ", data['name']]);
+  } 
+
+  async function SendFriendRequest() {
+    const data = await send_friend_request(searched_user[0]);
+    console.log(data)
   }
 
   useEffect(() => {
@@ -92,6 +103,8 @@ const HomePage = ({ navigation }) => {
           async (newLocation) => {
             setLocation(newLocation);
             const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
+            LoadChatrooms(newLocation.coords.long,newLocation.coords.lat);
+            console.log(chatroom_data);
             setErrorMsg(data);
             console.log(data);
           }
@@ -145,19 +158,25 @@ const renderContent = () => {
             <Feather name="info" size={16} color={colors.text} />
                 <Text style={[styles.infoText, { color: colors.text }]}>Recent Users You’ve Chatted With</Text>
             </View>
-          <TextInput
-            style={[styles.input, { borderColor: colors.secondary, color: colors.text }]}
-            placeholder="Add a friend..."
-            placeholderTextColor="gray"
-            
-          />
+            <TextInput
+
+              style={[styles.input, { borderColor: colors.secondary, color: colors.text }]}
+              placeholder="Add a friend..."
+              placeholderTextColor="gray"
+              onChangeText={(text) => SearchUser(text)}
+            />
+            <View>
+              <Text onPress={() => SendFriendRequest()}>
+                {searched_user}
+              </Text>
+            </View>
           </>
           
         );
         case 'nearby':
           return (
             <>
-              <View onLayout={() => LoadChatrooms()}
+              <View
                     style={styles.infoContainer}>
                 <Feather name="info" size={16} color={colors.text} />
                 <Text style={[styles.infoText, { color: colors.text }]}>Tap to join a bubble</Text>

@@ -17,6 +17,11 @@ const validate_signup_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023
 const user_location_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location";
 const user_profile_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/profile_data";
 const user_location_data_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/user_location_data";
+const public_user_data_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/user_ops/user_data";
+const send_friend_request_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/send_friend_request";
+const friend_data_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/friend_data";
+const friend_request_response_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/friend_request_response";
+
 
 export async function make_csrf_token() {
     const csrf_response = await axios.get(generate_csrf_token_url);
@@ -157,7 +162,7 @@ export async function disconnect_from_chatroom() {
     return response.data;
 }
 
-export async function load_chatrooms() {
+export async function load_chatrooms(long,lat) {
     const response = await axios.get(load_chatrooms_url);
     let chatrooms = [];
     const data = await response.data;
@@ -214,4 +219,106 @@ export async function update_location(longitue_coord, latidute_coord) {
         }
     );
     return response.data;
+}
+
+export async function search_user(username) {
+    const data = qs.stringify({
+        username: username,
+        });
+    const token = await make_csrf_token();
+    const response = await axios.post(
+        public_user_data_url,
+        data,
+        {
+            headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": token,
+            },
+        }
+    );
+    return response.data;
+}
+
+export async function send_friend_request(user_id) {
+    const data = qs.stringify({
+        id: user_id,
+        });
+    const token = await make_csrf_token();
+    const response = await axios.post(
+        send_friend_request_url,
+        data,
+        {
+            headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": token,
+            },
+        }
+    );
+    return response.data;
+}
+
+export async function accept_friend_request(user_id) {
+    const data = qs.stringify({
+        user: user_id,
+        response: 'accepted'
+        });
+    const token = await make_csrf_token();
+    const response = await axios.post(
+        friend_request_response_url,
+        data,
+        {
+            headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": token,
+            },
+        }
+    );
+    console.log(response.data);
+    return response.data;
+}
+
+export async function decline_friend_request(user_id) {
+    const data = qs.stringify({
+        user: user_id,
+        response: 'rejected'
+        });
+    const token = await make_csrf_token();
+    const response = await axios.post(
+        friend_request_response_url,
+        data,
+        {
+            headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Csrf-Token": token,
+            },
+        }
+    );
+    return response.data;
+}
+
+export async function load_profile_data() {
+    const response = await axios.get(
+        user_profile_url
+    );
+    profile_data = response.data;
+    setUsername(profile_data.name);
+    setUserId(profile_data.id);
+  }
+
+export async function get_friend_requests() {
+    const user_response = await axios.get(
+        user_profile_url
+    );
+    profile_data = user_response.data;
+    const response = await axios.get(friend_data_url);
+    let friend_requests = [];
+    response.data.forEach((element) => {
+        element = JSON.parse(element);
+        const status = element.status;
+        const recieving = element.user_r_id;
+        if(status == 0  && recieving == profile_data['id']) {
+            friend_requests.push(element);
+        }
+    });
+    return friend_requests;
 }

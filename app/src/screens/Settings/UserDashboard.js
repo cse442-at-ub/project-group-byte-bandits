@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics'
 import axios from "axios";
 import { useState } from "react";
 import NavBar from '../../components/Navbar';
+import { load_profile_data } from '../../bubble_api/bubble_api';
 
 const UserDashboard = ({ navigation }) => {
   const barData = [
@@ -20,14 +21,7 @@ const UserDashboard = ({ navigation }) => {
   const [username, setUsername] = useState(null);
   const [userid, setUserId] = useState(null);
 
-  async function load_profile_data() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/profile_data"
-    );
-    profile_data = response.data;
-    setUsername(profile_data.name);
-    setUserId(profile_data.id);
-  }
+
 
   return (
     <View style={styles.container} onLayout={() => load_profile_data() }>

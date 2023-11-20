@@ -1,13 +1,19 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, useColorScheme } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, useColorScheme,FlatList } from 'react-native';
 import { Header, Avatar, Badge, Button } from 'react-native-elements';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import theme from '../../components/theme'; // Adjust the import path according to your project structure
+import { accept_friend_request, get_friend_requests } from "../../bubble_api/bubble_api";
 
 const Notification = ({ navigation }) => {
   const scheme = useColorScheme();
   const colors = theme(scheme);
+  const [friend_request_data, SetFriendRequestData] = useState(null);
 
+  async function GetFriendRequests() {
+    const data = await get_friend_requests();
+    SetFriendRequestData(data);
+  }
   // Improved dark theme colors for better contrast
   const darkThemeStyles = scheme === 'dark' ? { 
     notification: {
@@ -22,7 +28,8 @@ const Notification = ({ navigation }) => {
   } : {};
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}
+          onLayout={() => GetFriendRequests()}>
       <Header
         leftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -37,33 +44,38 @@ const Notification = ({ navigation }) => {
           borderBottomWidth: 0, // Remove border for a cleaner look
         }}
       />
-      <View style={[styles.notification, darkThemeStyles.notification]}>
-        <Avatar
-          rounded
-          source={{ uri: 'https://placeimg.com/140/140/any' }} // Placeholder image
-          size="medium"
-        />
-        <Text style={[styles.text, { color: colors.text }]}>John (@john) sent you a friend request.</Text>
-        <View style={styles.buttonGroup}>
-          <Button
-            buttonStyle={[styles.button, darkThemeStyles.acceptButton]}
-            titleStyle={[styles.buttonText, { color: colors.buttonText }]}
-            title="Accept"
-            onPress={() => { /* Handle accept action */ }}
-          />
-          <Button
-            buttonStyle={[styles.button, darkThemeStyles.declineButton]}
-            titleStyle={[styles.buttonText, { color: colors.buttonText }]}
-            title="Decline"
-            onPress={() => { /* Handle decline action */ }}
-          />
-        </View>
-        <Badge
-          value="1"
-          status="error"
-          containerStyle={{ position: 'absolute', top: -4, right: -4 }}
-        />
-      </View>
+      <FlatList
+              data={friend_request_data}
+              renderItem={({ item }) => (
+                <View style={[styles.notification, darkThemeStyles.notification]}>
+                <Avatar
+                  rounded
+                  source={{ uri: 'https://placeimg.com/140/140/any' }} // Placeholder image
+                  size="medium"
+                />
+                <Text style={[styles.text, { color: colors.text }]}>{item['user_s_name']} ({item['user_s_id']}) sent you a friend request.</Text>
+                <View style={styles.buttonGroup}>
+                  <Button
+                    buttonStyle={[styles.button, darkThemeStyles.acceptButton]}
+                    titleStyle={[styles.buttonText, { color: colors.buttonText }]}
+                    title="Accept"
+                    onPress={() => { accept_friend_request(item['user_s_id']) }}
+                  />
+                  <Button
+                    buttonStyle={[styles.button, darkThemeStyles.declineButton]}
+                    titleStyle={[styles.buttonText, { color: colors.buttonText }]}
+                    title="Decline"
+                    onPress={() => { /* Handle decline action */ }}
+                  />
+                </View>
+                <Badge
+                  value="1"
+                  status="error"
+                  containerStyle={{ position: 'absolute', top: -4, right: -4 }}
+                />
+              </View>
+              )}
+              />
     </View>
   )
 }
