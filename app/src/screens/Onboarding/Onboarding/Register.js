@@ -31,7 +31,7 @@ const Register = ({navigation}) => {
   }
 
   // function for fetching apple info
-  const fetchAppleInfo = async () => {
+  /*const fetchAppleInfo = async () => {
     try {
       const response = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -74,7 +74,7 @@ const Register = ({navigation}) => {
         // handle other errors
       }
     }
-  };
+  };*/
 
  
   return (
@@ -160,13 +160,13 @@ const Register = ({navigation}) => {
         </View>
 
 
-        <AppleAuthentication.AppleAuthenticationButton
+       {/*<AppleAuthentication.AppleAuthenticationButton
     buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
     buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
     cornerRadius={5}
     style={styles.appleButton}
     onPress={fetchAppleInfo}
-/>
+/>*/} 
               </View>
             </KeyboardAvoidingView>
 </>

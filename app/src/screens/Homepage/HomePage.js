@@ -42,13 +42,6 @@ const HomePage = ({ navigation }) => {
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
-  const create_bubble = () => {
-    try {
-      const data = qs.stringify({
-        chatroom_radius: selectedRadius,
-      });
-    } catch {}
-  };
 
   const scheme = useColorScheme();
   const colors = theme(scheme);
@@ -70,6 +63,9 @@ const HomePage = ({ navigation }) => {
   async function LoadChatrooms() {
     const data = await load_chatrooms();
     setChatroomData(data);
+  }
+
+  async function CreateChatroom() {
 
   }
 
@@ -99,8 +95,7 @@ const HomePage = ({ navigation }) => {
           },
           async (newLocation) => {
             setLocation(newLocation);
-            console.log("User's location:", newLocation);
-            const data = await update_location();
+            const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
             setErrorMsg(data);
             console.log(data);
           }
@@ -158,6 +153,7 @@ const renderContent = () => {
             style={[styles.input, { borderColor: colors.secondary, color: colors.text }]}
             placeholder="Add a friend..."
             placeholderTextColor="gray"
+            
           />
           </>
           
@@ -165,21 +161,23 @@ const renderContent = () => {
         case 'nearby':
           return (
             <>
-              <View style={styles.infoContainer}>
+              <View onLayout={() => LoadChatrooms()}
+                    style={styles.infoContainer}>
                 <Feather name="info" size={16} color={colors.text} />
                 <Text style={[styles.infoText, { color: colors.text }]}>Tap to join a bubble</Text>
               </View>
               <FlatList
-                data={chatroom_data}
-                renderItem={({ item }) => (
-                  <Text
-                    style={{ color: "white" }}
-                    onPress={() => ConnectToChatroom(item[0])}
-                  >
-                    {item}
-                  </Text>
-                )}
+              data={chatroom_data}
+              renderItem={({ item }) => (
+                <Text
+                  style={{ color: "black" }}
+                  onPress={() => ConnectToChatroom(item[0])}
+                >
+                  {item}
+                </Text>
+              )}
               />
+              
             </>
           );
       case 'explore':

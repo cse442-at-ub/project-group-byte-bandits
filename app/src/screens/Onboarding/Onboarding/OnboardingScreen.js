@@ -12,6 +12,7 @@ import {
 import AnimatedDots from '../../../components/AnimatedDots'
 import * as Haptics from 'expo-haptics';
 import theme from '../../../components/theme'
+import { handle_auto_login } from '../../../bubble_api/bubble_api';
 
 const onboardingData = [
   {
@@ -82,7 +83,8 @@ const OnboardingScreen = ({navigation}) => {
 
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}
+          onLayout={() => handle_auto_login(navigation)}>
       <FlatList
         data={onboardingData}
         renderItem={renderItem}

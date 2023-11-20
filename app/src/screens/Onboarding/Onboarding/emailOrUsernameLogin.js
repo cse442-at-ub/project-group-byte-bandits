@@ -30,8 +30,8 @@ const EmailOrUsernameLogin = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [userID, setUserID] = useState();
   const dispatch = useDispatch();
-
-  async function user_login() {
+  
+  async function SecureLogin() {
     const data = await secure_login(emailOrUsername, password);
     console.log(data.response);
     setErrorMessage(data.response);
@@ -225,7 +225,7 @@ const EmailOrUsernameLogin = ({ navigation }) => {
               <TouchableOpacity
                 // ADD FUNCTION THAT SENDS GET REQUEST
                 style={styles.logInButton}
-                onPress={() => user_login()}
+                onPress={() => SecureLogin()}
               >
                 {/* Login w/ Apple Text*/}
                 <View

@@ -25,7 +25,7 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
-          {/* <Stack.Screen 
+          <Stack.Screen 
                       name="Onboarding"
                       options={{ headerShown: false, gestureEnabled: false }}
                       component={OnboardingScreen}/>
@@ -33,7 +33,7 @@ const App = () => {
             name="Login"
             options={{ headerShown: false, gestureEnabled: false }}
             component={Login}
-          /> */}
+          />
           <Stack.Screen
             name="HomePage"
             options={{
@@ -62,11 +62,11 @@ const App = () => {
             component={ChatroomUsers}
           />
 
-          {/* <Stack.Screen
+          <Stack.Screen
             name="Register"
             options={{ headerShown: false, gestureEnabled: false }}
             component={Register}
-          /> */}
+          />
           <Stack.Screen
             name="EmailorUsernameLogin"
             options={{ headerShown: false, gestureEnabled: false }}

@@ -176,6 +176,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
                   onPress={() => ConnectToChatroom(item[0])}
                 >
                   {item}
+                  shite
                 </Text>
               )}
             />
