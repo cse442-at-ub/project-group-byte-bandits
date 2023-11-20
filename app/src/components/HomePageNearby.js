@@ -171,6 +171,7 @@ const HomePageNearby = ({ setNearbyTab, setSocialTab }) => {
                   }}
                 >
                   {item}
+                  shite
                 </Text>
               )}
             />

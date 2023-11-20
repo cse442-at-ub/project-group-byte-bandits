@@ -1,30 +1,25 @@
-import React, { useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Modal,
-  TouchableWithoutFeedback,
-  TextInput,
-  Keyboard,
-  Switch,
-} from "react-native";
+import React, { useState, useEffect} from 'react';
+import { Modal, Switch, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput, FlatList, TouchableWithoutFeedback} from 'react-native';
+import { Header } from 'react-native-elements';
+import { MaterialCommunityIcons, FontAwesome5, Feather, Entypo } from '@expo/vector-icons';
+import { useColorScheme } from 'react-native';
+import theme from '../../components/theme';
+import MapView from 'react-native-maps';
+import NearbyDark from '../../assets/nearbydark.gif';
+import ExploreDark from '../../assets/exploredark.gif';
+import SocialDark from '../../assets/socialdark.gif'
+import NearbyLight from '../../assets/nearbylight.gif'
+import ExploreLight from '../../assets/explorelight.gif'
+import SocialLight from '../../assets/sociallight.gif'
+import NavBar from '../../components/Navbar';
 import { useSelector } from "react-redux";
-import { Picker } from "@react-native-picker/picker";
+import { connect_to_chatroom, load_chatrooms, update_location } from "../../bubble_api/bubble_api";
+import * as Location from "expo-location";
 import axios from "axios";
-
-import BubbleComponent from "../../svgs/bubbleComponent";
-import Feather from "react-native-vector-icons/Feather";
-import Octicons from "react-native-vector-icons/Octicons";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import HomePageSocial from "../../components/HomePageSocial";
-import HomePageNearby from "../../components/HomePageNearby";
-
-import { create_chatroom, handle_login_state } from "../../bubble_api/bubble_api";
+import qs from "qs";
+import { handle_login_state } from "../../bubble_api/bubble_api";
+import { Slider } from 'react-native-elements';
 
 const HomePage = ({ navigation }) => {
   const [creatingBubble, setCreatingBubble] = useState(false);
@@ -37,881 +32,493 @@ const HomePage = ({ navigation }) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    handle_login_state(navigation);
+  }, [navigation]);
 
   const userID = useSelector((state) => state.user.userID);
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
+  const [selectedTab, setSelectedTab] = useState('nearby');
+
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [chatroom_data, setChatroomData] = useState(null);
+
+  async function ConnectToChatroom(id) {
+    const data = await connect_to_chatroom(id);
+    setErrorMsg(data);
+    console.log(data);
+    if (data == '') {
+      navigation.navigate("Chatroom");
+    }
+  }
+
+  async function LoadChatrooms() {
+    const data = await load_chatrooms();
+    setChatroomData(data);
+  }
+
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log("STATUS", status);
+
+      if (status !== "granted") {
+        console.log("Location permission not granted");
+        return;
+      }
+
+      try {
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+      } catch (error) {
+        console.error("Error getting the initial position:", error);
+      }
+
+      try {
+        locationSubscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            timeInterval: 1000,
+            distanceInterval: 1,
+          },
+          async (newLocation) => {
+            setLocation(newLocation);
+            const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
+            setErrorMsg(data);
+            console.log(data);
+          }
+        );
+      } catch (error) {
+        console.error("Error starting location monitoring:", error);
+      }
+    };
+
+    getLocation();
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, []);
+
+
+  const renderIcon = (tabName) => {
+    if (scheme === 'dark') {
+      switch (tabName) {
+        case 'nearby':
+          return <Image source={NearbyDark} style={styles.iconImage} />;
+        case 'explore':
+          return <Image source={ExploreDark} style={styles.iconImage} />;
+        case 'social':
+            return <Image source={SocialDark} style = {styles.iconImage} />
+        default:
+         return null;
+      }
+    }else{
+        switch (tabName) {
+            case 'nearby':
+              return <Image source={NearbyLight} style={styles.iconImage} />;
+            case 'explore':
+              return <Image source={ExploreLight} style={styles.iconImage} />;
+            case 'social':
+                return <Image source={SocialLight} style = {styles.iconImage} />
+            default:
+             return null;
+          }
+    }
+}
+
+const renderContent = () => {
+    switch (selectedTab) {
+      case 'social':
+        return (
+            <>
+            <View style = {styles.infoContainer}>
+            <Feather name="info" size={16} color={colors.text} />
+                <Text style={[styles.infoText, { color: colors.text }]}>Recent Users You’ve Chatted With</Text>
+            </View>
+          <TextInput
+            style={[styles.input, { borderColor: colors.secondary, color: colors.text }]}
+            placeholder="Add a friend..."
+            placeholderTextColor="gray"
+            
+          />
+          </>
+          
+        );
+        case 'nearby':
+          return (
+            <>
+              <View onLayout={() => LoadChatrooms()}
+                    style={styles.infoContainer}>
+                <Feather name="info" size={16} color={colors.text} />
+                <Text style={[styles.infoText, { color: colors.text }]}>Tap to join a bubble</Text>
+              </View>
+              <FlatList
+              data={chatroom_data}
+              renderItem={({ item }) => (
+                <Text
+                  style={{ color: "black" }}
+                  onPress={() => ConnectToChatroom(item[0])}
+                >
+                  {item}
+                </Text>
+              )}
+              />
+              
+            </>
+          );
+      case 'explore':
+        return(
+            <View style = {{justifyContent: "center", alignItems: 'center'}}>
+            <MapView style={styles.map} />
+            </View>
+        )
+      default:
+        return null;
+    }
+  };
+
+  const modalViewStyle = {
+    margin: 20,
+    backgroundColor: colors.modalBackground,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '90%', // Updated width to take 90% of the screen width
+  };
+  const modalInputStyle = {
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    color: colors.text,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: colors.subText,
+
+  };
+
+  const modalTitleInputStyle = {
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    color: colors.text,
+    width: '100%',
+    fontSize: 24,
+    fontWeight: 'bold', 
+  };
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-      onLayout={() => handle_login_state(navigation)}
-    >
-      <View style={styles.HomePageBackground}>
-        <SafeAreaView style={{ flex: 1 }}>
-          {/* CREATE BUBBLE MODAL */}
-          <Modal
-            transparent={true}
-            animationType="fade"
-            visible={creatingBubble}
-          >
-            <TouchableWithoutFeedback
-              onPress={
-                bubbleDescription.length === 0 && bubbleTitle.length === 0
-                  ? () => {
-                      setCreatingBubble(false);
-                      setIsPrivate(false);
-                      setMaxPeople(1);
-                      setSelectedRadius(150);
-                    }
-                  : () => setShowDeleteBubble(true)
-              }
-            >
-              <View style={styles.invisibleScreen}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    Keyboard.dismiss();
-                  }}
-                >
-                  <View style={styles.createBubble}>
-                    <View style={styles.createBubbleLabel}>
-                      <View style={styles.cancelDiv}>
-                        <TouchableOpacity
-                          onPress={
-                            bubbleDescription.length === 0 &&
-                            bubbleTitle.length === 0
-                              ? () => {
-                                  setCreatingBubble(false);
-                                  setIsPrivate(false);
-                                  setMaxPeople(1);
-                                  setSelectedRadius(150);
-                                }
-                              : () => setShowDeleteBubble(true)
-                          }
-                        >
-                          <MaterialIcons
-                            name="cancel"
-                            size={30}
-                            color="#6B6A6A"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.createBubbleTop}>
-                        <Text style={styles.createBubbleTopText}>
-                          Create Bubble
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.createBubbleTitle}>
-                      <Text style={styles.createBubbleTitleText}>Title</Text>
-                    </View>
-                    <View style={styles.searchBarDiv}>
-                      <TextInput
-                        style={styles.searchBar}
-                        placeholder="Add a title..."
-                        placeholderTextColor={"#3D3C3C"}
-                        onChangeText={(text) => setBubbleTitle(text)}
-                        value={bubbleTitle}
-                        maxLength={25}
-                      />
-                      <Text style={styles.titleCounter}>
-                        {bubbleTitle.length + "/25"}
-                      </Text>
-                    </View>
-                    <View style={styles.createBubbleDescription}>
-                      <Text style={styles.createBubbleDescriptionText}>
-                        Description
-                      </Text>
-                    </View>
+    <View style={[styles.container, { backgroundColor: colors.homeBackground }]}>
+      <Header
+        leftComponent={
+          <View style={styles.bubbleContainer}>
+          </View>
+        }
+        rightComponent={
+          <View style={styles.iconsContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
+            <Entypo name="mail" size={24} color={colors.iconColor} />
+            </TouchableOpacity>
 
-                    <View style={styles.searchBarDivDescription}>
-                      <TextInput
-                        style={{
-                          shadowColor: "#000",
-                          shadowOffset: {
-                            width: 0,
-                            height: 2,
-                          },
-                          shadowOpacity: 0.23,
-                          shadowRadius: 2.62,
-                          elevation: 4,
-                          padding: 20,
-                          width: "80%",
-                          borderRadius: 20,
-                          borderColor: "#3D3C3C",
-                          borderWidth: 1,
-                          backgroundColor: "#191818",
-                          color: "#56585B",
-                          fontWeight: "bold",
-                          paddingLeft: 15,
-                          paddingRight: 85,
-                          paddingTop: bubbleDescription.length === 0 ? 25 : 10,
-                        }}
-                        placeholder="Add a description..."
-                        placeholderTextColor={"#3D3C3C"}
-                        onChangeText={(text) => setBubbleDescription(text)}
-                        value={bubbleDescription}
-                        maxLength={80}
-                        multiline={true}
-                        textAlignVertical="top"
-                        onSubmitEditing={() => {
-                          Keyboard.dismiss;
-                        }}
-                      />
-                      <Text style={styles.descriptionCounter}>
-                        {bubbleDescription.length + "/80"}
-                      </Text>
-                    </View>
+            <TouchableOpacity onPress={() => navigation.navigate('DMList')}>
 
-                    <View style={styles.createBubbleSettings}>
-                      <View style={styles.settings}>
-                        <View style={styles.oneThirdSettings}>
-                          <View style={styles.setting2Title}>
-                            <Text style={styles.settingsTitleText}>
-                              Privacy
-                            </Text>
-                          </View>
-                          <View style={styles.privacySwitchBar}>
-                            {/* Public by default */}
-                            <Switch
-                              trackColor={{ false: "#767577", true: "#81b0ff" }}
-                              onValueChange={() => setIsPrivate(!isPrivate)}
-                              value={isPrivate}
-                              style={{
-                                transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
-                              }}
-                            ></Switch>
-                          </View>
-                          <View style={styles.informOfPrivacy}>
-                            <Text style={styles.privacyText}>
-                              {isPrivate
-                                ? "Currently Private"
-                                : "Currently Public"}
-                            </Text>
-                          </View>
-                        </View>
-
-                        <View style={styles.oneThirdSettings}>
-                          <View style={styles.settingTitle}>
-                            <Text style={styles.settingsTitleText}>
-                              Bubble Radius
-                            </Text>
-                          </View>
-
-                          <View style={styles.radiusChoiceDiv}>
-                            <Picker
-                              style={styles.radiusChoiceDiv}
-                              selectedValue={selectedRadius}
-                              onValueChange={(itemValue) =>
-                                setSelectedRadius(itemValue)
-                              }
-                              itemStyle={styles.radiusChoices}
-                            >
-                              <Picker.Item label="50 ft" value={50} />
-                              <Picker.Item label="100 ft" value={100} />
-                              <Picker.Item label="150 ft" value={150} />
-                              <Picker.Item label="200 ft" value={200} />
-                              <Picker.Item label="250 ft" vvalue={250} />
-                              <Picker.Item label="300 ft" value={300} />
-                            </Picker>
-                          </View>
-                        </View>
-                        <View style={styles.oneThirdSettings}>
-                          <View style={styles.settingTitle}>
-                            <Text style={styles.settingsTitleText}>
-                              Max People
-                            </Text>
-                          </View>
-
-                          <View style={styles.radiusChoiceDiv}>
-                            <Picker
-                              style={styles.radiusChoiceDiv}
-                              selectedValue={maxPeople}
-                              onValueChange={(itemValue) =>
-                                setMaxPeople(itemValue)
-                              }
-                              itemStyle={styles.radiusChoices}
-                            >
-                              <Picker.Item label="1" value={1} />
-                              <Picker.Item label="2" value={2} />
-                              <Picker.Item label="3" value={3} />
-                              <Picker.Item label="4" value={4} />
-                              <Picker.Item label="5" value={5} />
-                              <Picker.Item label="6" value={6} />
-                              <Picker.Item label="7" value={7} />
-                              <Picker.Item label="8" value={8} />
-                              <Picker.Item label="9" value={9} />
-                              <Picker.Item label="10" value={10} />
-                              <Picker.Item label="11" value={11} />
-                              <Picker.Item label="12" value={12} />
-                              <Picker.Item label="13" value={13} />
-                              <Picker.Item label="14" value={14} />
-                              <Picker.Item label="15" value={15} />
-                              <Picker.Item label="16" value={16} />
-                              <Picker.Item label="17" value={17} />
-                              <Picker.Item label="18" value={18} />
-                              <Picker.Item label="19" value={19} />
-                              <Picker.Item label="20" value={20} />
-                              <Picker.Item label="21" value={21} />
-                              <Picker.Item label="22" value={22} />
-                              <Picker.Item label="23" value={23} />
-                              <Picker.Item label="24" value={24} />
-                              <Picker.Item label="25" value={25} />
-                              <Picker.Item label="26" value={26} />
-                              <Picker.Item label="27" value={27} />
-                              <Picker.Item label="28" value={28} />
-                              <Picker.Item label="29" value={29} />
-                              <Picker.Item label="30" value={30} />
-                              <Picker.Item label="31" value={31} />
-                              <Picker.Item label="32" value={32} />
-                              <Picker.Item label="33" value={33} />
-                              <Picker.Item label="34" value={34} />
-                              <Picker.Item label="35" value={35} />
-                              <Picker.Item label="36" value={36} />
-                              <Picker.Item label="37" value={37} />
-                              <Picker.Item label="38" value={38} />
-                              <Picker.Item label="39" value={39} />
-                              <Picker.Item label="40" value={40} />
-                              <Picker.Item label="41" value={41} />
-                              <Picker.Item label="42" value={42} />
-                              <Picker.Item label="43" value={43} />
-                              <Picker.Item label="44" value={44} />
-                              <Picker.Item label="45" value={45} />
-                              <Picker.Item label="46" value={46} />
-                              <Picker.Item label="47" value={47} />
-                              <Picker.Item label="48" value={48} />
-                              <Picker.Item label="49" value={49} />
-                              <Picker.Item label="50" value={50} />
-                              <Picker.Item label="51" value={51} />
-                              <Picker.Item label="52" value={52} />
-                              <Picker.Item label="53" value={53} />
-                              <Picker.Item label="54" value={54} />
-                              <Picker.Item label="55" value={55} />
-                              <Picker.Item label="56" value={56} />
-                              <Picker.Item label="57" value={57} />
-                              <Picker.Item label="58" value={58} />
-                              <Picker.Item label="59" value={59} />
-                              <Picker.Item label="60" value={60} />
-                              <Picker.Item label="61" value={61} />
-                              <Picker.Item label="62" value={62} />
-                              <Picker.Item label="63" value={63} />
-                              <Picker.Item label="64" value={64} />
-                              <Picker.Item label="65" value={65} />
-                              <Picker.Item label="66" value={66} />
-                              <Picker.Item label="67" value={67} />
-                              <Picker.Item label="68" value={68} />
-                              <Picker.Item label="69" value={69} />
-                              <Picker.Item label="70" value={70} />
-                              <Picker.Item label="71" value={71} />
-                              <Picker.Item label="72" value={72} />
-                              <Picker.Item label="73" value={73} />
-                              <Picker.Item label="74" value={74} />
-                              <Picker.Item label="75" value={75} />
-                              <Picker.Item label="76" value={76} />
-                              <Picker.Item label="77" value={77} />
-                              <Picker.Item label="78" value={78} />
-                              <Picker.Item label="79" value={79} />
-                              <Picker.Item label="80" value={80} />
-                              <Picker.Item label="81" value={81} />
-                              <Picker.Item label="82" value={82} />
-                              <Picker.Item label="83" value={83} />
-                              <Picker.Item label="84" value={84} />
-                              <Picker.Item label="85" value={85} />
-                              <Picker.Item label="86" value={86} />
-                              <Picker.Item label="87" value={87} />
-                              <Picker.Item label="88" value={88} />
-                              <Picker.Item label="89" value={89} />
-                              <Picker.Item label="90" value={90} />
-                              <Picker.Item label="91" value={91} />
-                              <Picker.Item label="92" value={92} />
-                              <Picker.Item label="93" value={93} />
-                              <Picker.Item label="94" value={94} />
-                              <Picker.Item label="95" value={95} />
-                              <Picker.Item label="96" value={96} />
-                              <Picker.Item label="97" value={97} />
-                              <Picker.Item label="98" value={98} />
-                              <Picker.Item label="99" value={99} />
-                              <Picker.Item label="100" value={100} />
-                            </Picker>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.createBubbleButton}>
+            <Entypo name="message" size={24} color={colors.iconColor} style={styles.iconSpacing} />
+            </TouchableOpacity>
+          </View>
+        }
+        containerStyle={{
+          backgroundColor: colors.homeBackground,
+          borderBottomWidth: 0,
+        }}
+      />
+            <View style={styles.createBubbleButton}>
                       <TouchableOpacity
                         onPress={() => {
-                          const response = create_chatroom(isPrivate, selectedRadius, maxPeople);
-                          console.log(response.data);
-                          if(response.data == '') {
-                            navigation.navigate("Chatroom");
-                          }
-                          setCreatingBubble(false);
+                          setIsModalVisible(true);
                         }}
                       >
-                        <View style={styles.newBubble}>
-                          <Text style={styles.newBubbleText}>Create</Text>
+                        <View style={[styles.newBubble,{backgroundColor: colors.buttonBackground}]}>
+                          <Text style={[styles.newBubbleText,{color: colors.buttonText}]}>+ Create</Text>
                         </View>
                       </TouchableOpacity>
                     </View>
 
-                    <View style={styles.errorMessageDiv}>
-                      <Text style={styles.errorMessageText}></Text>
-                    </View>
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </TouchableWithoutFeedback>
-
-            {/* CONFIRM DELETE MODAL */}
-            <Modal
-              transparent={true}
-              animationType="fade"
-              visible={showDeleteBubble}
+      <View style={[styles.widget, { backgroundColor: colors.widget, borderTopLeftRadius: 50, borderTopRightRadius: 50 }]}>
+        <View style={styles.tabsContainer}>
+        <TouchableOpacity style={styles.tab} onPress={() => setSelectedTab('social')}>
+            {renderIcon('social')}
+            <Text style={[
+              styles.tabText,
+              selectedTab === 'social'
+                ? { color: colors.text, fontWeight: 'bold' }
+                : { color: colors.secondary }
+            ]}>      
+            Social
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+              style={styles.tab}
+              onPress={() => {
+                setSelectedTab('nearby');
+                setNearbyTab(false);
+                setSocialTab(true);
+              }}
             >
-              <View style={styles.deleteBubbleBackground}>
-                <View style={styles.deleteBubblePopup}>
-                  {/* TOP WARNING LABEL */}
-                  <View style={styles.topWarning}>
-                    <Text style={styles.topWarningText}>Warning</Text>
-                  </View>
-                  <View style={styles.bodyWarning}>
-                    <Text style={styles.bodyWarningText}>
-                      Are you sure you want to cancel creating this Bubble? All
-                      progress will be lost.
-                    </Text>
-                  </View>
-                  <View style={styles.continueAndcancelButtons}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setBubbleDescription("");
-                        setBubbleTitle("");
-                        setIsPrivate(false);
-                        setMaxPeople(1);
-                        setSelectedRadius(150);
-                        setCreatingBubble(false);
-                        setShowDeleteBubble(false);
-                      }}
-                      style={styles.buttonDiv}
-                    >
-                      <Text style={styles.buttonText}>Continue</Text>
-                    </TouchableOpacity>
+              {renderIcon('nearby')}
+            <Text style={[
+              styles.tabText,
+              selectedTab === 'nearby'
+                ? { color: colors.text, fontWeight: 'bold' }
+                : { color: colors.secondary }
+            ]}>              
+            Nearby
+            </Text>
+          </TouchableOpacity>
 
-                    <TouchableOpacity
-                      onPress={() => setShowDeleteBubble(false)}
-                      style={styles.buttonDiv}
-                    >
-                      <Text style={styles.buttonText}>Cancel</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </Modal>
-          </Modal>
-
-          <View style={styles.topOfHomePage}>
-            {/* Top Icon Bar */}
-            <View style={styles.topBar}>
-              {/* Bubble Logo */}
-              <View style={styles.bubbleLogo}>
-                <BubbleComponent width={120} height={40} />
-              </View>
-              {/* Padding Div*/}
-              <View style={styles.paddingDiv}></View>
-              {/* Div for Notifcations and DM Icons */}
-              <View style={styles.topIcons}>
-                {/* Notifcation Icon */}
-                <View style={styles.notiDiv}>
-                  <TouchableOpacity>
-                    <Feather name="bell" size={34} color={"#56585B"} />
-                  </TouchableOpacity>
-                </View>
-                {/* DM Icon */}
-                <View style={styles.dmDiv}>
-                  <TouchableOpacity>
-                    <Octicons
-                      name="paper-airplane"
-                      size={28}
-                      color={"#56585B"}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.bottomBar}>
-              <View style={styles.addBubbleDiv}>
-                <TouchableOpacity
-                  onPress={() => setCreatingBubble(true)}
-                  style={styles.addBubbleIcon}
-                >
-                  <View style={styles.plusLogoIcon}>
-                    <AntDesign name="pluscircleo" size={20} color={"white"} />
-                  </View>
-
-                  <View style={styles.BubbleText}>
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                        color: "white",
-                        fontSize: 16,
-                      }}
-                    >
-                      Bubble
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          {/* ====================================SOCIAL TAB======================================== */}
-
-          {socialTab && (
-            <HomePageSocial
-              userID={userID}
-              setSocialTab={setSocialTab}
-              setNearbyTab={setNearbyTab}
-            />
-          )}
-
-          {/* ====================================NEARBY TAB======================================== */}
-
-          {nearbyTab && (
-            <HomePageNearby
-              userID={userID}
-              setNearbyTab={setNearbyTab}
-              setSocialTab={setSocialTab}
-            />
-          )}
-
-          {/* ===================================EXPLORE TAB========================================== */}
-
-          <View style={styles.bottomNavBar}>
-            {/* Home Icon */}
-            <View style={styles.bottomIconDiv}>
-              <TouchableOpacity>
-                <Octicons name="home" size={54} color={"#628CD1"} />
-              </TouchableOpacity>
-            </View>
-            {/* Settings Icon */}
-            <View style={styles.bottomIconDiv}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("UserDashboard")}
-              >
-                <MaterialCommunityIcons
-                  name="account-circle-outline"
-                  size={60}
-                  color={"white"}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </SafeAreaView>
+          <TouchableOpacity style={styles.tab} onPress={() => setSelectedTab('explore')}>
+            {renderIcon('explore')}
+            <Text style={[
+              styles.tabText,
+              selectedTab === 'explore'
+                ? { color: colors.text, fontWeight: 'bold' }
+                : { color: colors.secondary }
+            ]}>
+              Explore
+            </Text>
+        </TouchableOpacity>
+        </View>
+        {renderContent()}
       </View>
-    </TouchableWithoutFeedback>
+      <NavBar navigation={navigation} currentScreen={'HomePage'} />
+      <Modal
+  animationType="fade"
+  transparent={true}
+  visible={isModalVisible}
+  onRequestClose={toggleModal}
+>
+<TouchableWithoutFeedback onPress={toggleModal}>
+
+<View style={styles.modalOverlay}>
+    <View style={modalViewStyle}>
+      
+    <TextInput
+      style={modalTitleInputStyle}
+      onChangeText={setBubbleTitle}
+      value={bubbleTitle}
+      placeholder="Bubble Title"
+      placeholderTextColor="gray"
+      maxLength={30}
+    />
+
+      <TextInput
+        style={[modalInputStyle, { height: 100 }]} // Adjust height for multiline input
+        onChangeText={setBubbleDescription}
+        value={bubbleDescription}
+        placeholder="Short Description"
+        placeholderTextColor="gray"
+        maxLength={100}
+        multiline
+      />
+      
+      <View style={styles.switchContainer}>
+        <Text style={[styles.modalText, { color: colors.text, right: 10, }]}>Private Room</Text>
+        <Switch
+          trackColor={{ false: "#767577", true: colors.primary }}
+          thumbColor={isPrivate ? colors.secondary : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={setIsPrivate}
+          value={isPrivate}
+        />
+      </View>
+      
+      <View style={styles.sliderContainer}>
+        <Text style={[styles.modalText, { color: colors.text }]}>Radius: {selectedRadius}m</Text>
+        <Slider
+          style={styles.slider}
+          minimumValue={10}
+          maximumValue={100}
+          step={1}
+          value={selectedRadius}
+          onValueChange={setSelectedRadius}
+          minimumTrackTintColor={colors.primary}
+          maximumTrackTintColor={colors.secondary}
+          thumbTintColor={colors.primary}
+        />
+      </View>
+      
+      <TouchableOpacity
+  style={[styles.createBubbleButtonStyle, { backgroundColor: colors.buttonBackground }]}
+  onPress={() => {
+    navigation.navigate("Chatroom");
+    setCreatingBubble(false);
+    create_bubble();
+  }}
+>
+  <Text style={{ color: colors.buttonText }}>Create Bubble</Text>
+</TouchableOpacity>
+    </View>
+  </View>
+  </TouchableWithoutFeedback>
+</Modal>
+    </View>
   );
 };
 
 export default HomePage;
 
 const styles = StyleSheet.create({
-  errorMessageText: {
-    fontWeight: "bold",
+  container: {
+    flex: 1,
+  },
+  bubbleContainer: {
+    // Define your bubble container styles here
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconSpacing: {
+    marginLeft: 20
+  },
+  widget: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '75%',
+    padding: 10,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    paddingTop: 20,
+  },
+  tabText: {
+    fontSize: 16,
+  },
+  tab: {
+    alignItems: 'center',
+  },
+  iconImage: {
+    width: 50, 
+    height: 50, 
+    marginBottom: 8,
+  },
+  input: {
+    borderRadius: 30,
+    borderWidth: 1,
+    padding: 15,
+    margin: 10,
     fontSize: 12,
   },
-
-  errorMessageDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "7%",
-    width: "100%",
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'flex-start', 
+    padding: 10,
+    marginTop: 10
   },
-  newBubbleText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "white",
+  infoText: {
+    fontSize: 12, 
+    fontWeight: 'normal', 
+    left: 5,
+    fontWeight: 'bold'
   },
-  newBubble: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 150,
-    height: 40,
-    backgroundColor: "#93B8DA",
-    borderRadius: 20,
+  map: {
+    width: '95%',
+    height: '85%',
+    borderRadius: 20
   },
   createBubbleButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "8%",
-    width: "100%",
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: '75%', // Since the widget is 75% of the height from the bottom, this button will sit on top of it
+    paddingHorizontal: 20, // Match the padding of the widget for alignment
+    paddingBottom: 20, // To give some space between the button and the widget,
+    alignSelf: 'center',
   },
-  radiusChoices: {
-    width: "100%",
-    height: "90%",
-    color: "white",
-  },
-  radiusChoiceDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  privacyText: {
-    fontWeight: "bold",
-    fontSize: 12,
-    color: "#56585B",
-  },
-  informOfPrivacy: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "15%",
-    width: "100%",
-  },
-  privacySwitchBar: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "60%",
-    width: "100%",
-  },
-  settingsTitleText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "white",
-  },
-  settingTitle: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "15%",
-  },
-  oneThirdSettings: {
-    display: "flex",
-    alignItems: "center",
-    height: "100%",
-    width: "33%",
-  },
-  settings: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    height: "90%",
-    width: "100%",
-  },
-  createBubbleSettingsBody: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
-  },
-  createBubbleSettingsText: {
-    fontWeight: "bold",
-    fontSize: 26,
-    color: "#6B6A6A",
-    paddingLeft: 16,
-  },
-  createBubbleSettings: {
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    height: "30%",
-    width: "100%",
-  },
-  descriptionCounter: {
-    color: "#3D3C3C",
-    textAlign: "right",
-  },
-  searchBarDivDescription: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "18%",
-    width: "100%",
-  },
-  createBubbleDescriptionText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "#6B6A6A",
-    paddingLeft: 16,
-  },
-  createBubbleDescription: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "5%",
-    width: "100%",
-  },
-  titleCounter: {
-    textAlign: "right",
-    color: "#3D3C3C",
-  },
-  searchBarDiv: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "12%",
-    width: "100%",
-  },
-  createBubbleTitleText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "#6B6A6A",
-    paddingLeft: 16,
-  },
-  createBubbleTitle: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "5%",
-    width: "100%",
-  },
-  createBubbleTopText: {
-    fontWeight: "bold",
-    fontSize: 34,
-    color: "white",
-  },
-  createBubbleTop: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "70%",
-  },
-  cancelDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "15%",
-  },
-  createBubbleLabel: {
-    display: "flex",
-    flexDirection: "row",
-    height: "15%",
-    width: "100%",
-  },
-  buttonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "white",
-  },
-  buttonDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "48%",
-    borderRadius: 15,
-    backgroundColor: "#191818",
-  },
-  continueAndcancelButtons: {
-    display: "flex",
-    flexDirection: "row",
-    height: "30%",
-    width: "90%",
-    justifyContent: "space-between",
-  },
-  bodyWarningText: {
-    fontWeight: "bold",
-    fontSize: 14,
-    color: "white",
-    padding: 5,
-    textAlign: "center",
-  },
-  bodyWarning: {
-    display: "flex",
-    height: "40%",
-    width: "90%",
-    flexShrink: 1,
-  },
-  topWarningText: {
-    fontWeight: "bold",
-    fontSize: 28,
-    color: "white",
-  },
-  topWarning: {
-    display: "flex",
-    height: "25%",
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  deleteBubblePopup: {
-    display: "flex",
-    height: "20%",
-    width: "60%",
-    backgroundColor: "#252525",
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  deleteBubbleBackground: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  invisibleScreen: {
-    display: "flex",
-    position: "absolute",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-  },
-  createBubble: {
-    display: "flex",
-    position: "absolute",
-    width: "90%",
-    height: "60%",
-    backgroundColor: "#1B1B1B",
-    borderRadius: 30,
-    shadowOpacity: 0.5,
-    opacity: 1,
-  },
-  bottomIconDiv: {
-    display: "flex",
-    height: "100%",
-    width: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  searchBar: {
-    shadowColor: "#000",
+  newBubble: {
+    borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 4,
-    padding: 15,
-    width: "80%",
-    borderRadius: 20,
-    borderColor: "#3D3C3C",
-    borderWidth: 1,
-    backgroundColor: "#191818",
-    color: "#56585B",
-    fontWeight: "bold",
-    paddingLeft: 15,
-    paddingRight: 85,
+    width: 110,
   },
+  
+  newBubbleText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center'
 
-  topIconDiv: {
-    display: "flex",
-    height: "100%",
-    width: "33%",
-    alignItems: "center",
   },
-
-  BubbleText: {
-    display: "flex",
+  centeredView: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: "100%",
-    width: "70%",
-    paddingRight: 5,
+    marginTop: 22,
   },
-  plusLogoIcon: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    height: "100%",
-    width: "30%",
+  modalText: {
+    marginBottom: 20,
+    textAlign: "center",
+    fontSize: 18, // Example size, adjust as needed
   },
-  addBubbleIcon: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 100,
-    height: 35,
-    backgroundColor: "#93B8DA",
-    borderRadius: 20,
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  addBubbleDiv: {
-    display: "flex",
-    height: "100%",
-    width: "35%",
+  modalOverlay: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
   },
-  bottomBar: {
-    display: "flex",
-    flexDirection: "row",
-    height: "50%",
-    width: "100%",
-  },
-  dmDiv: {
-    display: "flex",
-    height: "100%",
-    width: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-    transform: [{ rotate: "-45deg" }],
-    paddingBottom: 8,
-  },
-  notiDiv: {
-    display: "flex",
-    height: "100%",
-    width: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  topIcons: {
-    display: "flex",
-    flexDirection: "row",
-    height: "100%",
-    width: "30%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  paddingDiv: {
-    display: "flex",
-    height: "100%",
-    width: "35%",
-  },
-  bubbleLogo: {
-    display: "flex",
-    height: "100%",
-    width: "35%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  topBar: {
-    display: "flex",
-    flexDirection: "row",
-    height: "50%",
-    width: "100%",
-  },
-  HomePageBackground: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    backgroundColor: "#191818",
-  },
-  topOfHomePage: {
-    display: "flex",
-    justifyContent: "flex-start",
-    height: "18%",
-    width: "100%",
-  },
-
-  bottomNavBar: {
-    display: "flex",
-    flexDirection: "row",
-    height: "8%",
-    width: "100%",
-    backgroundColor: "#1a1a1a",
+  createBubbleButtonStyle: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2, // Optional for Android shadow
+    shadowOpacity: 0.1, // Optional for iOS shadow
+    shadowRadius: 2, // Optional for iOS shadow
+    shadowOffset: { height: 2, width: 2 }, // Optional for iOS shadow
+    shadowColor: '#000', // Optional for iOS shadow,
+    marginTop: 10,
   },
 });

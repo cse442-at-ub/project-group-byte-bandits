@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import OnboardingScreen from "./src/screens/Onboarding/Onboarding/OnboardingScreen";
 import Login from "./src/screens/Onboarding/Onboarding/Login";
 import Register from "./src/screens/Onboarding/Onboarding/Register";
 import EmailorUsernameLogin from "./src/screens/Onboarding/Onboarding/emailOrUsernameLogin";
@@ -13,6 +14,9 @@ import { Chatroom } from "./src/screens/Chatroom/Chatroom";
 import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers";
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
+import DM from "./src/screens/DM/DM";
+import DMList from "./src/screens/DM/DMList";
+import Notification from "./src/screens/Notification/Notification";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +25,10 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
+          <Stack.Screen 
+                      name="Onboarding"
+                      options={{ headerShown: false, gestureEnabled: false }}
+                      component={OnboardingScreen}/>
           <Stack.Screen
             name="Login"
             options={{ headerShown: false, gestureEnabled: false }}
@@ -91,6 +99,30 @@ const App = () => {
               animation: "slide_from_right",
             }}
             component={Settings}
+          />
+                    <Stack.Screen
+            name="DMList"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={DMList}
+          />
+                              <Stack.Screen
+            name="DM"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={DM}
+          />
+                                        <Stack.Screen
+            name="Notification"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={Notification}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -4,6 +4,7 @@ import qs from "qs";
 const chatroom_process_request_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request";
 const join_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom";
 const create_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/create_chatroom";
+const disconnect_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/disconnect_chatroom";
 const load_chatrooms_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
 
 const generate_csrf_token_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf";
@@ -151,8 +152,12 @@ export async function connect_to_chatroom(chatroom_id) {
     return response.data;
 }
 
-export async function load_chatrooms(long, lat) {
+export async function disconnect_from_chatroom() {
+    const response = await axios.get(disconnect_chatroom_url);
+    return response.data;
+}
 
+export async function load_chatrooms() {
     const response = await axios.get(load_chatrooms_url);
     let chatrooms = [];
     const data = await response.data;
