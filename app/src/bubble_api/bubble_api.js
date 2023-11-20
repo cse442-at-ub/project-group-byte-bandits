@@ -300,9 +300,7 @@ export async function load_profile_data() {
     const response = await axios.get(
         user_profile_url
     );
-    profile_data = response.data;
-    setUsername(profile_data.name);
-    setUserId(profile_data.id);
+    return response.data;
   }
 
 export async function get_friend_requests() {

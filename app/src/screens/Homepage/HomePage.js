@@ -14,7 +14,7 @@ import ExploreLight from '../../assets/explorelight.gif'
 import SocialLight from '../../assets/sociallight.gif'
 import NavBar from '../../components/Navbar';
 import { useSelector } from "react-redux";
-import { connect_to_chatroom, load_chatrooms, search_user, update_location, send_friend_request } from "../../bubble_api/bubble_api";
+import { connect_to_chatroom, load_chatrooms, search_user, update_location, send_friend_request, create_chatroom } from "../../bubble_api/bubble_api";
 import * as Location from "expo-location";
 import axios from "axios";
 import qs from "qs";
@@ -51,6 +51,13 @@ const HomePage = ({ navigation }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
   const [searched_user, setSearchedUser] = useState(null);
+
+  async function CreateChatroom() {
+    const data = await create_chatroom(selectedRadius,maxPeople,isPrivate);
+    if (data == '') {
+      navigation.navigate("Chatroom");
+    }
+  }
 
   async function ConnectToChatroom(id) {
     const data = await connect_to_chatroom(id);
@@ -389,7 +396,7 @@ const renderContent = () => {
   onPress={() => {
     navigation.navigate("Chatroom");
     setCreatingBubble(false);
-    create_bubble();
+    CreateChatroom();
   }}
 >
   <Text style={{ color: colors.buttonText }}>Create Bubble</Text>

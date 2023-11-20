@@ -21,10 +21,14 @@ const UserDashboard = ({ navigation }) => {
   const [username, setUsername] = useState(null);
   const [userid, setUserId] = useState(null);
 
-
+  async function LoadProfileData() {
+    const data = await load_profile_data();
+    setUsername(data['name']);
+    setUserId(data['id']);
+  }
 
   return (
-    <View style={styles.container} onLayout={() => load_profile_data() }>
+    <View style={styles.container} onLayout={() => LoadProfileData() }>
             <SafeAreaView style={{ flex: 1 }}>
 
       <ScrollView showsVerticalScrollIndicator={false}>
