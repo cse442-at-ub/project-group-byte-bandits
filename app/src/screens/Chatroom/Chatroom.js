@@ -24,7 +24,7 @@ import {
 import axios from "axios";
 import qs from "qs";
 import { Header } from 'react-native-elements'
-import { handle_login_state, 
+import { disconnect_from_chatroom, handle_login_state, 
   load_messages, 
   send_text_message } from "../../bubble_api/bubble_api.js";
 
@@ -39,16 +39,24 @@ export const Chatroom = ({ navigation }) => {
     setErrorMsg(data);
   }
 
-  async function load_page_contents() {
+  async function LoadMessages() {
     const data = await load_messages();
     setMessageData(data);
   }
 
-  load_page_contents()
+  async function ChatroomDisconnect() {
+    const data = await disconnect_from_chatroom();
+    console.log(data);
+    if(data == '' ) {
+      navigation.navigate("HomePage");
+    }
+  }
+
 
   return (
-    <SafeAreaView 
-    style={styles.ChatroomBackground} onLayout={() => handle_login_state(navigation)}>
+    <SafeAreaView
+    style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
+                                                      LoadMessages()}}>
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
@@ -65,10 +73,10 @@ export const Chatroom = ({ navigation }) => {
             <View style={styles.continueAndcancelButtons}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("HomePage");
+                  ChatroomDisconnect();
                   setShowConfirm(false);
                 }}
-                style={styles.buttonDiv}
+                style={styles.buttonDiv}  
               >
                 <Text style={styles.buttonText}>Continue</Text>
               </TouchableOpacity>
@@ -90,7 +98,6 @@ export const Chatroom = ({ navigation }) => {
     type: 'entypo', 
     onPress: () => {
       setShowConfirm(true);
-      navigation.goBack();
     }
   }}
   rightComponent={(

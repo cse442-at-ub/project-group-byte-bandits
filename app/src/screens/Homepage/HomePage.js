@@ -63,6 +63,9 @@ const HomePage = ({ navigation }) => {
   async function LoadChatrooms() {
     const data = await load_chatrooms();
     setChatroomData(data);
+  }
+
+  async function CreateChatroom() {
 
   }
 
@@ -93,7 +96,7 @@ const HomePage = ({ navigation }) => {
           async (newLocation) => {
             setLocation(newLocation);
             const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
-            //setErrorMsg(data);
+            setErrorMsg(data);
             console.log(data);
           }
         );
@@ -150,6 +153,7 @@ const renderContent = () => {
             style={[styles.input, { borderColor: colors.secondary, color: colors.text }]}
             placeholder="Add a friend..."
             placeholderTextColor="gray"
+            
           />
           </>
           

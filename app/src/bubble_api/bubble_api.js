@@ -8,6 +8,7 @@ const auto_login_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall
 const validate_login_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login";
 const validate_signup_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup";
 const join_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom";
+const disconnect_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/disconnect_chatroom";
 const load_chatrooms_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
 const user_location_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location";
 
@@ -142,6 +143,11 @@ export async function connect_to_chatroom(chatroom_id) {
         },
       }
     );
+    return response.data;
+}
+
+export async function disconnect_from_chatroom() {
+    const response = await axios.get(disconnect_chatroom_url);
     return response.data;
 }
 
