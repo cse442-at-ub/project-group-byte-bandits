@@ -4,6 +4,7 @@ include "../auth/utility.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // check ssid
     handle_login_state();
+    login_token_forwarding();
     validate_csrf_token();
     $id = $_POST['id'];
     $user_record = get_user_with_sid($_COOKIE['PHPSESSID'])[0];
@@ -12,7 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $reconnecting = false;
     try {
         if($user_record['chatroom_connection']) {
-            $chatroom_auth_record = get_chatroom_auth_with_token($user_record['chatroom_connection'], $_COOKIE['PHPSESSID'])[0];
+            $chatroom_auth_record = get_chatroom_auth_with_token($user_record['chatroom_connection'], 
+                                                                $_COOKIE['login_token'])[0];
             if($chatroom_auth_record['id'] != $id)
                 throw new Exception('already connected to chatroom ' . $chatroom_auth_record['id']);
             $reconnecting = true;
@@ -29,12 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        if ($user_record['location'] === NULL) {
+        $user_location_record = get_user_location_with_id($user_record['id']);
+        if(count($user_location_record) == 0) {
             throw new Exception("couldnt access location data");
         }
-        $user_location = json_decode($user_record['location'], true);
-        $chatroom_location = json_decode($chatroom_record['location'],true);
+        $user_location = array($user_location_record[0]['long'], $user_location_record[0]['lat']);
+        $chatroom_location = array($chatroom_record['long'], $chatroom_record['lat']);
         $chatroom_rad = $chatroom_record['radius'];
+
         if(cartesian_distance($user_location,$chatroom_location) > $chatroom_rad)
             throw new Exception('out of chatroom range');
 
@@ -47,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // generate new chatroom auth token
         $chatroom_token = bin2hex(random_bytes(16));
         set_user_chatroom_connection($chatroom_token, $_COOKIE['PHPSESSID']);
-        create_chatroom_token($id, $chatroom_token, $_COOKIE['PHPSESSID'],$user_record['id']);
+        create_chatroom_token($id, $chatroom_token, $user_record['login_token'],$user_record['id']);
         set_chatroom_tokens($chatroom_record['max_persons'] -1 , $id);
     }
 } else {

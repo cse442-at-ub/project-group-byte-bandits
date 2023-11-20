@@ -24,4 +24,4 @@ try {
 setcookie("chatroom", '', time() - $_GLOBALS['lifespan'],'/');
 unset_chatroom_connection($user_record['session']);
 set_chatroom_tokens($chatroom_record['max_persons'] + 1,$id);
-delete_chatroom_auth_token($user_record['session']);  // make sure to call these methods before logging out or the sesssion will not match
+delete_chatroom_auth_token($user_record['login_token']);  // make sure to call these methods before logging out or the sesssion will not match

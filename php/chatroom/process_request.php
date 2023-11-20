@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // check if user has connection
     $user_record = get_user_with_sid($_COOKIE['PHPSESSID'])[0];
     $user_chatroom_connection = $user_record['chatroom_connection'];
-    $chatroom_auth_record = get_chatroom_auth_with_token($user_chatroom_connection, $_COOKIE['PHPSESSID'])[0];
+    $chatroom_auth_record = get_chatroom_auth_with_token($user_chatroom_connection, $user_record['login_token'])[0];
     try {
         if(!$chatroom_auth_record)
             throw new Exception('no token found');
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $user_record = get_user_with_sid($_COOKIE['PHPSESSID'])[0];
     $user_chatroom_connection = $user_record['chatroom_connection'];
     $chatroom_auth_record = get_chatroom_auth_with_token($user_chatroom_connection,
-                                                         $_COOKIE['PHPSESSID'])[0];
+                                                         $user_record['login_token'])[0];
     try {
         if(!$chatroom_auth_record)
             throw new Exception('no token found');

@@ -65,10 +65,6 @@ const HomePage = ({ navigation }) => {
     setChatroomData(data);
   }
 
-  async function CreateChatroom() {
-
-  }
-
   useEffect(() => {
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();

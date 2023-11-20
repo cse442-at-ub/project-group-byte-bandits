@@ -4,27 +4,19 @@ include 'utility.php';
 if($_SERVER["REQUEST_METHOD"] === "POST") {
     check_post_record($_POST);
     handle_login_state();
-    //validate_csrf_token();
-    $user_id = $_POST["user_id"];
     $longitude = $_POST["long"];
     $latitude = $_POST["lat"];
-
-    // manually creating location object
-    $location = json_encode(["long" => $longitude, "lat" => $latitude]);
-
-    // update user's location in table
-    set_user_location($location, $_COOKIE['PHPSESSID']);
-
-    $data = [
-        'Message' => 'Updated User Location',
-        'status' => 200,
-        'user_info' => [
-            'user_id' => $user_id,
-            'longitude' => $longitude,
-            'latitude' => $latitude
-        ]
-    ];
-    echo json_encode($data);
+    $user_record = get_user_with_sid($_COOKIE['PHPSESSID'])[0];
+    $location_records = get_user_location_with_id($user_record['id']);
+    if(count($location_records) > 0) {
+        set_user_location($longitude, $latitude, $_COOKIE['PHPSESSID']);
+    } else {
+        create_user_location_record($user_record['id'], 
+                                    $_COOKIE['PHPSESSID'], 
+                                    $longitude, 
+                                    $latitude);
+    }
+    echo json_encode(["long" => $longitude, "lat" => $latitude]);
 } else {
     forbidden_response();
 }

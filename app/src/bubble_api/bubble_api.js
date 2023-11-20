@@ -2,15 +2,21 @@ import axios from "axios";
 import qs from "qs";
 
 const chatroom_process_request_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/process_request";
+const join_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom";
+const create_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/create_chatroom";
+const disconnect_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/disconnect_chatroom";
+const load_chatrooms_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
+
 const generate_csrf_token_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf";
+
 const handle_login_state_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state";
 const auto_login_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/auto_login";
 const validate_login_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_login";
 const validate_signup_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup";
-const join_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/join_chatroom";
-const disconnect_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/disconnect_chatroom";
-const load_chatrooms_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
+
 const user_location_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location";
+const user_profile_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/profile_data";
+const user_location_data_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/user_location_data";
 
 export async function make_csrf_token() {
     const csrf_response = await axios.get(generate_csrf_token_url);
@@ -32,7 +38,7 @@ export async function handle_auto_login(navigation) {
     login_state_data = response.data;
     console.log(login_state_data);
     if (login_state_data == '') {
-      navigation.navigate("HomePage");
+        navigation.navigate("HomePage");
     }
 }
 
@@ -51,19 +57,19 @@ export async function load_messages() {
 
 export async function send_text_message(content) {
     const data = qs.stringify({
-      content: content
+        content: content
     });
     const token = await make_csrf_token();
 
     const response = await axios.post(
-      chatroom_process_request_url,
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": token,
-        },
-      }
+        chatroom_process_request_url,
+        data,
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Csrf-Token": token,
+            },
+        }
     );
     return response.data;
 }
@@ -99,10 +105,10 @@ export async function secure_signup(email, password, confirmPassword) {
         validate_signup_url,
         data,
         {
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-        },
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Csrf-Token": token,
+            },
         }
     );
     return response.data;
@@ -129,19 +135,19 @@ export async function create_username() {
 
 export async function connect_to_chatroom(chatroom_id) {
     const data = qs.stringify({
-      id: chatroom_id,
+        id: chatroom_id,
     });
 
     const token = await make_csrf_token();
     const response = await axios.post(
-      join_chatroom_url,
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": token,
-        },
-      }
+        join_chatroom_url,
+        data,
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Csrf-Token": token,
+            },
+        }
     );
     return response.data;
 }
@@ -156,13 +162,39 @@ export async function load_chatrooms() {
     let chatrooms = [];
     const data = await response.data;
     data.forEach((element) => {
-      element = JSON.parse(element);
-      id = element.id;
-      loc = element.location;
-      host = element.host;
-      chatrooms.push([id, loc, host]);
+        element = JSON.parse(element);
+        const id = element.id;
+        const ch_long = element.long;
+        const ch_lat = element.lat;
+        const host = element.host;
+        const radius = element.radius;
+        // get distance
+        const distance = Math.sqrt(Math.pow(long-ch_long,2) + Math.pow(lat-ch_lat,2))
+        if (distance <= radius) {
+            chatrooms.push([" id: ",id," , ", "distance: ",distance," , ", "host: ",host]);
+        }
     });
     return chatrooms;
+}
+
+export async function create_chatroom(privacy, radius, maxpersons) {
+    const data = qs.stringify({
+        radius: radius,
+        maxpersons: maxpersons,
+        privacy: privacy
+    });
+    const token = await make_csrf_token();
+    const response = await axios.post(
+        create_chatroom_url,
+        data,
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Csrf-Token": token,
+            },
+        }
+    );
+    return response.data;
 }
 
 export async function update_location(longitue_coord, latidute_coord) {

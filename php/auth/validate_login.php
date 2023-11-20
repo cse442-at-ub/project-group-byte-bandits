@@ -7,8 +7,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $session_id = $_COOKIE['PHPSESSID'];
     try {
-        if(isset($session_id)) {
-            $rows = get_user_with_sid($session_id);
+        if(isset($_COOKIE['login_token'])) {
+            $rows = get_user_with_login_token($_COOKIE['login_token']);
             if (count($rows) > 0)
                 throw new Exception("already logged in"); 
         }

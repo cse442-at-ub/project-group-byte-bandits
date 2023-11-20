@@ -71,7 +71,7 @@ function push_rows(mysqli_result $result, bool $json = false): array {
 function handle_login_state() {
     try {
         if(!isset($_COOKIE['PHPSESSID']))
-            throw new Exception("no cookie");
+            throw new Exception("no session cookie");
         else
             $rows = get_user_with_sid($_COOKIE['PHPSESSID']);
             if(count($rows) == 0) {
@@ -85,7 +85,7 @@ function handle_login_state() {
 function login_token_forwarding() {
     try {
         if(!isset($_COOKIE['login_token']))
-            throw new Exception("no cookie");
+            throw new Exception("no login_token cookie");
         else
             $rows = get_user_with_login_token($_COOKIE['login_token']);
             if(count($rows) == 0) {
@@ -95,7 +95,6 @@ function login_token_forwarding() {
         handle_exception($e, 'cookies');
     }
 }
-
 
 function create_new_user(string $password, 
                         string $email, 
@@ -142,6 +141,20 @@ function get_user_with_name(string $uname): array {
 function get_user_with_email(string $email): array {
     return push_rows(query_database("SELECT * FROM `user_data` WHERE `email` = ?",
                                     array($email),
+                                    "s",
+                                    $retrieve=true));
+}
+
+function get_user_location_with_id(int $id) {
+    return push_rows(query_database("SELECT * FROM `user_location_data` WHERE `user_id` = ?",
+                                    array($id),
+                                    "i",
+                                    $retrieve=true));
+}
+
+function get_user_location_with_sid(string $session_id) {
+    return push_rows(query_database("SELECT * FROM `user_location_data` WHERE `session` = ?",
+                                    array($session_id),
                                     "s",
                                     $retrieve=true));
 }
@@ -195,15 +208,21 @@ function unset_chatroom_connection(string $session_id): void {
 }
 
 function unset_user_login_token(string $session_id): void {
-    query_database("UPDATE `user_data` SET `login_token` = '' WHERE session = ?",
+    query_database("UPDATE `user_data` SET `login_token` = '' WHERE `session` = ?",
                     array($session_id),
                     "s");
 }
 
-function set_user_location(string $location, string $session_id): void {
-    query_database("UPDATE `user_data` SET `location` = ? WHERE `session` = ?",
-                array($location, $session_id),
-                "ss");
+function create_user_location_record(int $user_id, string $session_id, float $long, float $lat) {
+    query_database("INSERT INTO `user_location_data` (`user_id`,`session`,`long`, `lat`)  VALUES(?,?,?,?)",
+                    array($user_id, $session_id, $long, $lat),
+                    "isdd");
+}
+
+function set_user_location(float $long, float $lat, string $session_id): void {
+    query_database("UPDATE `user_data` SET `long` = ?, `lat` = ? WHERE `session` = ?",
+                array($long, $lat, $session_id),
+                "dds");
 }
 
 function delete_user(string $session_id): void {
@@ -212,10 +231,10 @@ function delete_user(string $session_id): void {
                 "s");
 }
 
-function create_new_chatroom(int $id, int $radius, string $location, int $host, int $tokens): void {
-    query_database("INSERT INTO `chatroom_data` (`id`,`radius`,`location`,`host`,`max_persons`) VALUES (?,?,?,?,?)",
-                array($id,$radius,$location,$host,$tokens),
-                "iisii");
+function create_new_chatroom(int $id, int $radius, int $host, int $tokens): void {
+    query_database("INSERT INTO `chatroom_data` (`id`,`radius`, `host`, `max_persons`) VALUES (?,?,?,?)",
+                array($id,$radius,$host,$tokens),
+                "iiii");
 }
 
 function get_chatroom_with_id(int $chatroom_id): array {
@@ -232,22 +251,22 @@ function get_chatroom_with_host(int $host): array {
                     $retrieve=true));
 }
 
-function create_chatroom_token(int $chatroom_id, string $token, string $session_id, int $user): void {
-    query_database("INSERT INTO `chatroom_auth` (`id`,`token`,`session`, `user`) VALUES (?,?,?,?)",
-                array($chatroom_id,$token,$session_id,$user),
+function create_chatroom_token(int $chatroom_id, string $token, string $login_token, int $user): void {
+    query_database("INSERT INTO `chatroom_auth` (`id`,`token`,`login_token`, `user`) VALUES (?,?,?,?)",
+                array($chatroom_id,$token,$login_token,$user),
                 "issi");
 }
 
-function get_chatroom_auth_with_token(string $token, string $session_id): array {
-    return push_rows(query_database("SELECT * FROM `chatroom_auth` WHERE `token` = ? AND `session` = ?",
-                    array($token, $session_id),
+function get_chatroom_auth_with_token(string $token, string $login_token): array {
+    return push_rows(query_database("SELECT * FROM `chatroom_auth` WHERE `token` = ? AND `login_token` = ?",
+                    array($token, $login_token),
                     "ss",
                     $retrieve=true));
 }
 
-function delete_chatroom_auth_token(string $session_id): void {
-    query_database("DELETE FROM `chatroom_auth` WHERE `session` = ?",
-                array($session_id),
+function delete_chatroom_auth_token(string $login_token): void {
+    query_database("DELETE FROM `chatroom_auth` WHERE `login_token` = ?",
+                array($login_token),
                 "s");
 }
 
@@ -255,6 +274,12 @@ function set_chatroom_tokens(int $token_num, int $chatroom_id): void {
     query_database("UPDATE `chatroom_data` SET `max_persons` = ? WHERE `id` = ?",
                 array($token_num, $chatroom_id),
                 "ii");
+}
+
+function set_chatroom_location(float $long, float $lat, int $chatroom_id): void {
+    query_database("UPDATE `chatroom_data` SET `long` = ?, `lat` = ? WHERE `id` = ?",
+                    array($long, $lat, $chatroom_id),
+                    "ddi");
 }
 
 function get_text_with_chatroom_id(int $chatroom_id): array {
