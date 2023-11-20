@@ -5,6 +5,7 @@ import { VictoryBar, VictoryChart, VictoryTheme, VictoryAxis } from "victory-nat
 import * as Haptics from 'expo-haptics'
 import axios from "axios";
 import { useState } from "react";
+import NavBar from '../../components/Navbar';
 
 const UserDashboard = ({ navigation }) => {
   const barData = [
@@ -170,6 +171,7 @@ const UserDashboard = ({ navigation }) => {
       
       </ScrollView>
       </SafeAreaView>
+      <NavBar navigation={navigation} currentScreen={'UserDashboard'} />
 
     </View>
   );

@@ -1,29 +1,33 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Button,
-  SafeAreaView,
-} from "react-native";
-
-import Oticons from "react-native-vector-icons/Octicons";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import LineComponent from "../../../svgs/lineComponent";
-import BubbleComponent from "../../../svgs/bubbleComponent";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useColorScheme } from 'react-native';
+import theme from '../../../components/theme'; 
 import * as AppleAuthentication from "expo-apple-authentication";
 import axios from "axios";
 import qs from "qs";
 import { logIn } from "../../../../redux/user";
-import { handle_auto_login } from "../../../bubble_api/bubble_api";
+import { secure_login, handle_auto_login } from "../../../bubble_api/bubble_api";
 
 const Login = ({ navigation }) => {
-  const [errorMessage, setErrorMessage] = useState("");
-  const [userID, setUserID] = useState();
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
   const dispatch = useDispatch();
+  
+  const [emailOrUsername, setEmailOrUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  
+  async function user_login() {
+    const data = await secure_login(emailOrUsername, password);
+    console.log(data.response);
+    setErrorMessage(data.response);
+    if (data == '') {
+      navigation.navigate("HomePage");
+    }
+  };
+
+
 
   const fetchAppleInfo = async () => {
     try {
@@ -34,7 +38,6 @@ const Login = ({ navigation }) => {
         ],
       });
 
-      // IF APPLE RETURNS INFORMATION WE SEND INFO TO DATABASE TO CREATE USER
       const apple_user = response.user;
       const data = qs.stringify({
         apple_user: apple_user,
@@ -66,301 +69,145 @@ const Login = ({ navigation }) => {
       }
     }
   };
+
   return (
-    <View style={styles.onboardingBackground}
-    onLayout={() => handle_auto_login(navigation)}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.upperHalfofOnboarding}>
-          <View style={styles.lowerOfUpper}>
-            {/* View for Bubble Logo and Motto*/}
-            <View style={styles.bubbleLogo}>
-              <BubbleComponent />
-            </View>
-            {/* View for Underline */}
-            <View style={styles.underLineArea}>
-              <LineComponent />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  color: "white",
-                  position: "absolute",
-                  top: 18,
-                  fontSize: 18,
-                }}
-              >
-                where conversation pops
-              </Text>
-            </View>
+    <>
+    
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={[styles.container,  { backgroundColor: colors.background }]}>
+        <View style={[styles.content]}>
+          <Text style={[styles.title, { color: colors.text }]}>Welcome back,</Text>
+          <Text style={[styles.subtitle, { color: colors.subText }]}>It's good to see you again. Sign in to start chatting!</Text>
+          <View style={[styles.individualInputContainer, { backgroundColor: 'transparent', borderColor: colors.secondary }]}>
+
+          <TextInput
+            placeholder="Email Address"
+            keyboardType='email-address'
+            placeholderTextColor='gray'
+            style={[styles.textInput, { color: colors.text }]}
+            value={emailOrUsername}
+            onChangeText={setEmailOrUsername} 
+          />
+          
           </View>
-        </View>
+          <View style={[styles.individualInputContainer, { backgroundColor: 'transparent', borderColor: colors.secondary }]}>
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor='gray'
+            secureTextEntry
+            style={[styles.textInput, { color: colors.text }]}
+            value={password}
+            onChangeText={setPassword} 
+          />
 
-        {/* View for Login and Register Buttons*/}
-        <View style={styles.bottomHalfofOnboarding}>
-          {/* BUTTON ONE */}
-          <View style={styles.buttonDiv}>
-            {/* ADD ONCLICK FUNCTIONALITY HERE */}
-            <TouchableOpacity
-              onPress={() => {
-                fetchAppleInfo().then((response) => {
-                  console.log(response);
-                });
-              }}
-              style={styles.appleButton}
-            >
-              {/* Apple Logo */}
-              <View style={styles.logoDiv}>
-                <AntDesign name="apple-o" size={44} color={"white"} />
-              </View>
-
-              {/* Login w/ Apple Text*/}
-              <View
-                style={{
-                  height: "100%",
-                  width: "80%",
-                  alignItems: "flex-start",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={styles.buttonText}>Login with Apple</Text>
-              </View>
-            </TouchableOpacity>
           </View>
 
-          {/* BUTTON TWO */}
-          <View style={styles.buttonDiv}>
-            {/* ADD ONCLICK FUNCTIONALITY HERE */}
-            <TouchableOpacity style={styles.googleButton}>
-              {/* Google Logo */}
-              <View style={styles.logoDiv}>
-                <MaterialCommunityIcons
-                  name="google"
-                  size={44}
-                  color={"white"}
-                />
-              </View>
-
-              {/* Login w/ Google Text*/}
-              <View
-                style={{
-                  height: "100%",
-                  width: "80%",
-                  alignItems: "flex-start",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={styles.buttonText}>Login with Google</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* BUTTON THREE */}
-          <View style={styles.buttonDiv}>
-            {/* ADD ONCLICK FUNCTIONALITY HERE */}
-            <TouchableOpacity
-              style={styles.accountButton}
-              onPress={() => {
-                navigation.navigate("EmailorUsernameLogin");
-                setErrorMessage("");
-              }}
-            >
-              {/* Account Logo */}
-              <View style={styles.logoDiv}>
-                <MaterialCommunityIcons
-                  name="account-outline"
-                  size={44}
-                  color={"white"}
-                />
-              </View>
-
-              {/* Login w/ Email/Password Text*/}
-              <View
-                style={{
-                  height: "100%",
-                  width: "80%",
-                  alignItems: "flex-start",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={styles.buttonText}>Login with Email</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          {/* ERROR MESSAGE DISPLAYED HERE */}
-          <View
-            style={{
-              height: "8%",
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: colors.buttonBackground }]}
+            onPress={user_login} 
           >
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 12,
-                color: "red",
-              }}
-            >
+            <Text style={[styles.buttonText, { color: colors.buttonText }]}>Log In</Text>
+          </TouchableOpacity>
+
+          {errorMessage ? (
+            <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10, }}>
               {errorMessage}
             </Text>
+          ) : null}
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Register')} // Navigate to the register screen
+            style={styles.loginPromptContainer}
+          >
+            <Text style={[styles.loginPrompt, { color: colors.primary }]}>
+              Don't have an account? Sign up here
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.separator}>
+            <View style={styles.line} />
+            <Text style={[styles.orText, { color: colors.subText }]}>OR</Text>
+            <View style={styles.line} />
           </View>
 
-          {/* Area to switch to Register */}
-          <View style={styles.changeToRegister}>
-            {/* -- OR -- */}
-            <View style={styles.orDesign}>
-              <Oticons
-                name="horizontal-rule"
-                size={35}
-                color={"darkslategrey"}
-              />
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 18,
-                  paddingLeft: 3,
-                  paddingRight: 3,
-                  color: "darkslategrey",
-                }}
-              >
-                OR
-              </Text>
-              <Oticons
-                name="horizontal-rule"
-                size={35}
-                color={"darkslategrey"}
-              />
-            </View>
-
-            {/* REGISTER HERE BUTTON */}
-            <View style={styles.registerHere}>
-              <Button
-                onPress={() => navigation.navigate("Register")}
-                title="Register Here"
-                color={"royalblue"}
-              />
-            </View>
-          </View>
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            cornerRadius={5}
+            style={styles.appleButton}
+            onPress={fetchAppleInfo}
+          />
         </View>
-      </SafeAreaView>
-    </View>
+      </KeyboardAvoidingView>
+    </>
   );
 };
 
 export default Login;
 
 const styles = StyleSheet.create({
-  registerHere: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
+  container: {
+    flex: 1,
+    justifyContent: 'center',
   },
-  orDesign: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
+  content: {
+    padding: 20,
+    
   },
-  changeToRegister: {
-    display: "flex",
-    flexDirection: "column",
-    height: "40%",
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "flex-start",
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-  accountButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 300,
-    height: 60,
-    backgroundColor: "darkslategrey",
-    borderRadius: 20,
+  subtitle: {
+    fontSize: 14,
+    marginBottom: 20,
   },
-  googleButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 300,
-    height: 60,
-    backgroundColor: "royalblue",
-    borderRadius: 20,
+  individualInputContainer: {
+    borderRadius: 10, // Changed to 1
+    padding: 20,
+    marginBottom: 10, // Adjust space between input fields
+    borderWidth: 1,
   },
-  logoDiv: {
-    display: "flex",
-    height: "100%",
-    width: "20%",
-    justifyContent: "center",
-    alignItems: "center",
+  textInput: {
+    fontSize: 16,
   },
-  buttonDiv: {
-    display: "flex",
-    height: "20%",
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
+  button: {
+    marginTop: 15,
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: 'center',
   },
   buttonText: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  separator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15, 
+    justifyContent: 'center',
+  },
+  line: {
+    flex: .1,
+    height: 1,
+    backgroundColor: '#ddd',
+  },
+  orText: {
+    marginHorizontal: 8,
   },
   appleButton: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    width: 300,
-    height: 60,
-    backgroundColor: "black",
-    borderRadius: 20,
+    height: 50,
+    width: '100%',
+    alignSelf: 'center'
   },
-  onboardingBackground: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    backgroundColor: "#1a1a1a",
+  loginPromptContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 15,
   },
-  upperHalfofOnboarding: {
-    display: "flex",
-    justifyContent: "flex-end",
-    height: "50%",
-    width: "100%",
-  },
-  bottomHalfofOnboarding: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "50%",
-  },
-  bubbleLogo: {
-    display: "flex",
-    flexDirection: "row",
-    width: "100%",
-    height: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  underLineArea: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    width: "100%",
-    height: "50%",
-  },
-  lowerOfUpper: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    alignItems: "center",
-    height: "50%",
+  loginPrompt: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
