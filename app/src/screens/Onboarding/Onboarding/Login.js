@@ -18,7 +18,7 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   
-  async function user_login() {
+  async function SecureLogin() {
     const data = await secure_login(emailOrUsername, password);
     console.log(data.response);
     setErrorMessage(data.response);
@@ -29,7 +29,7 @@ const Login = ({ navigation }) => {
 
 
 
-  const fetchAppleInfo = async () => {
+  /*const fetchAppleInfo = async () => {
     try {
       const response = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -68,12 +68,13 @@ const Login = ({ navigation }) => {
         // handle other errors
       }
     }
-  };
+  };*/
 
   return (
     <>
     
       <KeyboardAvoidingView
+        onLayout={() => handle_auto_login(navigation)}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={[styles.container,  { backgroundColor: colors.background }]}>
         <View style={[styles.content]}>
@@ -105,7 +106,7 @@ const Login = ({ navigation }) => {
 
           <TouchableOpacity 
             style={[styles.button, { backgroundColor: colors.buttonBackground }]}
-            onPress={user_login} 
+            onPress={() => SecureLogin()} 
           >
             <Text style={[styles.buttonText, { color: colors.buttonText }]}>Log In</Text>
           </TouchableOpacity>
@@ -130,13 +131,13 @@ const Login = ({ navigation }) => {
             <View style={styles.line} />
           </View>
 
-          <AppleAuthentication.AppleAuthenticationButton
+          {/*<AppleAuthentication.AppleAuthenticationButton
             buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
             buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
             cornerRadius={5}
             style={styles.appleButton}
             onPress={fetchAppleInfo}
-          />
+          />*/}
         </View>
       </KeyboardAvoidingView>
     </>
