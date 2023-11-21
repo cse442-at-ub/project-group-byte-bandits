@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, FlatList, VirtualizedList} from 'react-native';
 import { Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 import { VictoryBar, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
 import * as Haptics from 'expo-haptics'
 import axios from "axios";
 import { useState } from "react";
 import NavBar from '../../components/Navbar';
-import { load_profile_data } from '../../bubble_api/bubble_api';
+import { get_friends, load_profile_data } from '../../bubble_api/bubble_api';
 
 const UserDashboard = ({ navigation }) => {
   const barData = [
@@ -20,18 +20,24 @@ const UserDashboard = ({ navigation }) => {
 
   const [username, setUsername] = useState(null);
   const [userid, setUserId] = useState(null);
+  const [friends, setFriends] = useState(null);
 
-  async function LoadProfileData() {
+  async function GetFriends() {
+    const data = await get_friends();
+    setFriends(data);
+  }
+
+  async function ProfileData() {
     const data = await load_profile_data();
     setUsername(data['name']);
     setUserId(data['id']);
   }
 
   return (
-    <View style={styles.container} onLayout={() => LoadProfileData() }>
+    <View style={styles.container} onLayout={() => ProfileData() }>
             <SafeAreaView style={{ flex: 1 }}>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <View>
 
       <View style={styles.header}>
         <View style={styles.profileInfoContainer}>
@@ -122,52 +128,26 @@ const UserDashboard = ({ navigation }) => {
 
   <View style={styles.rectangleContainer}>
     {/* Rectangle 1 */}
-    <View style={styles.rectangle}>
-  <View style={styles.statusInfoContainer}>
-    <View style={styles.circle2}></View>
-    <View style={styles.statusInfo}>
-      <Text style={styles.onlineStatus}>Online</Text>
-      <Text style={styles.roomStatus}>Searching for a room...</Text>
+    <View onLayout={() => GetFriends()}>
+      <FlatList 
+        data={friends}
+        renderItem={({item}) =>    <View style={styles.rectangle}>
+        <View style={styles.statusInfoContainer}>
+          <View style={styles.circle2}></View>
+          <View style={styles.statusInfo}>
+            <Text style={styles.onlineStatus}>Online</Text>
+            <Text style={styles.roomStatus}>Searching for a room...</Text>
+          </View>
+        </View>
+        <View style={styles.usernameInfo}>
+          <Text style={styles.usernameInGreen}>{item['user_s_name']}</Text>
+          <Text style={styles.username}>@{item['user_s_id']}</Text>
+        </View>
+      </View>}
+      />
     </View>
   </View>
-  <View style={styles.usernameInfo}>
-    <Text style={styles.usernameInGreen}>John</Text>
-    <Text style={styles.username}>@john</Text>
   </View>
-</View>
-
-<View style={styles.rectangle}>
-  <View style={styles.statusInfoContainer}>
-    <View style={styles.circle2}></View>
-    <View style={styles.statusInfo}>
-      <Text style={styles.onlineStatus}>Online</Text>
-      <Text style={styles.roomStatus}>Searching for a room...</Text>
-    </View>
-  </View>
-  <View style={styles.usernameInfo}>
-    <Text style={styles.usernameInGreen}>John</Text>
-    <Text style={styles.username}>@john</Text>
-  </View>
-</View>
-
-<View style={styles.rectangle}>
-  <View style={styles.statusInfoContainer}>
-    <View style={styles.circle2}></View>
-    <View style={styles.statusInfo}>
-      <Text style={styles.onlineStatus}>Online</Text>
-      <Text style={styles.roomStatus}>Searching for a room...</Text>
-    </View>
-  </View>
-  <View style={styles.usernameInfo}>
-    <Text style={styles.usernameInGreen}>John</Text>
-    <Text style={styles.username}>@john</Text>
-  </View>
-</View>
-
-  </View>
-
-      
-      </ScrollView>
       </SafeAreaView>
       <NavBar navigation={navigation} currentScreen={'UserDashboard'} />
 

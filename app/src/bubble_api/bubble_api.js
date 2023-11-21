@@ -22,6 +22,12 @@ const send_friend_request_url = "https://www-student.cse.buffalo.edu/CSE442-542/
 const friend_data_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/friend_data";
 const friend_request_response_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/friend_request_response";
 
+function post_request_headers(csrf_token) {
+    return {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Csrf-Token": csrf_token,
+    };
+}
 
 export async function make_csrf_token() {
     const csrf_response = await axios.get(generate_csrf_token_url);
@@ -32,7 +38,6 @@ export async function make_csrf_token() {
 export async function handle_login_state(navigation) {
     const response = await axios.get(handle_login_state_url);
     login_state_data = response.data;
-    console.log(login_state_data);
     if (login_state_data != "") {
         navigation.navigate("Login");
     }
@@ -41,7 +46,6 @@ export async function handle_login_state(navigation) {
 export async function handle_auto_login(navigation) {
     const response = await axios.get(auto_login_url);
     login_state_data = response.data;
-    console.log(login_state_data);
     if (login_state_data == '') {
         navigation.navigate("HomePage");
     }
@@ -65,16 +69,10 @@ export async function send_text_message(content) {
         content: content
     });
     const token = await make_csrf_token();
-
     const response = await axios.post(
         chatroom_process_request_url,
         data,
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -88,12 +86,7 @@ export async function secure_login(username, password) {
     const response = await axios.post(
         validate_login_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -109,12 +102,7 @@ export async function secure_signup(email, password, confirmPassword) {
     const response = await axios.post(
         validate_signup_url,
         data,
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 };
@@ -128,12 +116,7 @@ export async function create_username() {
     const response = await axios.post(
         validate_signup_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
         );
     return response.data;
 }
@@ -147,12 +130,7 @@ export async function connect_to_chatroom(chatroom_id) {
     const response = await axios.post(
         join_chatroom_url,
         data,
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -192,12 +170,7 @@ export async function create_chatroom(privacy, radius, maxpersons) {
     const response = await axios.post(
         create_chatroom_url,
         data,
-        {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -211,12 +184,7 @@ export async function update_location(longitue_coord, latidute_coord) {
     const response = await axios.post(
         user_location_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -229,12 +197,7 @@ export async function search_user(username) {
     const response = await axios.post(
         public_user_data_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -247,12 +210,7 @@ export async function send_friend_request(user_id) {
     const response = await axios.post(
         send_friend_request_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -266,14 +224,8 @@ export async function accept_friend_request(user_id) {
     const response = await axios.post(
         friend_request_response_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
-    console.log(response.data);
     return response.data;
 }
 
@@ -286,12 +238,7 @@ export async function decline_friend_request(user_id) {
     const response = await axios.post(
         friend_request_response_url,
         data,
-        {
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": token,
-            },
-        }
+        {headers: post_request_headers(token)}
     );
     return response.data;
 }
@@ -301,7 +248,7 @@ export async function load_profile_data() {
         user_profile_url
     );
     return response.data;
-  }
+}
 
 export async function get_friend_requests() {
     const user_response = await axios.get(
@@ -319,4 +266,17 @@ export async function get_friend_requests() {
         }
     });
     return friend_requests;
+}
+
+export async function get_friends() {
+    const response = await axios.get(friend_data_url);
+    let friends = [];
+    response.data.forEach((element) => {
+        element = JSON.parse(element);
+        const status = element.status;
+        if(status == 1) {
+            friends.push(element);
+        }
+    });
+    return friends;
 }
