@@ -6,6 +6,8 @@ const join_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-F
 const create_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/create_chatroom";
 const disconnect_chatroom_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/disconnect_chatroom";
 const load_chatrooms_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
+const chatroom_data_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/chatroom_data";
+
 
 const generate_csrf_token_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf";
 
@@ -53,7 +55,7 @@ export async function handle_auto_login(navigation) {
 
 export async function load_messages() {
     const response = await axios.get(chatroom_process_request_url);
-    const data = response.data;
+    const data = await response.data;
     let text_messages = [];
     data.forEach(element => {
         const text_data = JSON.parse(element);
@@ -132,7 +134,6 @@ export async function connect_to_chatroom(chatroom_id) {
         data,
         {headers: post_request_headers(token)}
     );
-    console.log("data", response.data);
     return response.data;
 }
 
@@ -147,21 +148,23 @@ export async function load_chatrooms(long,lat) {
     const data = await response.data;
     data.forEach((element) => {
         element = JSON.parse(element);
-        console.log(element);
         const id = element.id;
         const ch_long = parseFloat(element.longitude);
         const ch_lat = parseFloat(element.latitude);
         const host = element.host;
         const radius = element.radius;
         // get distance
-        console.log(long,lat, ch_long,ch_lat);
         const distance = Math.sqrt(Math.pow(long-ch_long,2) + Math.pow(lat-ch_lat,2))
-        console.log(distance, radius);
         if (distance <= radius) {
             chatrooms.push([" id: ",id," , ", "distance: ",distance," , ", "host: ",host]);
         }
     });
     return chatrooms;
+}
+
+export async function load_chatroom_data() {
+    const response = await axios.get(chatroom_data_url);
+    return response.data;
 }
 
 export async function create_chatroom(privacy, radius, maxpersons) {
@@ -216,6 +219,7 @@ export async function send_friend_request(user_id) {
         data,
         {headers: post_request_headers(token)}
     );
+    console.log(response.data);
     return response.data;
 }
 
@@ -273,13 +277,19 @@ export async function get_friend_requests() {
 }
 
 export async function get_friends() {
+    const prof_data = await load_profile_data();
+    console.log(prof_data.id);
     const response = await axios.get(friend_data_url);
     let friends = [];
     response.data.forEach((element) => {
         element = JSON.parse(element);
         const status = element.status;
         if(status == 1) {
-            friends.push(element);
+            if (prof_data.id == element.user_s_id) {
+                friends.push([element.user_r_id, element.user_r_name]);
+            } else {
+                friends.push([element.user_s_id, element.user_s_name]);
+            }
         }
     });
     return friends;

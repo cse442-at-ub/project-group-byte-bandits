@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, useColorScheme,FlatList } fro
 import { Header, Avatar, Badge, Button } from 'react-native-elements';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import theme from '../../components/theme'; // Adjust the import path according to your project structure
-import { accept_friend_request, get_friend_requests } from "../../bubble_api/bubble_api";
+import { accept_friend_request, decline_friend_request, get_friend_requests } from "../../bubble_api/bubble_api";
 
 const Notification = ({ navigation }) => {
   const scheme = useColorScheme();
@@ -65,7 +65,7 @@ const Notification = ({ navigation }) => {
                     buttonStyle={[styles.button, darkThemeStyles.declineButton]}
                     titleStyle={[styles.buttonText, { color: colors.buttonText }]}
                     title="Decline"
-                    onPress={() => { /* Handle decline action */ }}
+                    onPress={() => { decline_friend_request(item['user_s_id']) }}
                   />
                 </View>
                 <Badge

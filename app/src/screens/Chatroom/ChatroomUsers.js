@@ -17,10 +17,23 @@ import {
   MaterialCommunityIcons,
   FontAwesome5,
 } from "@expo/vector-icons";
+import { disconnect_from_chatroom, handle_login_state, 
+  load_chatroom_data, 
+  load_messages, 
+  send_text_message } from "../../bubble_api/bubble_api.js";
 
 export const ChatroomUsers = ({ navigation }) => {
+  const [chatroom_name, setChatroomName] = useState(null);
+  const [chatroom_description, setDescription] = useState(null);
+
+  async function LoadChatroomData() {
+    const data = await load_chatroom_data();
+    setChatroomName(data.name);
+    setDescription(data.description);
+  }
+
   return (
-    <SafeAreaView style={styles.ChatroomBackground}>
+    <SafeAreaView style={styles.ChatroomBackground} onLayout={() => LoadChatroomData()}>
       <View style={styles.topBar}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Chatroom")}
@@ -32,7 +45,8 @@ export const ChatroomUsers = ({ navigation }) => {
       </View>
 
       <View style={styles.chatroomTitle}>
-        <Text style={styles.chatroomTitleText}>Machine Learning Bubble</Text>
+        <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
+        <Text style={{color:'white'}}>{chatroom_description}</Text>
       </View>
     </SafeAreaView>
   );

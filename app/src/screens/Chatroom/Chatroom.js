@@ -25,13 +25,17 @@ import axios from "axios";
 import qs from "qs";
 import { Header } from 'react-native-elements'
 import { disconnect_from_chatroom, handle_login_state, 
+  load_chatroom_data, 
   load_messages, 
   send_text_message } from "../../bubble_api/bubble_api.js";
+import { color } from "react-native-elements/dist/helpers/index.js";
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [message_contents, setMessageContents] = useState(null);
   const [message_data, setMessageData] = useState(null);
+  const [chatroom_name, setChatroomName] = useState(null);
+  const [chatroom_description, setDescription] = useState(null);
   const [errMessage, setErrorMsg] = useState(null);
 
   async function send_text() {
@@ -52,11 +56,17 @@ export const Chatroom = ({ navigation }) => {
     }
   }
 
+  async function LoadChatroomData() {
+    const data = await load_chatroom_data();
+    setChatroomName(data.name);
+    setDescription(data.description);
+  }
 
   return (
     <SafeAreaView
     style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
-                                                      LoadMessages()}}>
+                                                      LoadMessages();
+                                                      LoadChatroomData();}}>
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
@@ -116,7 +126,8 @@ export const Chatroom = ({ navigation }) => {
 />
 
       <View style={styles.chatroomTitle}>
-        <Text style={styles.chatroomTitleText}>Machine Learning Bubble</Text>
+        <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
+        <Text style={{color:'white'}}>{chatroom_description}</Text>
       </View>
 
       <KeyboardAvoidingView

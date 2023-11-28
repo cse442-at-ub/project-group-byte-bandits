@@ -140,8 +140,8 @@ const UserDashboard = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.usernameInfo}>
-          <Text style={styles.usernameInGreen}>{item['user_s_name']}</Text>
-          <Text style={styles.username}>@{item['user_s_id']}</Text>
+          <Text style={styles.usernameInGreen}>{item[1]}</Text>
+          <Text style={styles.username}>@{item[0]}</Text>
         </View>
       </View>}
       />
