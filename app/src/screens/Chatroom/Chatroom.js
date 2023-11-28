@@ -61,13 +61,7 @@ export const Chatroom = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      style={styles.ChatroomBackground}
-      onLayout={() => {
-        handle_login_state(navigation);
-        LoadMessages();
-      }}
-    >
-    style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
+      style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
                                                       LoadMessages();
                                                       LoadChatroomData();}}>
       {/* CONFIRMATION TO LEAVE ROOM */}
