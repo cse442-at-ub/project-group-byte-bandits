@@ -50,7 +50,7 @@ const HomePage = ({ navigation }) => {
   const [exploreTab, setExploreTab] = useState(false);
   const [bubbleTitle, setBubbleTitle] = useState("");
   const [bubbleDescription, setBubbleDescription] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(0);
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -98,7 +98,8 @@ const HomePage = ({ navigation }) => {
   const [searched_user, setSearchedUser] = useState(null);
 
   async function CreateChatroom() {
-    const data = await create_chatroom(selectedRadius, maxPeople, isPrivate);
+    const data = await create_chatroom(selectedRadius, maxPeople, isPrivate,bubbleDescription,bubbleTitle);
+    console.log(data);
     if (data == "") {
       navigation.navigate("Chatroom");
     }
@@ -149,10 +150,6 @@ const HomePage = ({ navigation }) => {
           },
           async (newLocation) => {
             setLocation(newLocation);
-            console.log(
-              newLocation.coords.longitude,
-              newLocation.coords.latitude
-            );
             const data = await update_location(
               newLocation.coords.longitude,
               newLocation.coords.latitude
@@ -161,6 +158,7 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
+            console.log(c_data);
             setChatroomData(c_data);
             setErrorMsg(data);
           }
@@ -238,8 +236,8 @@ const HomePage = ({ navigation }) => {
               data={chatroom_data}
               renderItem={({ item }) => (
                 <Text
-                  style={{ color: "white" }}
-                  onPress={() => ConnectToChatroom(item[0])}
+                  style={{ color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2}}
+                  onPress={() => ConnectToChatroom(item[1])}
                 >
                   {item}
                 </Text>
@@ -503,7 +501,6 @@ const HomePage = ({ navigation }) => {
                   { backgroundColor: colors.buttonBackground },
                 ]}
                 onPress={() => {
-                  navigation.navigate("Chatroom");
                   setCreatingBubble(false);
                   CreateChatroom();
                 }}
