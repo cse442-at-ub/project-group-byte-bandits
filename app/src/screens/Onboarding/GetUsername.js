@@ -15,12 +15,12 @@ export const GetUsername = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const userID = useSelector((state) => state.user.userID);
-  
+
   async function CreateUsername() {
-    const data = await create_username();
+    const data = await create_username(username);
     setErrorMessage(data);
     console.log(data);
-    if (data == '') {
+    if (data == "") {
       navigation.navigate("HomePage");
     }
   }

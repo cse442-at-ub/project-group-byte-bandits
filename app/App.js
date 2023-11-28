@@ -25,10 +25,11 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen 
-                      name="Onboarding"
-                      options={{ headerShown: false, gestureEnabled: false }}
-                      component={OnboardingScreen}/>
+          <Stack.Screen
+            name="Onboarding"
+            options={{ headerShown: false, gestureEnabled: false }}
+            component={OnboardingScreen}
+          />
           <Stack.Screen
             name="Login"
             options={{ headerShown: false, gestureEnabled: false }}
@@ -39,7 +40,7 @@ const App = () => {
             options={{
               headerShown: false,
               animation: "none",
-              gestureEnabled: true,
+              gestureEnabled: false,
             }}
             component={HomePage}
           />
@@ -48,7 +49,7 @@ const App = () => {
             options={{
               headerShown: false,
               animation: "slide_from_left",
-              gestureEnabled: false,
+              gestureEnabled: true,
             }}
             component={Chatroom}
           />
@@ -87,7 +88,7 @@ const App = () => {
             options={{
               headerShown: false,
               gestureEnabled: true,
-              animation: "slide_from_left",
+              animation: "none",
             }}
             component={UserDashboard}
           />
@@ -100,7 +101,7 @@ const App = () => {
             }}
             component={Settings}
           />
-                    <Stack.Screen
+          <Stack.Screen
             name="DMList"
             options={{
               headerShown: false,
@@ -108,7 +109,7 @@ const App = () => {
             }}
             component={DMList}
           />
-                              <Stack.Screen
+          <Stack.Screen
             name="DM"
             options={{
               headerShown: false,
@@ -116,7 +117,7 @@ const App = () => {
             }}
             component={DM}
           />
-                                        <Stack.Screen
+          <Stack.Screen
             name="Notification"
             options={{
               headerShown: false,

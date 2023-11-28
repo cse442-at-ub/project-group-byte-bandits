@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  StatusBar,
-  FlatList,
-} from 'react-native';
+import { StatusBar, FlatList } from "react-native";
 import {
   View,
   StyleSheet,
@@ -23,10 +20,13 @@ import {
 } from "@expo/vector-icons";
 import axios from "axios";
 import qs from "qs";
-import { Header } from 'react-native-elements'
-import { disconnect_from_chatroom, handle_login_state, 
-  load_messages, 
-  send_text_message } from "../../bubble_api/bubble_api.js";
+import { Header } from "react-native-elements";
+import {
+  disconnect_from_chatroom,
+  handle_login_state,
+  load_messages,
+  send_text_message,
+} from "../../bubble_api/bubble_api.js";
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -47,16 +47,19 @@ export const Chatroom = ({ navigation }) => {
   async function ChatroomDisconnect() {
     const data = await disconnect_from_chatroom();
     console.log(data);
-    if(data == '' ) {
+    if (data == "") {
       navigation.navigate("HomePage");
     }
   }
 
-
   return (
     <SafeAreaView
-    style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
-                                                      LoadMessages()}}>
+      style={styles.ChatroomBackground}
+      onLayout={() => {
+        handle_login_state(navigation);
+        LoadMessages();
+      }}
+    >
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
@@ -76,7 +79,7 @@ export const Chatroom = ({ navigation }) => {
                   ChatroomDisconnect();
                   setShowConfirm(false);
                 }}
-                style={styles.buttonDiv}  
+                style={styles.buttonDiv}
               >
                 <Text style={styles.buttonText}>Continue</Text>
               </TouchableOpacity>
@@ -92,28 +95,28 @@ export const Chatroom = ({ navigation }) => {
         </View>
       </Modal>
       <Header
-  leftComponent={{ 
-    icon: 'chevron-left', 
-    color: '#fff', 
-    type: 'entypo', 
-    onPress: () => {
-      setShowConfirm(true);
-    }
-  }}
-  rightComponent={(
-    <TouchableOpacity
-      onPress={() => navigation.navigate("ChatroomUsers")}
-      style={styles.leaveButton}
-    >
-      <FontAwesome5 name="user-friends" size={32} color="#555454" />
-    </TouchableOpacity>
-  )}
-  containerStyle={{
-    backgroundColor: 'transparent',
-    borderBottomWidth: 0,
-    marginTop: Platform.OS === 'ios' ? 0 : -24 
-  }}
-/>
+        leftComponent={{
+          icon: "chevron-left",
+          color: "#fff",
+          type: "entypo",
+          onPress: () => {
+            setShowConfirm(true);
+          },
+        }}
+        rightComponent={
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChatroomUsers")}
+            style={styles.leaveButton}
+          >
+            <FontAwesome5 name="user-friends" size={32} color="#555454" />
+          </TouchableOpacity>
+        }
+        containerStyle={{
+          backgroundColor: "transparent",
+          borderBottomWidth: 0,
+          marginTop: Platform.OS === "ios" ? 0 : -24,
+        }}
+      />
 
       <View style={styles.chatroomTitle}>
         <Text style={styles.chatroomTitleText}>Machine Learning Bubble</Text>
@@ -125,11 +128,15 @@ export const Chatroom = ({ navigation }) => {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
         <View style={styles.chatroomBody}>
-          <View>  
+          <View>
             <View style={styles.container_style}>
-              <FlatList 
+              <FlatList
                 data={message_data}
-                renderItem={({item}) => <Text style={{color : 'white'}}>{item[0]}  -  {item[1]}</Text> }
+                renderItem={({ item }) => (
+                  <Text style={{ color: "white" }}>
+                    {item[0]} - {item[1]}
+                  </Text>
+                )}
               />
             </View>
           </View>
@@ -144,14 +151,18 @@ export const Chatroom = ({ navigation }) => {
             />
           </TouchableOpacity>
           <View style={styles.textBox}>
-            <TextInput onChangeText={(text) => setMessageContents(text)}
+            <TextInput
+              onChangeText={(text) => setMessageContents(text)}
               style={styles.searchBar}
               placeholder="Type a message..."
               placeholderTextColor={"#3D3C3C"}
               maxLength={40}
             />
           </View>
-          <TouchableOpacity style={styles.sendMessage} onPress={() => send_text()}>
+          <TouchableOpacity
+            style={styles.sendMessage}
+            onPress={() => send_text()}
+          >
             <Feather
               name="send"
               size={42}
