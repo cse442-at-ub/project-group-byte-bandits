@@ -132,6 +132,7 @@ export async function connect_to_chatroom(chatroom_id) {
         data,
         {headers: post_request_headers(token)}
     );
+    console.log("data", response.data);
     return response.data;
 }
 
@@ -146,13 +147,16 @@ export async function load_chatrooms(long,lat) {
     const data = await response.data;
     data.forEach((element) => {
         element = JSON.parse(element);
+        console.log(element);
         const id = element.id;
-        const ch_long = element.long;
-        const ch_lat = element.lat;
+        const ch_long = parseFloat(element.longitude);
+        const ch_lat = parseFloat(element.latitude);
         const host = element.host;
         const radius = element.radius;
         // get distance
+        console.log(long,lat, ch_long,ch_lat);
         const distance = Math.sqrt(Math.pow(long-ch_long,2) + Math.pow(lat-ch_lat,2))
+        console.log(distance, radius);
         if (distance <= radius) {
             chatrooms.push([" id: ",id," , ", "distance: ",distance," , ", "host: ",host]);
         }

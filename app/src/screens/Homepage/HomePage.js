@@ -67,11 +67,6 @@ const HomePage = ({ navigation }) => {
     }
   }
 
-  async function LoadChatrooms() {
-    const data = await load_chatrooms();
-    setChatroomData(data);
-  }
-
   async function SearchUser(username) {
     const data = await search_user(username);
     console.log(data);
@@ -109,11 +104,11 @@ const HomePage = ({ navigation }) => {
           },
           async (newLocation) => {
             setLocation(newLocation);
+            console.log(newLocation.coords.longitude, newLocation.coords.latitude)
             const data = await update_location(newLocation.coords.longitude, newLocation.coords.latitude);
-            LoadChatrooms(newLocation.coords.long,newLocation.coords.lat);
-            console.log(chatroom_data);
+            const c_data = await load_chatrooms(newLocation.coords.longitude,newLocation.coords.latitude);
+            setChatroomData(c_data);
             setErrorMsg(data);
-            console.log(data);
           }
         );
       } catch (error) {
@@ -193,7 +188,7 @@ const renderContent = () => {
               renderItem={({ item }) => (
                 <Text
                   style={{ color: "black" }}
-                  onPress={() => ConnectToChatroom(item[0])}
+                  onPress={() => ConnectToChatroom(item[1])}
                 >
                   {item}
                 </Text>
