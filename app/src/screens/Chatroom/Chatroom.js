@@ -120,14 +120,21 @@ export const Chatroom = ({ navigation }) => {
         </View>
       </Modal>
       <Header
-        leftComponent={{
-          icon: "chevron-left",
-          color: "#fff",
-          type: "entypo",
-          onPress: () => {
-            setShowConfirm(true);
-          },
-        }}
+        leftComponent={
+          <View style={styles.leftHeaderComponent}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowConfirm(true);
+              }}
+            >
+              <Entypo name="chevron-left" size={24} color="#fff" />
+            </TouchableOpacity>
+            {/* CONDITIONALLY RENDER END BUBBLE OR LEAVE BUBBLE DEPENDING ON IF YOURE THE HOST OR NOT */}
+            <TouchableOpacity style={styles.popBubbleButton}>
+              <Text style={styles.popBubbleButtonText}>End Bubble</Text>
+            </TouchableOpacity>
+          </View>
+        }
         rightComponent={
           <TouchableOpacity
             onPress={() => navigation.navigate("ChatroomUsers")}
@@ -211,6 +218,23 @@ export const Chatroom = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  leftHeaderComponent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  popBubbleButton: {
+    backgroundColor: "red",
+    marginLeft: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    width: 100,
+  },
+  popBubbleButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   buttonText: {
     fontWeight: "bold",
     fontSize: 16,

@@ -107,11 +107,18 @@ const HomePage = ({ navigation }) => {
   const [searched_user, setSearchedUser] = useState(null);
 
   async function CreateChatroom() {
-    const data = await create_chatroom(selectedRadius, maxPeople, isPrivate, bubbleDescription, bubbleTitle);
+    const data = await create_chatroom(
+      selectedRadius,
+      maxPeople,
+      isPrivate,
+      bubbleDescription,
+      bubbleTitle
+    );
     console.log(data);
     if (data == "") {
+      setIsModalVisible(false);
       navigation.navigate("Chatroom");
-    } 
+    }
   }
 
   async function ConnectToChatroom(id) {
@@ -125,13 +132,12 @@ const HomePage = ({ navigation }) => {
   async function SearchUser(username) {
     const data = await search_user(username);
     let users = [];
-    if(data.length > 0) {
+    if (data.length > 0) {
       data.forEach((element) => {
-        users.push([element.name, element.id])
+        users.push([element.name, element.id]);
       });
       setSearchedUser(users);
-    }
-    else setSearchedUser('');
+    } else setSearchedUser("");
   }
 
   async function SendFriendRequest(id) {
@@ -141,8 +147,8 @@ const HomePage = ({ navigation }) => {
 
   async function ProfileData() {
     const data = await load_profile_data();
-    setUsername(data['name']);
-    setUserId(data['id']);
+    setUsername(data["name"]);
+    setUserId(data["id"]);
   }
 
   useEffect(() => {
@@ -179,7 +185,7 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
-            console.log(c_data)
+            console.log(c_data);
             setChatroomData(c_data);
             setErrorMsg(data);
           }
@@ -248,10 +254,16 @@ const HomePage = ({ navigation }) => {
               data={searched_user}
               renderItem={({ item }) => (
                 <Text
-                  style={{ color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2}}
+                  style={{
+                    color: "black",
+                    backgroundColor: "lightgrey",
+                    padding: 5,
+                    fontSize: 16,
+                    margin: 2,
+                  }}
                   onPress={() => SendFriendRequest(item[1])}
                 >
-                  {item[1]}:  {item[0]}
+                  {item[1]}: {item[0]}
                 </Text>
               )}
             />
@@ -515,7 +527,7 @@ const HomePage = ({ navigation }) => {
               />
 
               <TextInput
-                style={[modalInputStyle, { height: 100 }]} // Adjust height for multiline input
+                style={[modalInputStyle, { height: 100 }]}
                 onChangeText={setBubbleDescription}
                 value={bubbleDescription}
                 placeholder="Short Description"
@@ -594,9 +606,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  bubbleContainer: {
-    // Define your bubble container styles here
-  },
+  bubbleContainer: {},
   iconsContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -731,39 +741,38 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     padding: 25,
     margin: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   chatroomItemHost: {
     borderRadius: 30,
     borderWidth: 2,
     padding: 25,
     margin: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   chatroomItemCreator: {
-    alignSelf: 'flex-end',
-    marginTop: 10
+    alignSelf: "flex-end",
+    marginTop: 10,
   },
   chatroomItemContent: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   chatroomItemTextContainer: {
-    flexShrink: 1
+    flexShrink: 1,
   },
   chatroomItemName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16, // You can adjust the font size as needed
   },
   chatroomItemJoin: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14, // You can adjust the font size as needed
-    alignSelf: 'flex-start',
-    color: 'white'
-  }
-  
+    alignSelf: "flex-start",
+    color: "white",
+  },
 });
