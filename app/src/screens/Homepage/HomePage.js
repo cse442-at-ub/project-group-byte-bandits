@@ -115,12 +115,18 @@ const HomePage = ({ navigation }) => {
 
   async function SearchUser(username) {
     const data = await search_user(username);
-    console.log(data);
-    setSearchedUser([data["id"], " ", data["name"]]);
+    let users = [];
+    if(data.length > 0) {
+      data.forEach((element) => {
+        users.push([element.name, element.id])
+      });
+      setSearchedUser(users);
+    }
+    else setSearchedUser('');
   }
 
-  async function SendFriendRequest() {
-    const data = await send_friend_request(searched_user[0]);
+  async function SendFriendRequest(id) {
+    const data = await send_friend_request(id);
     console.log(data);
   }
 
@@ -218,8 +224,20 @@ const HomePage = ({ navigation }) => {
                 styles.input,
                 { borderColor: colors.secondary, color: colors.text },
               ]}
+              onChangeText={(text) => SearchUser(text)}
               placeholder="Add a friend..."
               placeholderTextColor="gray"
+            />
+            <FlatList
+              data={searched_user}
+              renderItem={({ item }) => (
+                <Text
+                  style={{ color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2}}
+                  onPress={() => SendFriendRequest(item[1])}
+                >
+                  {item[1]}:  {item[0]}
+                </Text>
+              )}
             />
           </>
         );

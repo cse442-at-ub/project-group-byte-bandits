@@ -226,6 +226,7 @@ export async function search_user(username) {
   const response = await axios.post(public_user_data_url, data, {
     headers: post_request_headers(token),
   });
+
   return response.data;
 }
 
