@@ -90,8 +90,8 @@ const HomePage = ({ navigation }) => {
   };
 
   const getDescriptionStyle = (description) => {
-    return description === "No description" 
-      ? { color: "gray" } 
+    return description === "No description"
+      ? { color: "gray" }
       : { color: colors.text };
   };
 
@@ -107,11 +107,18 @@ const HomePage = ({ navigation }) => {
   const [searched_user, setSearchedUser] = useState(null);
 
   async function CreateChatroom() {
-    const data = await create_chatroom(selectedRadius, maxPeople, isPrivate, bubbleDescription, bubbleTitle);
+    const data = await create_chatroom(
+      selectedRadius,
+      maxPeople,
+      isPrivate,
+      bubbleDescription,
+      bubbleTitle
+    );
     console.log(data);
     if (data == "") {
+      setIsModalVisible(false);
       navigation.navigate("Chatroom");
-    } 
+    }
   }
 
   async function ConnectToChatroom(id) {
@@ -125,13 +132,12 @@ const HomePage = ({ navigation }) => {
   async function SearchUser(username) {
     const data = await search_user(username);
     let users = [];
-    if(data.length > 0) {
+    if (data.length > 0) {
       data.forEach((element) => {
-        users.push([element.name, element.id])
+        users.push([element.name, element.id]);
       });
       setSearchedUser(users);
-    }
-    else setSearchedUser('');
+    } else setSearchedUser("");
   }
 
   async function SendFriendRequest(id) {
@@ -141,8 +147,8 @@ const HomePage = ({ navigation }) => {
 
   async function ProfileData() {
     const data = await load_profile_data();
-    setUsername(data['name']);
-    setUserId(data['id']);
+    setUsername(data["name"]);
+    setUserId(data["id"]);
   }
 
   useEffect(() => {
@@ -179,7 +185,7 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
-            console.log(c_data)
+            console.log(c_data);
             setChatroomData(c_data);
             setErrorMsg(data);
           }
@@ -248,62 +254,73 @@ const HomePage = ({ navigation }) => {
               data={searched_user}
               renderItem={({ item }) => (
                 <Text
-                  style={{ color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2}}
+                  style={{
+                    color: "black",
+                    backgroundColor: "lightgrey",
+                    padding: 5,
+                    fontSize: 16,
+                    margin: 2,
+                  }}
                   onPress={() => SendFriendRequest(item[1])}
                 >
-                  {item[1]}:  {item[0]}
+                  {item[1]}: {item[0]}
                 </Text>
               )}
             />
           </>
         );
-        case "nearby":
-          const getChatroomItemStyle = (item) => {
-            return userid === item[7]
-              ? { ...styles.chatroomItemHost }
-              : { ...styles.chatroomItem };
-          };
-          
-          return (
-            <View onLayout={() => ProfileData()}>
-              <View style={styles.infoContainer}>
-                <Feather name="info" size={16} color={colors.text} />
-                <Text style={[styles.infoText, { color: colors.text }]}>
-                  Tap to join a bubble
-                </Text>
-              </View>
-              <FlatList
-                data={chatroom_data}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[getChatroomItemStyle(item), { backgroundColor: colors.homeBackground }]}
-                    onPress={() => ConnectToChatroom(item[1])}
-                  >
-                    <View style={styles.chatroomItemContent}>
-                      <View style={styles.chatroomItemTextContainer}>
-                        <Text style={[styles.chatroomItemName, { color: colors.text }]}>
-                          {item[10]} {/* Name */}
-                        </Text>
-              <Text style={getDescriptionStyle(item[13])}>
-                {item[13]} {/* Description */}
+      case "nearby":
+        const getChatroomItemStyle = (item) => {
+          return userid === item[7]
+            ? { ...styles.chatroomItemHost }
+            : { ...styles.chatroomItem };
+        };
+
+        return (
+          <View onLayout={() => ProfileData()}>
+            <View style={styles.infoContainer}>
+              <Feather name="info" size={16} color={colors.text} />
+              <Text style={[styles.infoText, { color: colors.text }]}>
+                Tap to join a bubble
               </Text>
-                      </View>
-                      <Text style={styles.chatroomItemJoin}>
-                        + Join
-                      </Text>
-                    </View>
-                    <View style={styles.chatroomItemCreator}>
-                      <Text style={{ color: "gray", fontWeight: 'bold' }}>
-                        Created by @{item[7]} 
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
             </View>
-          );
-        
-      
+            <FlatList
+              data={chatroom_data}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    getChatroomItemStyle(item),
+                    { backgroundColor: colors.homeBackground },
+                  ]}
+                  onPress={() => ConnectToChatroom(item[1])}
+                >
+                  <View style={styles.chatroomItemContent}>
+                    <View style={styles.chatroomItemTextContainer}>
+                      <Text
+                        style={[
+                          styles.chatroomItemName,
+                          { color: colors.text },
+                        ]}
+                      >
+                        {item[10]} {/* Name */}
+                      </Text>
+                      <Text style={getDescriptionStyle(item[13])}>
+                        {item[13]} {/* Description */}
+                      </Text>
+                    </View>
+                    <Text style={styles.chatroomItemJoin}>+ Join</Text>
+                  </View>
+                  <View style={styles.chatroomItemCreator}>
+                    <Text style={{ color: "gray", fontWeight: "bold" }}>
+                      Created by @{item[7]}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        );
+
       case "explore":
         return (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -513,7 +530,7 @@ const HomePage = ({ navigation }) => {
               />
 
               <TextInput
-                style={[modalInputStyle, { height: 100 }]} // Adjust height for multiline input
+                style={[modalInputStyle, { height: 100 }]}
                 onChangeText={setBubbleDescription}
                 value={bubbleDescription}
                 placeholder="Short Description"
@@ -592,9 +609,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  bubbleContainer: {
-    // Define your bubble container styles here
-  },
+  bubbleContainer: {},
   iconsContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -729,39 +744,38 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     padding: 25,
     margin: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   chatroomItemHost: {
     borderRadius: 30,
     borderWidth: 2,
     padding: 25,
     margin: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   chatroomItemCreator: {
-    alignSelf: 'flex-end',
-    marginTop: 10
+    alignSelf: "flex-end",
+    marginTop: 10,
   },
   chatroomItemContent: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   chatroomItemTextContainer: {
-    flexShrink: 1
+    flexShrink: 1,
   },
   chatroomItemName: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16, // You can adjust the font size as needed
   },
   chatroomItemJoin: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 14, // You can adjust the font size as needed
-    alignSelf: 'flex-start',
-    color: 'white'
-  }
-  
+    alignSelf: "flex-start",
+    color: "white",
+  },
 });
