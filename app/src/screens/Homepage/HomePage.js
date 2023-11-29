@@ -89,6 +89,12 @@ const HomePage = ({ navigation }) => {
     setIsModalVisible(!isModalVisible);
   };
 
+  const getDescriptionStyle = (description) => {
+    return description === "No description" 
+      ? { color: "gray" } 
+      : { color: colors.text };
+  };
+
   const scheme = useColorScheme();
   const colors = theme(scheme);
   const [selectedTab, setSelectedTab] = useState("nearby");
@@ -105,7 +111,7 @@ const HomePage = ({ navigation }) => {
     console.log(data);
     if (data == "") {
       navigation.navigate("Chatroom");
-    }
+    } 
   }
 
   async function ConnectToChatroom(id) {
@@ -173,7 +179,7 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
-            console.log(c_data);
+            console.log(c_data)
             setChatroomData(c_data);
             setErrorMsg(data);
           }
@@ -251,36 +257,53 @@ const HomePage = ({ navigation }) => {
             />
           </>
         );
-      case "nearby":
-        var text_style = { color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2};
-        return (
-          <View onLayout={() => ProfileData()}>
-            <View style={styles.infoContainer} >
-              <Feather name="info" size={16} color={colors.text} />
-              <Text style={[styles.infoText, { color: colors.text }]}>
-                Tap to join a bubble
-              </Text>
-            </View>
-            <FlatList
-              data={chatroom_data}
-              renderItem={({ item }) => (
-                <View onLayout={() => {
-                  if(userid == item[7]) {
-                    console.log(userid);
-                    text_style = { color: "green", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2 };
-                  }
-                }}>
-                  <Text             
-                    style={text_style}
+        case "nearby":
+          const getChatroomItemStyle = (item) => {
+            return userid === item[7]
+              ? { ...styles.chatroomItemHost }
+              : { ...styles.chatroomItem };
+          };
+          
+          return (
+            <View onLayout={() => ProfileData()}>
+              <View style={styles.infoContainer}>
+                <Feather name="info" size={16} color={colors.text} />
+                <Text style={[styles.infoText, { color: colors.text }]}>
+                  Tap to join a bubble
+                </Text>
+              </View>
+              <FlatList
+                data={chatroom_data}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[getChatroomItemStyle(item), { backgroundColor: colors.homeBackground }]}
                     onPress={() => ConnectToChatroom(item[1])}
                   >
-                    {item}
-                  </Text>
-                </View>
-              )}
-            />
-          </View>
-        );
+                    <View style={styles.chatroomItemContent}>
+                      <View style={styles.chatroomItemTextContainer}>
+                        <Text style={[styles.chatroomItemName, { color: colors.text }]}>
+                          {item[10]} {/* Name */}
+                        </Text>
+              <Text style={getDescriptionStyle(item[13])}>
+                {item[13]} {/* Description */}
+              </Text>
+                      </View>
+                      <Text style={styles.chatroomItemJoin}>
+                        + Join
+                      </Text>
+                    </View>
+                    <View style={styles.chatroomItemCreator}>
+                      <Text style={{ color: "gray", fontWeight: 'bold' }}>
+                        Created by @{item[7]} 
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          );
+        
+      
       case "explore":
         return (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -701,4 +724,44 @@ const styles = StyleSheet.create({
     shadowColor: "#000", // Optional for iOS shadow,
     marginTop: 10,
   },
+
+  chatroomItem: {
+    borderRadius: 30,
+    padding: 25,
+    margin: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  chatroomItemHost: {
+    borderRadius: 30,
+    borderWidth: 2,
+    padding: 25,
+    margin: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  chatroomItemCreator: {
+    alignSelf: 'flex-end',
+    marginTop: 10
+  },
+  chatroomItemContent: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  chatroomItemTextContainer: {
+    flexShrink: 1
+  },
+  chatroomItemName: {
+    fontWeight: 'bold',
+    fontSize: 16, // You can adjust the font size as needed
+  },
+  chatroomItemJoin: {
+    fontWeight: 'bold',
+    fontSize: 14, // You can adjust the font size as needed
+    alignSelf: 'flex-start',
+    color: 'white'
+  }
+  
 });

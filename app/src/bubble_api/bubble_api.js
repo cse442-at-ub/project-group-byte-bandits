@@ -158,7 +158,8 @@ export async function load_chatrooms(long, lat) {
   const response = await axios.get(load_chatrooms_url);
   let chatrooms = [];
   const data = await response.data;
-  console.log(data);
+  console.log("data", data);
+
   data.forEach((element) => {
     element = JSON.parse(element);
     const id = element.id;
@@ -166,20 +167,21 @@ export async function load_chatrooms(long, lat) {
     const ch_lat = parseFloat(element.latitude);
     const host = element.host;
     const radius = element.radius;
-    // get distance
-    const distance = Math.sqrt(
-      Math.pow(long - ch_long, 2) + Math.pow(lat - ch_lat, 2)
-    );
+    const name = element.name;
+    let description = element.description;
+
+    if (description === "") {
+        description = "No description";
+    }
+
+    const distance = Math.sqrt(Math.pow(long - ch_long, 2) + Math.pow(lat - ch_lat, 2));
     if (distance <= radius) {
       chatrooms.push([
-        " id: ",
-        id,
-        " , ",
-        "distance: ",
-        distance,
-        " , ",
-        "host: ",
-        host,
+        " id: ", id,
+        " , ", "distance: ", distance,
+        " , ", "host: ", host,
+        " , ", "name: ", name,
+        " , ", "description: ", description
       ]);
     }
   });
