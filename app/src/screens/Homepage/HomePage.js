@@ -28,6 +28,7 @@ import SocialLight from "../../assets/sociallight.gif";
 import NavBar from "../../components/Navbar";
 import { useSelector } from "react-redux";
 import {
+  load_profile_data,
   connect_to_chatroom,
   load_chatrooms,
   search_user,
@@ -94,11 +95,13 @@ const HomePage = ({ navigation }) => {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [userid, setUserId] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
   const [searched_user, setSearchedUser] = useState(null);
 
   async function CreateChatroom() {
-    const data = await create_chatroom(selectedRadius, maxPeople, isPrivate,bubbleDescription,bubbleTitle);
+    const data = await create_chatroom(selectedRadius, maxPeople, isPrivate, bubbleDescription, bubbleTitle);
     console.log(data);
     if (data == "") {
       navigation.navigate("Chatroom");
@@ -128,6 +131,12 @@ const HomePage = ({ navigation }) => {
   async function SendFriendRequest(id) {
     const data = await send_friend_request(id);
     console.log(data);
+  }
+
+  async function ProfileData() {
+    const data = await load_profile_data();
+    setUsername(data['name']);
+    setUserId(data['id']);
   }
 
   useEffect(() => {
@@ -175,6 +184,7 @@ const HomePage = ({ navigation }) => {
     };
 
     getLocation();
+
     return () => {
       if (locationSubscription) {
         locationSubscription.remove();
@@ -242,9 +252,10 @@ const HomePage = ({ navigation }) => {
           </>
         );
       case "nearby":
+        var text_style = { color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2};
         return (
-          <>
-            <View style={styles.infoContainer}>
+          <View onLayout={() => ProfileData()}>
+            <View style={styles.infoContainer} >
               <Feather name="info" size={16} color={colors.text} />
               <Text style={[styles.infoText, { color: colors.text }]}>
                 Tap to join a bubble
@@ -253,15 +264,22 @@ const HomePage = ({ navigation }) => {
             <FlatList
               data={chatroom_data}
               renderItem={({ item }) => (
-                <Text
-                  style={{ color: "black", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2}}
-                  onPress={() => ConnectToChatroom(item[1])}
-                >
-                  {item}
-                </Text>
+                <View onLayout={() => {
+                  if(userid == item[7]) {
+                    console.log(userid);
+                    text_style = { color: "green", backgroundColor:"lightgrey", padding:5, fontSize:16, margin:2 };
+                  }
+                }}>
+                  <Text             
+                    style={text_style}
+                    onPress={() => ConnectToChatroom(item[1])}
+                  >
+                    {item}
+                  </Text>
+                </View>
               )}
             />
-          </>
+          </View>
         );
       case "explore":
         return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar, FlatList } from "react-native";
 import {
   View,
@@ -43,11 +43,10 @@ export const Chatroom = ({ navigation }) => {
   async function LoadMessages() {
     const data = await load_messages();
     setMessageData(data);
-  }
+  }  
 
   async function ChatroomDisconnect() {
     const data = await disconnect_from_chatroom();
-    console.log(data);
     if (data == "") {
       navigation.navigate("HomePage");
     }
@@ -62,8 +61,9 @@ export const Chatroom = ({ navigation }) => {
   return (
     <SafeAreaView
       style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
-                                                      LoadMessages();
-                                                      LoadChatroomData();}}>
+                                                        LoadChatroomData();
+                                                        LoadMessages();
+                                                        }}>
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
