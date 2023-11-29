@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StatusBar, FlatList } from "react-native";
+import { StatusBar, FlatList, TouchableWithoutFeedback } from "react-native";
 import {
   View,
   StyleSheet,
@@ -20,11 +20,16 @@ import {
 } from "@expo/vector-icons";
 import axios from "axios";
 import qs from "qs";
-import { Header } from 'react-native-elements'
-import { disconnect_from_chatroom, handle_login_state, 
-  load_chatroom_data, 
-  load_messages, 
-  send_text_message } from "../../bubble_api/bubble_api.js";
+import { Header } from "react-native-elements";
+import { Keyboard } from "react-native";
+
+import {
+  disconnect_from_chatroom,
+  handle_login_state,
+  load_chatroom_data,
+  load_messages,
+  send_text_message,
+} from "../../bubble_api/bubble_api.js";
 import { color } from "react-native-elements/dist/helpers/index.js";
 
 export const Chatroom = ({ navigation }) => {
@@ -43,7 +48,15 @@ export const Chatroom = ({ navigation }) => {
   async function LoadMessages() {
     const data = await load_messages();
     setMessageData(data);
-  }  
+  }
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      LoadMessages();
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   async function ChatroomDisconnect() {
     const data = await disconnect_from_chatroom();
@@ -60,10 +73,13 @@ export const Chatroom = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
-                                                        LoadChatroomData();
-                                                        LoadMessages();
-                                                        }}>
+      style={styles.ChatroomBackground}
+      onLayout={() => {
+        handle_login_state(navigation);
+        LoadChatroomData();
+        LoadMessages();
+      }}
+    >
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
@@ -122,61 +138,69 @@ export const Chatroom = ({ navigation }) => {
         }}
       />
 
-      <View style={styles.chatroomTitle}>
-        <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
-        <Text style={{color:'white'}}>{chatroom_description}</Text>
-      </View>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.chatroomTitle}>
+          <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
+          <Text style={{ color: "white" }}>{chatroom_description}</Text>
+        </View>
+      </TouchableWithoutFeedback>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoid}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-      >
-        <View style={styles.chatroomBody}>
-          <View>
-            <View style={styles.container_style}>
-              <FlatList
-                data={message_data}
-                renderItem={({ item }) => (
-                  <Text style={{ color: "white" }}>
-                    {item[0]} - {item[1]}
-                  </Text>
-                )}
-              />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardAvoid}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        >
+          <View style={styles.chatroomBody}>
+            <View>
+              <View style={styles.container_style}>
+                <FlatList
+                  data={message_data}
+                  renderItem={({ item }) => (
+                    <Text style={{ color: "white" }}>
+                      {item[0]} - {item[1]}
+                    </Text>
+                  )}
+                />
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.mapIcon}>
-            <MaterialCommunityIcons
-              name="map-search-outline"
-              size={50}
-              color={"#56585B"}
-            />
-          </TouchableOpacity>
-          <View style={styles.textBox}>
-            <TextInput
-              onChangeText={(text) => setMessageContents(text)}
-              style={styles.searchBar}
-              placeholder="Type a message..."
-              placeholderTextColor={"#3D3C3C"}
-              maxLength={40}
-            />
+          <View style={styles.bottomBar}>
+            <TouchableOpacity style={styles.mapIcon}>
+              <MaterialCommunityIcons
+                name="map-search-outline"
+                size={50}
+                color={"#56585B"}
+              />
+            </TouchableOpacity>
+            <View style={styles.textBox}>
+              <TextInput
+                onChangeText={(text) => setMessageContents(text)}
+                style={styles.searchBar}
+                placeholder="Type a message..."
+                placeholderTextColor={"#3D3C3C"}
+                color="white"
+                maxLength={40}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.sendMessage}
+              onPress={() => {
+                send_text();
+                setMessageContents("");
+              }}
+            >
+              <Feather
+                name="send"
+                size={42}
+                color={"#555454"}
+                style={{ transform: [{ rotate: "45deg" }] }}
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.sendMessage}
-            onPress={() => send_text()}
-          >
-            <Feather
-              name="send"
-              size={42}
-              color={"#555454"}
-              style={{ transform: [{ rotate: "45deg" }] }}
-            />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };
