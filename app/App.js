@@ -17,6 +17,7 @@ import { Provider } from "react-redux";
 import DM from "./src/screens/DM/DM";
 import DMList from "./src/screens/DM/DMList";
 import Notification from "./src/screens/Notification/Notification";
+import { ChatroomTemp } from "./src/screens/Chatroom/ChatroomTemp";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,7 +52,7 @@ const App = () => {
               animation: "slide_from_left",
               gestureEnabled: true,
             }}
-            component={Chatroom}
+            component={ChatroomTemp}
           />
           <Stack.Screen
             name="ChatroomUsers"

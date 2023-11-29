@@ -91,13 +91,13 @@ const HomePage = ({ navigation }) => {
 
   const getDescriptionStyle = (description) => {
     return description === "No description" 
-      ? { color: "gray" } 
-      : { color: colors.text };
+      ? { color: "gray", fontSize: 10, marginTop: 5 } 
+      : { color: colors.text, fontSize: 10, marginTop: 5 };
   };
 
   const scheme = useColorScheme();
   const colors = theme(scheme);
-  const [selectedTab, setSelectedTab] = useState("nearby");
+  const [selectedTab, setSelectedTab] = useState("nearby"); 
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -273,7 +273,9 @@ const HomePage = ({ navigation }) => {
                 </Text>
               </View>
               <FlatList
-                data={chatroom_data}
+              contentContainerStyle={{paddingBottom: 40,}}
+              data={chatroom_data}
+              showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={[getChatroomItemStyle(item), { backgroundColor: colors.homeBackground }]}
@@ -282,10 +284,10 @@ const HomePage = ({ navigation }) => {
                     <View style={styles.chatroomItemContent}>
                       <View style={styles.chatroomItemTextContainer}>
                         <Text style={[styles.chatroomItemName, { color: colors.text }]}>
-                          {item[10]} {/* Name */}
+                          {item[10]} 
                         </Text>
               <Text style={getDescriptionStyle(item[13])}>
-                {item[13]} {/* Description */}
+                {item[13]} 
               </Text>
                       </View>
                       <Text style={styles.chatroomItemJoin}>

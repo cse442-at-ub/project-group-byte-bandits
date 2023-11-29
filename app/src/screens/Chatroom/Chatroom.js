@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StatusBar, FlatList, TouchableWithoutFeedback } from "react-native";
+import { StatusBar, FlatList, TouchableWithoutFeedback, useColorScheme } from "react-native";
 import {
   View,
   StyleSheet,
@@ -31,6 +31,7 @@ import {
   send_text_message,
 } from "../../bubble_api/bubble_api.js";
 import { color } from "react-native-elements/dist/helpers/index.js";
+import theme from '../../components/theme.js'; // Update path as necessary
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -39,7 +40,9 @@ export const Chatroom = ({ navigation }) => {
   const [chatroom_name, setChatroomName] = useState(null);
   const [chatroom_description, setDescription] = useState(null);
   const [errMessage, setErrorMsg] = useState(null);
-
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
+  
   async function LoadMessages() {
     const data = await load_messages();
     setMessageData(data);
