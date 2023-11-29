@@ -40,11 +40,6 @@ export const Chatroom = ({ navigation }) => {
   const [chatroom_description, setDescription] = useState(null);
   const [errMessage, setErrorMsg] = useState(null);
 
-  async function send_text() {
-    const data = await send_text_message(message_contents);
-    setErrorMsg(data);
-  }
-
   async function LoadMessages() {
     const data = await load_messages();
     setMessageData(data);
@@ -53,10 +48,17 @@ export const Chatroom = ({ navigation }) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       LoadMessages();
-    }, 1000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, []);
+
+  async function send_text() {
+    const data = await send_text_message(message_contents);
+    setErrorMsg(data);
+    setMessageContents("");
+    LoadMessages();
+  }
 
   async function ChatroomDisconnect() {
     const data = await disconnect_from_chatroom();
@@ -177,6 +179,7 @@ export const Chatroom = ({ navigation }) => {
             <View style={styles.textBox}>
               <TextInput
                 onChangeText={(text) => setMessageContents(text)}
+                value={message_contents}
                 style={styles.searchBar}
                 placeholder="Type a message..."
                 placeholderTextColor={"#3D3C3C"}
@@ -188,7 +191,6 @@ export const Chatroom = ({ navigation }) => {
               style={styles.sendMessage}
               onPress={() => {
                 send_text();
-                setMessageContents("");
               }}
             >
               <Feather
