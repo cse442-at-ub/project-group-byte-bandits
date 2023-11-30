@@ -181,17 +181,22 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
-            const c_data = await load_chatrooms(
-              newLocation.coords.longitude,
-              newLocation.coords.latitude
-            );
-            console.log(c_data);
-            setChatroomData(c_data);
             setErrorMsg(data);
+
           }
+          
         );
       } catch (error) {
         console.error("Error starting location monitoring:", error);
+      }
+      console.log(location)
+      if(location) {
+        const c_data = await load_chatrooms(
+          location.coords.longitude,
+          location.coords.latitude
+        );
+        console.log(c_data);
+        setChatroomData(c_data);
       }
     };
 

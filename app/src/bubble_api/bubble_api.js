@@ -13,6 +13,8 @@ const load_chatrooms_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
   const chatroom_data_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/chatroom_data";
+  const delete_chatroom_url =
+  "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/delete_chatroom";
 
 
 
@@ -150,16 +152,49 @@ export async function connect_to_chatroom(chatroom_id) {
 }
 
 export async function disconnect_from_chatroom() {
-  const response = await axios.get(disconnect_chatroom_url);
+  const chatroom_data = await load_chatroom_data();
+  const profile_data = await load_profile_data();
+  if(chatroom_data.host == profile_data.id) {
+    const response = await axios.get(delete_chatroom_url);
+    console.log(response.data);
+    return response.data;
+  } else {
+    const response = await axios.get(disconnect_chatroom_url);
+    console.log(response.data);
+    return response.data;
+  }
+
+}
+
+export async function load_chatroom_data() {
+  const response = await axios.get(chatroom_data_url);
   return response.data;
+}
+
+function encode_chatroom_data(chatroom_data) {
+  return [
+      " id: ", chatroom_data.id,
+      " , ", "distance: ", chatroom_data.distance,
+      " , ", "host: ", chatroom_data.host,
+      " , ", "name: ", chatroom_data.name,
+      " , ", "description: ", chatroom_data.description
+  ];
 }
 
 export async function load_chatrooms(long, lat) {
   const response = await axios.get(load_chatrooms_url);
-  let chatrooms = [];
-  const data = await response.data;
-  console.log("data", data);
+  const chatroom_data = await load_chatroom_data();
+  const profile_data = await load_profile_data();
 
+  let chatrooms = [];
+
+  if (chatroom_data.code)
+    console.log(chatroom_data);
+  else {
+    chatrooms.push(encode_chatroom_data(chatroom_data));
+  }
+
+  const data = await response.data;
   data.forEach((element) => {
     element = JSON.parse(element);
     const id = element.id;
@@ -173,9 +208,9 @@ export async function load_chatrooms(long, lat) {
     if (description === "") {
         description = "No description";
     }
-
     const distance = Math.sqrt(Math.pow(long - ch_long, 2) + Math.pow(lat - ch_lat, 2));
-    if (distance <= radius) {
+    if (distance <= radius && host != profile_data.id && id != chatroom_data.id) {
+      console.log(distance);
       chatrooms.push([
         " id: ", id,
         " , ", "distance: ", distance,
@@ -185,12 +220,8 @@ export async function load_chatrooms(long, lat) {
       ]);
     }
   });
-  return chatrooms;
-}
 
-export async function load_chatroom_data() {
-    const response = await axios.get(chatroom_data_url);
-    return response.data;
+  return chatrooms;
 }
 
 export async function create_chatroom(privacy, radius, maxpersons, description, name) {
