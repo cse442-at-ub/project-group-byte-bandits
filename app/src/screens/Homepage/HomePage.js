@@ -101,7 +101,7 @@ const HomePage = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState("nearby");
 
   const [location, setLocation] = useState(null);
-  const [connected_chatroom, seteConnectedChatroom] = useState(null);
+  const [connected_chatroom, setConnectedChatroom] = useState(null);
 
   const [errorMsg, setErrorMsg] = useState(null);
   const [username, setUsername] = useState(null);
@@ -117,7 +117,7 @@ const HomePage = ({ navigation }) => {
       bubbleDescription,
       bubbleTitle
     );
-    console.log(data);
+    //console.log(data);
     if (data == "") {
       setIsModalVisible(false);
       navigation.navigate("Chatroom");
@@ -157,10 +157,13 @@ const HomePage = ({ navigation }) => {
   async function CheckConnection() {
     const response = await load_chatroom_data();
     if(response.code) {
-      console.log(response);
+      console.log("connected chatroom", response);
       return false;
     } else {
-      seteConnectedChatroom([response.description, response.id, response.distance, response.name, response.host, ]);
+      console.log(response);
+      setConnectedChatroom([response.id,
+                            response.name,
+                            response.host]);
     }
   }
 
@@ -199,9 +202,9 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.latitude
             );
             CheckConnection();
-            console.log(c_data);
             setChatroomData(c_data);
             setErrorMsg(data);
+            //console.log(c_data);
           }
         );
       } catch (error) {
@@ -418,9 +421,11 @@ const HomePage = ({ navigation }) => {
       <Header
         leftComponent={
           <View>
-            <Text>
-              {connected_chatroom}
-            </Text>
+            <TouchableOpacity onPress={() => {
+                    if(connected_chatroom) ConnectToChatroom(connected_chatroom[0])
+                    }}>
+                      <Text>{connected_chatroom}</Text>
+            </TouchableOpacity>
           </View>
         }
         rightComponent={

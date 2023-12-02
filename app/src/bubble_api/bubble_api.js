@@ -77,14 +77,19 @@ export async function handle_auto_login(navigation) {
 export async function load_messages() {
   const response = await axios.get(chatroom_process_request_url);
   const data = await response.data;
-  let text_messages = [];
-  data.forEach((element) => {
-    const text_data = JSON.parse(element);
-    const user = text_data.user;
-    const content = text_data.content;
-    text_messages.push([user, content]);
-  });
-  return text_messages;
+  if(response.data.conde == undefined) {
+    let text_messages = [];
+    data.forEach((element) => {
+      const text_data = JSON.parse(element);
+      const user = text_data.user;
+      const content = text_data.content;
+      text_messages.push([user, content]);
+    });
+    return text_messages;
+  } else {
+    console.log(response.data)
+  }
+  
 }
 
 export async function send_text_message(content) {
