@@ -133,23 +133,23 @@ export const ChatroomTemp = ({ navigation }) => {
               <Text style={styles.chatroomDescription}>{chatroom_description}</Text>
           </View>
 
-        <FlatList
-    ref={flatListRef} 
-    
-    data={message_data}
-    contentContainerStyle={{paddingBottom: 40,}}
-    showsVerticalScrollIndicator={false}
-    keyExtractor={(item, index) => index.toString()}
-    onScroll={handleScroll} 
-    scrollEventThrottle={400} 
-    renderItem={({ item }) => (
-        <MessageItem
-            user={item[0]}
-            content={item[1]} />
-    )} />
-    
-          
-              
+          <FlatList
+  ref={flatListRef}
+  data={message_data}
+  contentContainerStyle={{ paddingBottom: 40 }}
+  showsVerticalScrollIndicator={false}
+  keyExtractor={(item, index) => index.toString()}
+  onScroll={handleScroll}
+  scrollEventThrottle={400}
+  renderItem={({ item }) => (
+    <MessageItem
+      user={item[0]}
+      content={item[1]} />
+  )}
+  ListFooterComponent={() => (
+    loading && <ActivityIndicator size="large" color={colors.primary} />
+  )}
+/>            
           <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.inputContainer}
