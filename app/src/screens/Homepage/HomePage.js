@@ -35,7 +35,8 @@ import {
   update_location,
   send_friend_request,
   create_chatroom,
-  load_chatroom_data
+  load_chatroom_data,
+  load_all_chatroom
 } from "../../bubble_api/bubble_api";
 import * as Location from "expo-location";
 import axios from "axios";
@@ -56,31 +57,7 @@ const HomePage = ({ navigation }) => {
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const mockChatrooms = [
-    {
-      id: "1",
-      title: "Coffee Lovers",
-      description: "Discuss the best coffee shops in town!",
-      latitude: 37.785834,
-      longitude: -122.406417,
-    },
-    {
-      id: "2",
-      title: "Morning Joggers",
-      description: "Join us for a morning run.",
-      latitude: 37.786834,
-      longitude: -122.406417,
-    },
-    {
-      id: "3",
-      title: "Buffalo Book Club",
-      description: "Discussing classic literature weekly.",
-      latitude: 42.8864,
-      longitude: -78.8784,
-    },
-  ];
-
+  
   useEffect(() => {
     handle_login_state(navigation);
   }, [navigation]);
@@ -108,6 +85,8 @@ const HomePage = ({ navigation }) => {
   const [userid, setUserId] = useState(null);
   const [chatroom_data, setChatroomData] = useState(null);
   const [searched_user, setSearchedUser] = useState(null);
+  const [map_chatrooms, setMapData] = useState(null);
+
 
   async function CreateChatroom() {
     const data = await create_chatroom(
@@ -130,6 +109,11 @@ const HomePage = ({ navigation }) => {
     if (data == "") {
       navigation.navigate("Chatroom");
     }
+  }
+
+  async function LoadAllChatrooms() {
+    const data = await load_all_chatroom();
+    setMapData(data);
   }
 
   async function SearchUser(username) {
@@ -166,7 +150,9 @@ const HomePage = ({ navigation }) => {
                             response.host]);
     }
   }
-
+  useEffect(() => {
+    LoadAllChatrooms()
+  });
   useEffect(() => {
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -343,7 +329,7 @@ const HomePage = ({ navigation }) => {
       case "explore":
         return (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <MapView
+            <MapView 
               style={styles.map}
               initialRegion={{
                 latitude: location?.coords.latitude ?? 37.785834, // Fallback to mock location if no location
@@ -352,19 +338,20 @@ const HomePage = ({ navigation }) => {
                 longitudeDelta: 0.0421,
               }}
             >
-              {mockChatrooms.map((bubble, index) => (
+              {       
+              map_chatrooms.map((bubble, index) => (
                 <Marker
                   key={index}
                   coordinate={{
-                    latitude: bubble.latitude,
-                    longitude: bubble.longitude,
+                    latitude: parseFloat(bubble.latitude),
+                    longitude: parseFloat(bubble.longitude),
                   }}
-                  title={bubble.title}
+                  title={bubble.name}
                   description={bubble.description}
                   onCalloutPress={() => ConnectToChatroom(bubble.id)}
                 >
                   <View style={styles.bubbleMarker}>
-                    <Text style={styles.bubbleMarkerText}>{bubble.title}</Text>
+                    <Text style={styles.bubbleMarkerText}>{bubble.name}</Text>
                   </View>
                 </Marker>
               ))}

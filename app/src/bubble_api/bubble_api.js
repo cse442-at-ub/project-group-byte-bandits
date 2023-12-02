@@ -221,6 +221,17 @@ export async function load_chatrooms(long, lat) {
   return chatrooms;
 }
 
+export async function load_all_chatroom() {
+  const response = await axios.get(load_chatrooms_url);
+  const data = response.data;
+  let chatrooms = [];
+  data.forEach((element) => {
+    element = JSON.parse(element);
+    chatrooms.push(element)
+  });
+  return chatrooms;
+}
+
 export async function create_chatroom(privacy, radius, maxpersons, description, name) {
   const data = qs.stringify({
     radius: radius,
