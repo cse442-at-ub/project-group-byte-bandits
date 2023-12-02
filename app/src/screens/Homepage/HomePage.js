@@ -57,7 +57,7 @@ const HomePage = ({ navigation }) => {
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  
+
   useEffect(() => {
     handle_login_state(navigation);
   }, [navigation]);
@@ -255,20 +255,8 @@ const HomePage = ({ navigation }) => {
             />
             <FlatList
               data={searched_user}
-              renderItem={({ item }) => (
-                <Text
-                  style={{
-                    color: "black",
-                    backgroundColor: "lightgrey",
-                    padding: 5,
-                    fontSize: 16,
-                    margin: 2,
-                  }}
-                  onPress={() => SendFriendRequest(item[1])}
-                >
-                  {item[1]}: {item[0]}
-                </Text>
-              )}
+                renderItem={renderUserItem}
+
             />
           </>
         );
@@ -401,19 +389,40 @@ const HomePage = ({ navigation }) => {
     fontWeight: "bold",
   };
 
+  const renderUserItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.userListItem}
+        onPress={() => SendFriendRequest(item[1])}
+      >
+        <View style={styles.profileImage} />
+        <View>
+          <Text style={styles.userListItemText}>
+            {item[0]}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View
       style={[styles.container, { backgroundColor: colors.homeBackground }]}
     >
       <Header
         leftComponent={
-          <View>
-            <TouchableOpacity onPress={() => {
-                    if(connected_chatroom) ConnectToChatroom(connected_chatroom[0])
-                    }}>
-                      <Text>{connected_chatroom}</Text>
-            </TouchableOpacity>
-          </View>
+        <TouchableOpacity 
+          style={[styles.connectedChatroomButton,{backgroundColor: colors.widget, borderRadius: 20,}]}
+          onPress={() => {
+            if (connected_chatroom) 
+              ConnectToChatroom(connected_chatroom[0])
+          }} 
+        >
+          <Text style={[styles.connectedChatroomText,{color: colors.text}]}>
+            {connected_chatroom ? `${connected_chatroom[1]}` : "No Chatroom Connected"}
+          </Text>
+        </TouchableOpacity>
+          
         }
         rightComponent={
           <View style={styles.iconsContainer}>
@@ -791,5 +800,42 @@ const styles = StyleSheet.create({
     fontSize: 14, // You can adjust the font size as needed
     alignSelf: "flex-start",
     color: "white",
+  },
+  userListItem: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 3, // for shadow on Android
+    shadowColor: "#000", // for shadow on iOS
+    shadowOffset: { width: 0, height: 1 }, // for shadow on iOS
+    shadowOpacity: 0.2, // for shadow on iOS
+    shadowRadius: 1.5, // for shadow on iOS
+  },
+  userListItemText: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: 'black',
+  },
+  userListItemSubText: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ddd', 
+  },
+  connectedChatroomButton: {
+    padding: 15,
+  },
+  connectedChatroomText: {
+    fontSize: 13, 
+    textAlign: 'center',
+    
   },
 });
