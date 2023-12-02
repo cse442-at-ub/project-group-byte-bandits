@@ -205,22 +205,16 @@ export async function load_chatrooms(long, lat) {
     const ch_lat = parseFloat(element.latitude);
     const host = element.host;
     const radius = element.radius;
-    const name = element.name;
     let description = element.description;
 
     if (description === "") {
         description = "No description";
     }
+    // calculate distance
     const distance = Math.sqrt(Math.pow(long - ch_long, 2) + Math.pow(lat - ch_lat, 2));
     if (distance <= radius && host != profile_data.id && id != chatroom_data.id) {
       console.log(distance);
-      chatrooms.push([
-        " id: ", id,
-        " , ", "distance: ", distance,
-        " , ", "host: ", host,
-        " , ", "name: ", name,
-        " , ", "description: ", description
-      ]);
+      chatrooms.push(encode_chatroom_data(element));
     }
   });
 
