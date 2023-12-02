@@ -167,9 +167,9 @@ export async function disconnect_from_chatroom() {
 }
 
 export async function load_chatroom_data() {
-  
   const response = await axios.get(chatroom_data_url);
   return response.data;
+
 }
 
 function encode_chatroom_data(chatroom_data) {
@@ -191,9 +191,6 @@ export async function load_chatrooms(long, lat) {
 
   if (chatroom_data.code)
     console.log(chatroom_data);
-  else {
-    chatrooms.push(encode_chatroom_data(chatroom_data));
-  }
 
   const data = await response.data;
   data.forEach((element) => {

@@ -35,6 +35,7 @@ import {
   update_location,
   send_friend_request,
   create_chatroom,
+  load_chatroom_data
 } from "../../bubble_api/bubble_api";
 import * as Location from "expo-location";
 import axios from "axios";
@@ -100,6 +101,8 @@ const HomePage = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState("nearby");
 
   const [location, setLocation] = useState(null);
+  const [connected_chatroom, seteConnectedChatroom] = useState(null);
+
   const [errorMsg, setErrorMsg] = useState(null);
   const [username, setUsername] = useState(null);
   const [userid, setUserId] = useState(null);
@@ -150,6 +153,16 @@ const HomePage = ({ navigation }) => {
     setUsername(data["name"]);
     setUserId(data["id"]);
   }
+  
+  async function CheckConnection() {
+    const response = await load_chatroom_data();
+    if(response.code) {
+      console.log(response);
+      return false;
+    } else {
+      return response;
+    }
+  }
 
   useEffect(() => {
     const getLocation = async () => {
@@ -181,20 +194,17 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
+            const c_data = await load_chatrooms(
+              newLocation.coords.longitude,
+              newLocation.coords.latitude
+            );
+            console.log(c_data);
+            setChatroomData(c_data);
             setErrorMsg(data);
           }
         );
       } catch (error) {
         console.error("Error starting location monitoring:", error);
-      }
-      console.log(location);
-      if (location) {
-        const c_data = await load_chatrooms(
-          location.coords.longitude,
-          location.coords.latitude
-        );
-        console.log(c_data);
-        setChatroomData(c_data);
       }
     };
 
