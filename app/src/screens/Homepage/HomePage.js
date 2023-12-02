@@ -26,7 +26,7 @@ import NearbyLight from "../../assets/nearbylight.gif";
 import ExploreLight from "../../assets/explorelight.gif";
 import SocialLight from "../../assets/sociallight.gif";
 import NavBar from "../../components/Navbar";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import {
   load_profile_data,
   connect_to_chatroom,
@@ -160,7 +160,7 @@ const HomePage = ({ navigation }) => {
       console.log(response);
       return false;
     } else {
-      return response;
+      seteConnectedChatroom([response.description, response.id, response.distance, response.name, response.host, ]);
     }
   }
 
@@ -198,6 +198,7 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.longitude,
               newLocation.coords.latitude
             );
+            CheckConnection();
             console.log(c_data);
             setChatroomData(c_data);
             setErrorMsg(data);
@@ -418,7 +419,7 @@ const HomePage = ({ navigation }) => {
         leftComponent={
           <View>
             <Text>
-              Hello
+              {connected_chatroom}
             </Text>
           </View>
         }
