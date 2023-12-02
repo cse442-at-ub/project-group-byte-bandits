@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { StatusBar, FlatList, TouchableWithoutFeedback, useColorScheme } from "react-native";
+import { StatusBar, FlatList, TouchableWithoutFeedback, useColorScheme, ActivityIndicator} from "react-native";
 import {
   View,
   StyleSheet,
@@ -61,9 +61,10 @@ export const ChatroomTemp = ({ navigation }) => {
   const colors = theme(scheme);
   const flatListRef = useRef();
   const [isAtBottom, setIsAtBottom] = useState(true); 
-  
+  const [loading, isLoading] = useState(true);
+
   useEffect(() => {
-    if (message_data && message_data.length > 0 && isAtBottom) {
+    if (message_data && message_data.length > 0 && isAtBottom ) {
       flatListRef.current.scrollToEnd({ animated: true });
     }
   }, [message_data, isAtBottom]);
@@ -83,6 +84,7 @@ export const ChatroomTemp = ({ navigation }) => {
     }, 1000);
 
     return () => clearInterval(messageIntervalId);
+
   }, []);
   async function LoadMessages() {
     const data = await load_messages();
@@ -112,7 +114,9 @@ export const ChatroomTemp = ({ navigation }) => {
   }
 
   async function LoadChatroomData() {
+    isLoading(true);
     const data = await load_chatroom_data();
+    isLoading(false);
     setChatroomName(data.name);
     setDescription(data.description);
   }
@@ -129,21 +133,23 @@ export const ChatroomTemp = ({ navigation }) => {
               <Text style={styles.chatroomDescription}>{chatroom_description}</Text>
           </View>
 
-
-          <FlatList
-                    ref={flatListRef} 
-
-              data={message_data}
-              contentContainerStyle={{paddingBottom: 40,}}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={handleScroll} 
-              scrollEventThrottle={400} 
-              renderItem={({ item }) => (
-                  <MessageItem
-                      user={item[0]}
-                      content={item[1]} />
-              )} />
+        <FlatList
+    ref={flatListRef} 
+    
+    data={message_data}
+    contentContainerStyle={{paddingBottom: 40,}}
+    showsVerticalScrollIndicator={false}
+    keyExtractor={(item, index) => index.toString()}
+    onScroll={handleScroll} 
+    scrollEventThrottle={400} 
+    renderItem={({ item }) => (
+        <MessageItem
+            user={item[0]}
+            content={item[1]} />
+    )} />
+    
+          
+              
           <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.inputContainer}

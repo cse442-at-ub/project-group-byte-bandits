@@ -167,6 +167,7 @@ export async function disconnect_from_chatroom() {
 }
 
 export async function load_chatroom_data() {
+  
   const response = await axios.get(chatroom_data_url);
   return response.data;
 }

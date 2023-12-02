@@ -90,14 +90,14 @@ const HomePage = ({ navigation }) => {
   };
 
   const getDescriptionStyle = (description) => {
-    return description === "No description" 
-      ? { color: "gray", fontSize: 10, marginTop: 5 } 
+    return description === "No description"
+      ? { color: "gray", fontSize: 10, marginTop: 5 }
       : { color: colors.text, fontSize: 10, marginTop: 5 };
   };
 
   const scheme = useColorScheme();
   const colors = theme(scheme);
-  const [selectedTab, setSelectedTab] = useState("nearby"); 
+  const [selectedTab, setSelectedTab] = useState("nearby");
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -182,15 +182,13 @@ const HomePage = ({ navigation }) => {
               newLocation.coords.latitude
             );
             setErrorMsg(data);
-
           }
-          
         );
       } catch (error) {
         console.error("Error starting location monitoring:", error);
       }
-      console.log(location)
-      if(location) {
+      console.log(location);
+      if (location) {
         const c_data = await load_chatrooms(
           location.coords.longitude,
           location.coords.latitude
@@ -274,55 +272,60 @@ const HomePage = ({ navigation }) => {
             />
           </>
         );
-        case "nearby":
-          const getChatroomItemStyle = (item) => {
-            return userid === item[7]
-              ? { ...styles.chatroomItemHost }
-              : { ...styles.chatroomItem };
-          };
-          
-          return (
-            <View onLayout={() => ProfileData()}>
-              <View style={styles.infoContainer}>
-                <Feather name="info" size={16} color={colors.text} />
-                <Text style={[styles.infoText, { color: colors.text }]}>
-                  Tap to join a bubble
-                </Text>
-              </View>
-              <FlatList
-              contentContainerStyle={{paddingBottom: 40,}}
+      case "nearby":
+        const getChatroomItemStyle = (item) => {
+          return userid === item[7]
+            ? { ...styles.chatroomItemHost }
+            : { ...styles.chatroomItem };
+        };
+
+        return (
+          <View onLayout={() => ProfileData()}>
+            <View style={styles.infoContainer}>
+              <Feather name="info" size={16} color={colors.text} />
+              <Text style={[styles.infoText, { color: colors.text }]}>
+                Tap to join a bubble
+              </Text>
+            </View>
+            <FlatList
+              contentContainerStyle={{ paddingBottom: 150 }}
               data={chatroom_data}
               showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[getChatroomItemStyle(item), { backgroundColor: colors.homeBackground }]}
-                    onPress={() => ConnectToChatroom(item[1])}
-                  >
-                    <View style={styles.chatroomItemContent}>
-                      <View style={styles.chatroomItemTextContainer}>
-                        <Text style={[styles.chatroomItemName, { color: colors.text }]}>
-                          {item[10]} 
-                        </Text>
-              <Text style={getDescriptionStyle(item[13])}>
-                {item[13]} 
-              </Text>
-                      </View>
-                      <Text style={styles.chatroomItemJoin}>
-                        + Join
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    getChatroomItemStyle(item),
+                    { backgroundColor: colors.homeBackground },
+                  ]}
+                  onPress={() => ConnectToChatroom(item[1])}
+                >
+                  <View style={styles.chatroomItemContent}>
+                    <View style={styles.chatroomItemTextContainer}>
+                      <Text
+                        style={[
+                          styles.chatroomItemName,
+                          { color: colors.text },
+                        ]}
+                      >
+                        {item[10]}
+                      </Text>
+                      <Text style={getDescriptionStyle(item[13])}>
+                        {item[13]}
                       </Text>
                     </View>
-                    <View style={styles.chatroomItemCreator}>
-                      <Text style={{ color: "gray", fontWeight: 'bold' }}>
-                        Created by @{item[7]} 
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          );
-        
-      
+                    <Text style={styles.chatroomItemJoin}>+ Join</Text>
+                  </View>
+                  <View style={styles.chatroomItemCreator}>
+                    <Text style={{ color: "gray", fontWeight: "bold" }}>
+                      Created by @{item[7]}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        );
+
       case "explore":
         return (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -402,7 +405,13 @@ const HomePage = ({ navigation }) => {
       style={[styles.container, { backgroundColor: colors.homeBackground }]}
     >
       <Header
-        leftComponent={<View style={styles.bubbleContainer}></View>}
+        leftComponent={
+          <View>
+            <Text>
+              Hello
+            </Text>
+          </View>
+        }
         rightComponent={
           <View style={styles.iconsContainer}>
             <TouchableOpacity
