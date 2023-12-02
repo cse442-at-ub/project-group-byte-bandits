@@ -132,7 +132,9 @@ export const ChatroomTemp = ({ navigation }) => {
               <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
               <Text style={styles.chatroomDescription}>{chatroom_description}</Text>
           </View>
-
+          {loading ? (
+      <ActivityIndicator size="large" color="white" />
+    ) : (
           <FlatList
   ref={flatListRef}
   data={message_data}
@@ -146,10 +148,9 @@ export const ChatroomTemp = ({ navigation }) => {
       user={item[0]}
       content={item[1]} />
   )}
-  ListFooterComponent={() => (
-    loading && <ActivityIndicator size="large" color={colors.primary} />
-  )}
-/>            
+
+/>
+)}            
           <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.inputContainer}

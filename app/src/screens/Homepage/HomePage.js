@@ -376,7 +376,7 @@ const HomePage = ({ navigation }) => {
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width: "90%", // Updated width to take 90% of the screen width
+    width: "90%",
   };
   const modalInputStyle = {
     marginBottom: 15,
