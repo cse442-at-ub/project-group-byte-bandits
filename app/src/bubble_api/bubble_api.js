@@ -11,6 +11,12 @@ const disconnect_chatroom_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/disconnect_chatroom";
 const load_chatrooms_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/load_chatrooms";
+  const chatroom_data_url =
+  "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/chatroom_data";
+  const delete_chatroom_url =
+  "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/delete_chatroom";
+
+
 
 const generate_csrf_token_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf";
@@ -70,15 +76,20 @@ export async function handle_auto_login(navigation) {
 
 export async function load_messages() {
   const response = await axios.get(chatroom_process_request_url);
-  const data = response.data;
-  let text_messages = [];
-  data.forEach((element) => {
-    const text_data = JSON.parse(element);
-    const user = text_data.user;
-    const content = text_data.content;
-    text_messages.push([user, content]);
-  });
-  return text_messages;
+  const data = await response.data;
+  if(response.data.conde == undefined) {
+    let text_messages = [];
+    data.forEach((element) => {
+      const text_data = JSON.parse(element);
+      const user = text_data.user;
+      const content = text_data.content;
+      text_messages.push([user, content]);
+    });
+    return text_messages;
+  } else {
+    console.log(response.data)
+  }
+  
 }
 
 export async function send_text_message(content) {
@@ -89,6 +100,7 @@ export async function send_text_message(content) {
   const response = await axios.post(chatroom_process_request_url, data, {
     headers: post_request_headers(token),
   });
+  console.log(response.data);
   return response.data;
 }
 
@@ -131,6 +143,7 @@ export async function create_username(username) {
 }
 
 export async function connect_to_chatroom(chatroom_id) {
+  console.log(chatroom_id);
   const data = qs.stringify({
     id: chatroom_id,
   });
@@ -139,59 +152,93 @@ export async function connect_to_chatroom(chatroom_id) {
   const response = await axios.post(join_chatroom_url, data, {
     headers: post_request_headers(token),
   });
-  console.log("data", response.data);
+  console.log(response.data);
   return response.data;
 }
 
 export async function disconnect_from_chatroom() {
-  const response = await axios.get(disconnect_chatroom_url);
+  const chatroom_data = await load_chatroom_data();
+  const profile_data = await load_profile_data();
+  if(chatroom_data.host == profile_data.id) {
+    const response = await axios.get(delete_chatroom_url);
+    console.log(response.data);
+    return response.data;
+  } else {
+    const response = await axios.get(disconnect_chatroom_url);
+    console.log(response.data);
+    return response.data;
+  }
+
+}
+
+export async function load_chatroom_data() {
+  const response = await axios.get(chatroom_data_url);
   return response.data;
+
+}
+
+function encode_chatroom_data(chatroom_data) {
+  return [
+      " id: ", chatroom_data.id,
+      " , ", "distance: ", chatroom_data.distance,
+      " , ", "host: ", chatroom_data.host,
+      " , ", "name: ", chatroom_data.name,
+      " , ", "description: ", chatroom_data.description
+  ];
 }
 
 export async function load_chatrooms(long, lat) {
   const response = await axios.get(load_chatrooms_url);
+  const chatroom_data = await load_chatroom_data();
+  const profile_data = await load_profile_data();
+
   let chatrooms = [];
+
+  if (chatroom_data.code)
+    console.log(chatroom_data);
+
   const data = await response.data;
   data.forEach((element) => {
     element = JSON.parse(element);
-    console.log(element);
     const id = element.id;
     const ch_long = parseFloat(element.longitude);
     const ch_lat = parseFloat(element.latitude);
     const host = element.host;
     const radius = element.radius;
-    // get distance
-    console.log(long, lat, ch_long, ch_lat);
-    const distance = Math.sqrt(
-      Math.pow(long - ch_long, 2) + Math.pow(lat - ch_lat, 2)
-    );
-    console.log(distance, radius);
-    if (distance <= radius) {
-      chatrooms.push([
-        " id: ",
-        id,
-        " , ",
-        "distance: ",
-        distance,
-        " , ",
-        "host: ",
-        host,
-      ]);
+    let description = element.description;
+
+    if (description === "") {
+        description = "No description";
     }
+    // calculate distance
+    const distance = Math.sqrt(Math.pow(long - ch_long, 2) + Math.pow(lat - ch_lat, 2));
+    if (distance <= radius && host != profile_data.id && id != chatroom_data.id) {
+      console.log(distance);
+      chatrooms.push(encode_chatroom_data(element));
+    }
+  });
+
+  return chatrooms;
+}
+
+export async function load_all_chatroom() {
+  const response = await axios.get(load_chatrooms_url);
+  const data = response.data;
+  let chatrooms = [];
+  data.forEach((element) => {
+    element = JSON.parse(element);
+    chatrooms.push(element)
   });
   return chatrooms;
 }
 
-export async function load_chatroom_data() {
-    const response = await axios.get(chatroom_data_url);
-    return response.data;
-}
-
-export async function create_chatroom(privacy, radius, maxpersons) {
+export async function create_chatroom(privacy, radius, maxpersons, description, name) {
   const data = qs.stringify({
     radius: radius,
     maxpersons: maxpersons,
     privacy: privacy,
+    description: description,
+    name: name
   });
   const token = await make_csrf_token();
   const response = await axios.post(create_chatroom_url, data, {
@@ -220,6 +267,7 @@ export async function search_user(username) {
   const response = await axios.post(public_user_data_url, data, {
     headers: post_request_headers(token),
   });
+
   return response.data;
 }
 
@@ -272,7 +320,7 @@ export async function get_friend_requests() {
     element = JSON.parse(element);
     const status = element.status;
     const recieving = element.user_r_id;
-    if (status == 0 && recieving == profile_data["id"]) {
+    if (status == 0 && recieving == profile_data.id) {
       friend_requests.push(element);
     }
   });
@@ -280,13 +328,19 @@ export async function get_friend_requests() {
 }
 
 export async function get_friends() {
+  const user_response = await axios.get(user_profile_url);
+  profile_data = user_response.data;
   const response = await axios.get(friend_data_url);
   let friends = [];
   response.data.forEach((element) => {
     element = JSON.parse(element);
     const status = element.status;
     if (status == 1) {
-      friends.push(element);
+      if(element.user_s_id == profile_data.id) {
+        friends.push([element.user_r_id, element.user_r_name]);
+      } else {
+        friends.push([element.user_s_id, element.user_s_name]);
+      }
     }
   });
   return friends;

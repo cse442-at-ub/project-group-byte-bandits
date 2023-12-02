@@ -13,6 +13,8 @@ const lightTheme = {
     modalText: '#000000',
     modalInputBackground: '#F0F0F0',
     modalButtonBackground: '#6E9DF7',
+    chartJoined: '#6E9DF7',
+  chartCreated: '#FFD700', // Example yellow color for created bubbles
   };
   
   const darkTheme = {
@@ -30,6 +32,8 @@ const lightTheme = {
     modalText: '#FFF1DD',
     modalInputBackground: '#303030',
     modalButtonBackground: '#5A5A5A',
+    chartJoined: '#FF6347', // Example tomato color for joined bubbles
+    chartCreated: '#90EE90', // Example light green color for created bubbles
   };
   
   const theme = mode => (mode === 'light' ? lightTheme : darkTheme);

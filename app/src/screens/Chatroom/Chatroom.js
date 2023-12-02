@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StatusBar, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StatusBar, FlatList, TouchableWithoutFeedback, useColorScheme } from "react-native";
 import {
   View,
   StyleSheet,
@@ -20,12 +20,18 @@ import {
 } from "@expo/vector-icons";
 import axios from "axios";
 import qs from "qs";
-import { Header } from 'react-native-elements'
-import { disconnect_from_chatroom, handle_login_state, 
-  load_chatroom_data, 
-  load_messages, 
-  send_text_message } from "../../bubble_api/bubble_api.js";
+import { Header } from "react-native-elements";
+import { Keyboard } from "react-native";
+
+import {
+  disconnect_from_chatroom,
+  handle_login_state,
+  load_chatroom_data,
+  load_messages,
+  send_text_message,
+} from "../../bubble_api/bubble_api.js";
 import { color } from "react-native-elements/dist/helpers/index.js";
+import theme from '../../components/theme.js'; // Update path as necessary
 
 export const Chatroom = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -34,20 +40,31 @@ export const Chatroom = ({ navigation }) => {
   const [chatroom_name, setChatroomName] = useState(null);
   const [chatroom_description, setDescription] = useState(null);
   const [errMessage, setErrorMsg] = useState(null);
-
-  async function send_text() {
-    const data = await send_text_message(message_contents);
-    setErrorMsg(data);
-  }
-
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
+  
   async function LoadMessages() {
     const data = await load_messages();
     setMessageData(data);
   }
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      LoadMessages();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  async function send_text() {
+    const data = await send_text_message(message_contents);
+    setErrorMsg(data);
+    setMessageContents("");
+    LoadMessages();
+  }
+
   async function ChatroomDisconnect() {
     const data = await disconnect_from_chatroom();
-    console.log(data);
     if (data == "") {
       navigation.navigate("HomePage");
     }
@@ -61,9 +78,13 @@ export const Chatroom = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      style={styles.ChatroomBackground} onLayout={() => {handle_login_state(navigation);
-                                                      LoadMessages();
-                                                      LoadChatroomData();}}>
+      style={styles.ChatroomBackground}
+      onLayout={() => {
+        handle_login_state(navigation);
+        LoadChatroomData();
+        LoadMessages();
+      }}
+    >
       {/* CONFIRMATION TO LEAVE ROOM */}
       <Modal transparent={true} animationType="fade" visible={showConfirm}>
         <View style={styles.showConfirmBackground}>
@@ -99,14 +120,21 @@ export const Chatroom = ({ navigation }) => {
         </View>
       </Modal>
       <Header
-        leftComponent={{
-          icon: "chevron-left",
-          color: "#fff",
-          type: "entypo",
-          onPress: () => {
-            setShowConfirm(true);
-          },
-        }}
+        leftComponent={
+          <View style={styles.leftHeaderComponent}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowConfirm(true);
+              }}
+            >
+              <Entypo name="chevron-left" size={24} color="#fff" />
+            </TouchableOpacity>
+            {/* CONDITIONALLY RENDER END BUBBLE OR LEAVE BUBBLE DEPENDING ON IF YOURE THE HOST OR NOT */}
+            <TouchableOpacity style={styles.popBubbleButton}>
+              <Text style={styles.popBubbleButtonText}>End Bubble</Text>
+            </TouchableOpacity>
+          </View>
+        }
         rightComponent={
           <TouchableOpacity
             onPress={() => navigation.navigate("ChatroomUsers")}
@@ -122,66 +150,91 @@ export const Chatroom = ({ navigation }) => {
         }}
       />
 
-      <View style={styles.chatroomTitle}>
-        <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
-        <Text style={{color:'white'}}>{chatroom_description}</Text>
-      </View>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.chatroomTitle}>
+          <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
+          <Text style={{ color: "white" }}>{chatroom_description}</Text>
+        </View>
+      </TouchableWithoutFeedback>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoid}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-      >
-        <View style={styles.chatroomBody}>
-          <View>
-            <View style={styles.container_style}>
-              <FlatList
-                data={message_data}
-                renderItem={({ item }) => (
-                  <Text style={{ color: "white" }}>
-                    {item[0]} - {item[1]}
-                  </Text>
-                )}
-              />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardAvoid}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        >
+          <View style={styles.chatroomBody}>
+            <View>
+              <View style={styles.container_style}>
+                <FlatList
+                  data={message_data}
+                  renderItem={({ item }) => (
+                    <Text style={{ color: "white" }}>
+                      {item[0]} - {item[1]}
+                    </Text>
+                  )}
+                />
+              </View>
             </View>
           </View>
-        </View>
 
-        <View style={styles.bottomBar}>
-          <TouchableOpacity style={styles.mapIcon}>
-            <MaterialCommunityIcons
-              name="map-search-outline"
-              size={50}
-              color={"#56585B"}
-            />
-          </TouchableOpacity>
-          <View style={styles.textBox}>
-            <TextInput
-              onChangeText={(text) => setMessageContents(text)}
-              style={styles.searchBar}
-              placeholder="Type a message..."
-              placeholderTextColor={"#3D3C3C"}
-              maxLength={40}
-            />
+          <View style={styles.bottomBar}>
+            <TouchableOpacity style={styles.mapIcon}>
+              <MaterialCommunityIcons
+                name="map-search-outline"
+                size={50}
+                color={"#56585B"}
+              />
+            </TouchableOpacity>
+            <View style={styles.textBox}>
+              <TextInput
+                onChangeText={(text) => setMessageContents(text)}
+                value={message_contents}
+                style={styles.searchBar}
+                placeholder="Type a message..."
+                placeholderTextColor={"#3D3C3C"}
+                color="white"
+                maxLength={40}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.sendMessage}
+              onPress={() => {
+                send_text();
+              }}
+            >
+              <Feather
+                name="send"
+                size={42}
+                color={"#555454"}
+                style={{ transform: [{ rotate: "45deg" }] }}
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.sendMessage}
-            onPress={() => send_text()}
-          >
-            <Feather
-              name="send"
-              size={42}
-              color={"#555454"}
-              style={{ transform: [{ rotate: "45deg" }] }}
-            />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  leftHeaderComponent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  popBubbleButton: {
+    backgroundColor: "red",
+    marginLeft: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    width: 100,
+  },
+  popBubbleButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   buttonText: {
     fontWeight: "bold",
     fontSize: 16,

@@ -81,12 +81,12 @@ const Login = ({ navigation }) => {
 
   const fetchAppleInfo = async () => {
     try {
-      const response = await AppleAuthentication.signInAsync({
+      /*const response = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
-      });
+      });*/
 
       const apple_user = response.user;
       const data = qs.stringify({
@@ -201,7 +201,7 @@ const Login = ({ navigation }) => {
             <View style={styles.line} />
           </View>
 
-          <AppleAuthentication.AppleAuthenticationButton
+          {/*<AppleAuthentication.AppleAuthenticationButton
             buttonStyle={
               AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
             }
@@ -211,7 +211,7 @@ const Login = ({ navigation }) => {
             cornerRadius={5}
             style={styles.appleButton}
             onPress={fetchAppleInfo}
-          />
+          />*/}
         </View>
       </KeyboardAvoidingView>
     </>
