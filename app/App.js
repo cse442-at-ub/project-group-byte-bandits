@@ -18,6 +18,7 @@ import DM from "./src/screens/DM/DM";
 import DMList from "./src/screens/DM/DMList";
 import Notification from "./src/screens/Notification/Notification";
 import { ChatroomTemp } from "./src/screens/Chatroom/ChatroomTemp";
+import CreateChatroom from "./src/screens/Homepage/CreateChatroom";
 
 const Stack = createNativeStackNavigator();
 
@@ -125,6 +126,14 @@ const App = () => {
               gestureEnabled: true,
             }}
             component={Notification}
+          />
+                    <Stack.Screen
+            name="CreateChatroom"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={CreateChatroom}
           />
         </Stack.Navigator>
       </NavigationContainer>

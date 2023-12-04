@@ -153,7 +153,6 @@ const HomePage = ({ navigation }) => {
       let hasRun = false;
 
       if (!hasRun) {
-        console.log("JOEEEEEEEEEEEEEEEE");
         LoadAllChatrooms();
         CheckConnection();
 
@@ -470,7 +469,7 @@ const HomePage = ({ navigation }) => {
       <View style={styles.createBubbleButton}>
         <TouchableOpacity
           onPress={() => {
-            setIsModalVisible(true);
+            navigation.navigate("CreateChatroom")
           }}
         >
           <View
