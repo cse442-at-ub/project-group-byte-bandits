@@ -423,8 +423,11 @@ const HomePage = ({ navigation }) => {
     <View
       style={[styles.container, { backgroundColor: colors.homeBackground }]}
     >
-      <Header
-        leftComponent={
+<Header
+  leftComponent={
+    (() => {
+      if (connected_chatroom.length > 0) {
+        return (
           <TouchableOpacity
             style={[
               styles.connectedChatroomButton,
@@ -437,12 +440,14 @@ const HomePage = ({ navigation }) => {
             <Text
               style={[styles.connectedChatroomText, { color: colors.text }]}
             >
-              {connected_chatroom.length === 0
-                ? "No Chatroom Connected"
-                : `${connected_chatroom[1]}`}
+              {`${connected_chatroom[1]}`}
             </Text>
           </TouchableOpacity>
-        }
+        );
+      }
+      return null; // Return null if no chatroom is connected
+    })()
+  }
         rightComponent={
           <View style={styles.iconsContainer}>
             <TouchableOpacity

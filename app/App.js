@@ -127,7 +127,7 @@ const App = () => {
             }}
             component={Notification}
           />
-                    <Stack.Screen
+            <Stack.Screen
             name="CreateChatroom"
             options={{
               headerShown: false,
