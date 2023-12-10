@@ -1,191 +1,74 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Modal,
-} from "react-native";
-import {
-  Entypo,
-  Feather,
-  MaterialCommunityIcons,
-  FontAwesome5,
-} from "@expo/vector-icons";
-import { disconnect_from_chatroom, handle_login_state, 
-  load_chatroom_users, 
-  load_messages, 
-  send_text_message } from "../../bubble_api/bubble_api.js";
-
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, useColorScheme } from 'react-native';
+import { Entypo } from '@expo/vector-icons';
+import theme from '../../components/theme.js';
+import { Header } from 'react-native-elements';
+import { load_chatroom_data, load_chatroom_users } from "../../bubble_api/bubble_api.js";
+  
 export const ChatroomUsers = ({ navigation }) => {
-  const [chatroom_users, setChatroomUsers] = useState(null);
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
 
-  async function LoadChatroomUsers() {
-    const data = await load_chatroom_users();
-    setChatroomUsers(data);
-  }
+  const [chatroom_name, setChatroomName] = useState(null);
+  const [chatroom_users, setChatroomUsers] = useState([]);
+
+  useEffect(() => {
+    async function LoadChatroomData() {
+      const data = await load_chatroom_data();
+      setChatroomName(data.name);
+    }
+
+    LoadChatroomData();
+  }, []);
+
+  useEffect(() => {
+    async function LoadChatroomUsers() {
+      const users = await load_chatroom_users();
+      setChatroomUsers(users);
+    }
+
+    LoadChatroomUsers();
+  }, []);
 
   return (
-    <SafeAreaView style={styles.ChatroomBackground} onLayout={() => LoadChatroomUsers()}>
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Chatroom")}
-          style={styles.leaveButton}
-        >
-          <Entypo name="chevron-left" size={36} color="white" />
-        </TouchableOpacity>
-        <View />
-      </View>
-
-      <View style={styles.chatroomTitle}>
-        <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
-        <Text style={{color:'white'}}>{chatroom_description}</Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: colors.widget }]}>
+      <Header
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Entypo name="chevron-left" size={24} color={colors.text} />
+          </TouchableOpacity>
+        }
+        centerComponent={{ text: chatroom_name || 'Chatroom Users', style: { color: colors.text, fontSize: 20 } }}
+        backgroundColor={colors.widget}
+        containerStyle={{ borderBottomWidth: 0 }}
+      />
+      
       <FlatList
-                  data={chatroom_users}
-                  renderItem={({ item }) => (
-                    <Text style={{ color: "white" }}>
-                      {item}
-                    </Text>
-                  )}
-                />
-    </SafeAreaView>
+        data={chatroom_users}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.userItem}>
+            <View style={[styles.circle,{backgroundColor: colors.background}]} />
+            <Text style={{ color: colors.text, marginLeft: 10 }}>{item.user_name}</Text>
+          </View>
+        )}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "white",
-  },
-  buttonDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "48%",
-    borderRadius: 15,
-    backgroundColor: "#191818",
-  },
-  continueAndcancelButtons: {
-    display: "flex",
-    flexDirection: "row",
-    height: "30%",
-    width: "90%",
-    justifyContent: "space-between",
-  },
-  bodyWarningText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "white",
-    padding: 5,
-  },
-  bodyWarning: {
-    display: "flex",
-    height: "40%",
-    width: "90%",
-    flexShrink: 1,
-  },
-  topWarningText: {
-    fontWeight: "bold",
-    fontSize: 28,
-    color: "white",
-  },
-  topWarning: {
-    display: "flex",
-    height: "25%",
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-
-  showConfirmPopup: {
-    display: "flex",
-    height: "20%",
-    width: "60%",
-    backgroundColor: "#252525",
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  showConfirmBackground: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  ChatroomBackground: {
-    flex: 1,
-    backgroundColor: "#191818",
-  },
-  topBar: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    height: "5%",
-    backgroundColor: "#191818",
-  },
-  leaveButton: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  chatroomTitle: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "10%",
-    backgroundColor: "#191818",
-  },
-  chatroomTitleText: {
-    fontWeight: "bold",
-    fontSize: 30,
-    color: "#93B8DA",
-  },
-  keyboardAvoid: {
+  container: {
     flex: 1,
   },
-  chatroomBody: {
-    flex: 1,
-    backgroundColor: "#232222",
+  userItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
   },
-
-  bottomBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-  },
-  mapIcon: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  textBox: {
-    flex: 5,
-    justifyContent: "center",
-  },
-  sendMessage: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  searchBar: {
-    padding: 10,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: "#3C3B3B",
-    color: "#56585B",
-    fontWeight: "bold",
-  },
-  leaveText: {
-    fontSize: 16,
-    color: "red",
-    marginLeft: 5,
+  circle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
 });

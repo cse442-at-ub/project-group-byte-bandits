@@ -17,6 +17,7 @@ import {
   Feather,
   MaterialCommunityIcons,
   FontAwesome5,
+  FontAwesome
 } from "@expo/vector-icons";
 import axios from "axios";
 import qs from "qs";
@@ -32,24 +33,28 @@ import {
 } from "../../bubble_api/bubble_api.js";
 import theme from '../../components/theme.js'; 
 
+const MessageItem = ({ user, content, isHost }) => {
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
 
-const MessageItem = ({ user, content }) => {
-    const scheme = useColorScheme();
-    const colors = theme(scheme);
-  
-    return (
-      <View style={styles.messageContainer}>
-        <View style={styles.profilePic} />
-        <View>
-          <Text style={{ color:  colors.primary  }}>
+  return (
+    <View style={styles.messageContainer}>
+      <View style={styles.profilePic} />
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+          <Text style={{ fontWeight: 'bold', color: colors.primary, marginRight: isHost ? 3 : 0 }}>
             {user}
           </Text>
-          <Text style={{ color: colors.text }}>{content}</Text>
+          {isHost && (
+            <MaterialCommunityIcons name="crown" size={18} color="gold" />
+          )}
         </View>
+        <Text style={{ color: colors.text }}>{content}</Text>
       </View>
-    );
-  };
-
+    </View>
+  );
+};
 export const ChatroomTemp = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [message_contents, setMessageContents] = useState(null);
@@ -123,15 +128,22 @@ export const ChatroomTemp = ({ navigation }) => {
 
   return (
     <><View style={{ flex: 1, backgroundColor: colors.widget }}>
-
-<TouchableOpacity style={styles.leaveButton} onPress={() => setShowConfirm(true)}>
+<View style={styles.headerRow}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => setShowConfirm(true)}>
           <Entypo name="chevron-left" size={24} color={colors.primary} />
         </TouchableOpacity>
 
-          <View style={styles.chatroomHeader}>
-              <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
-              <Text style={styles.chatroomDescription}>{chatroom_description}</Text>
-          </View>
+        <View style={styles.chatroomHeader}>
+          <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
+          <Text style={styles.chatroomDescription}>{chatroom_description}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('ChatroomUsers')}>
+          <FontAwesome name="users" size={24} color={colors.primary} />
+        </TouchableOpacity>
+      </View>
+
+
           {loading ? (
       <ActivityIndicator size="large" color="white" />
     ) : (
@@ -145,9 +157,10 @@ export const ChatroomTemp = ({ navigation }) => {
   scrollEventThrottle={400}
   renderItem={({ item }) => (
     <MessageItem
-      user={item[0]}
-      content={item[1]} />
-  )}
+    user={item[0]}
+    content={item[1]}
+    isHost={item[2]} />
+)}
 
 />
 )}            
@@ -204,20 +217,30 @@ const styles = StyleSheet.create({
       padding: 10,
       alignItems: 'center'
     },
+
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: Platform.OS === 'ios' ? 60 : 40, // Responsive margin-top based on platform
+      paddingHorizontal: 10,
+    },
     chatroomHeader: {
-        alignItems: 'center',
-        marginTop: Platform.OS === 'ios' ? 60 : 40, // Responsive margin-top based on platform
-        marginBottom: 10,
-      },
-      chatroomTitleText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#FFFFFF', // Adjust color as needed
-      },
-      chatroomDescription: {
-        fontSize: 16,
-        color: '#CCCCCC', // Adjust color as needed
-      },
+      flex: 1,
+      alignItems: 'center',
+    },
+    chatroomTitleText: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+    },
+    chatroomDescription: {
+      fontSize: 16,
+      color: '#CCCCCC',
+    },
+    iconButton: {
+      padding: 10, // Adjust padding as needed
+    },
     profilePic: {
       width: 40,
       height: 40,

@@ -76,9 +76,15 @@ export async function handle_auto_login(navigation) {
 }
 
 export async function load_chatroom_users() {
-  const response = await axios.get(chatroom_users_url);
-  const data = response.data;
-  console.log(data);
+  try {
+    const response = await axios.get(chatroom_users_url);
+    const data = response.data;
+    console.log("data", data);
+    return data; // Ensure that this returns the expected array of user objects
+  } catch (error) {
+    console.error('Error loading chatroom users:', error);
+    return []; // Return an empty array in case of error
+  }
 }
 
 export async function load_messages() {
