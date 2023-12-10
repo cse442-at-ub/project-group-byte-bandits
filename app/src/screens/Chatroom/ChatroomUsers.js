@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, useColorScheme } fr
 import { Entypo } from '@expo/vector-icons';
 import theme from '../../components/theme.js';
 import { Header } from 'react-native-elements';
-import { load_chatroom_data, load_chatroom_users } from "../../bubble_api/bubble_api.js";
+import { load_chatroom_data, load_chatroom_users, send_friend_request } from "../../bubble_api/bubble_api.js";
   
 export const ChatroomUsers = ({ navigation }) => {
   const scheme = useColorScheme();
@@ -30,6 +30,12 @@ export const ChatroomUsers = ({ navigation }) => {
     LoadChatroomUsers();
   }, []);
 
+  async function SendFriendRequest(id) {
+    const data = await send_friend_request(id);
+    console.log(data);
+  }
+
+
   return (
     <View style={[styles.container, { backgroundColor: colors.widget }]}>
       <Header
@@ -49,7 +55,11 @@ export const ChatroomUsers = ({ navigation }) => {
         renderItem={({ item }) => (
           <View style={styles.userItem}>
             <View style={[styles.circle,{backgroundColor: colors.background}]} />
-            <Text style={{ color: colors.text, marginLeft: 10 }}>{item.user_name}</Text>
+            <TouchableOpacity
+                  onPress={() => SendFriendRequest(item.user)}
+                >
+                  <Text style={{ color: colors.text, marginLeft: 10 }}>{item.user_name}</Text>
+                </TouchableOpacity>
           </View>
         )}
       />
