@@ -57,6 +57,7 @@ const HomePage = ({ navigation }) => {
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  let locationSubscription;
 
   useEffect(() => {
     handle_login_state(navigation);
@@ -70,7 +71,7 @@ const HomePage = ({ navigation }) => {
   const getDescriptionStyle = (description) => {
     return description === "No description"
       ? { color: "gray", fontSize: 10, marginTop: 5 }
-      : { color: colors.text, fontSize: 10, marginTop: 5 };
+      : { color: colors.subText, fontSize: 10, marginTop: 5 };
   };
 
   const scheme = useColorScheme();
@@ -228,6 +229,10 @@ const HomePage = ({ navigation }) => {
     }, [])
   );
 
+  const isUserInChatroom = (chatroomId) => {
+    return connected_chatroom.includes(chatroomId);
+  };
+
   const renderIcon = (tabName) => {
     if (scheme === "dark") {
       switch (tabName) {
@@ -293,7 +298,7 @@ const HomePage = ({ navigation }) => {
               </Text>
             </View>
             <FlatList
-              contentContainerStyle={{ paddingBottom: 150 }}
+              contentContainerStyle={{ paddingBottom: 80 }}
               data={chatroom_data}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
@@ -309,7 +314,7 @@ const HomePage = ({ navigation }) => {
                       <Text
                         style={[
                           styles.chatroomItemName,
-                          { color: colors.text },
+                          { color: "white" },
                         ]}
                       >
                         {item[10]}
@@ -321,12 +326,14 @@ const HomePage = ({ navigation }) => {
                     <Text style={styles.chatroomItemJoin}>+ Join</Text>
                   </View>
                   <View style={styles.chatroomItemCreator}>
-                    <Text style={{ color: "gray", fontWeight: "bold" }}>
+                    <Text style={{ color: colors.subText, fontWeight: "bold" }}>
                       Created by @{item[7]}
                     </Text>
                   </View>
                 </TouchableOpacity>
               )}
+                ListFooterComponent={<View style={{ height: 150 }} />}
+
             />
           </View>
         );
@@ -451,7 +458,10 @@ const HomePage = ({ navigation }) => {
         rightComponent={
           <View style={styles.iconsContainer}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Notification")}
+              onPress={() => 
+                navigation.navigate("Notification")
+                // navigation.navigate("Register")
+            }
             >
               <Entypo name="mail" size={24} color={colors.iconColor} />
             </TouchableOpacity>
@@ -475,17 +485,19 @@ const HomePage = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("CreateChatroom")
+            // navigation.navigate("GetUsername")
           }}
         >
           <View
             style={[
               styles.newBubble,
-              { backgroundColor: colors.buttonBackground },
+              { backgroundColor: "white" },
             ]}
           >
-            <Text style={[styles.newBubbleText, { color: colors.buttonText }]}>
-              + Create
-            </Text>
+        <Text style={[styles.newBubbleText, { color: scheme === 'dark' ? colors.buttonText : colors.subText }]}>
+          + Create
+        </Text>
+
           </View>
         </TouchableOpacity>
       </View>
@@ -719,8 +731,9 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "95%",
-    height: "85%",
+    height: "80%",
     borderRadius: 20,
+    bottom: '5%'
   },
   createBubbleButton: {
     position: "absolute",
@@ -793,6 +806,7 @@ const styles = StyleSheet.create({
     margin: 10,
     flexDirection: "column",
     justifyContent: "space-between",
+    
   },
   chatroomItemHost: {
     borderRadius: 30,
