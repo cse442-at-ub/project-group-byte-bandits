@@ -201,17 +201,19 @@ const Login = ({ navigation }) => {
             <View style={styles.line} />
           </View>
 
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonStyle={
-              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-            }
-            buttonType={
-              AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
-            }
-            cornerRadius={5}
-            style={styles.appleButton}
-            onPress={fetchAppleInfo}
-          />
+          {Platform.OS === "ios" && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+              }
+              cornerRadius={5}
+              style={styles.appleButton}
+              onPress={fetchAppleInfo}
+            />
+          )}
         </View>
       </KeyboardAvoidingView>
     </>
