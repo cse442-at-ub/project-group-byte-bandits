@@ -77,13 +77,19 @@ export async function handle_auto_login(navigation) {
 export async function load_messages() {
   const response = await axios.get(chatroom_process_request_url);
   const data = await response.data;
+  const chatroom_data = await axios.get(chatroom_data_url)
+  hostid = chatroom_data.data.host
+
   if(response.data.conde == undefined) {
     let text_messages = [];
     data.forEach((element) => {
       const text_data = JSON.parse(element);
       const user = text_data.user;
       const content = text_data.content;
-      text_messages.push([user, content]);
+      console.log(text_data.user_id)
+      let ishost = false;
+      if(text_data.user_id == hostid) ishost = true;
+      text_messages.push([user, content, ishost]);
     });
     return text_messages;
   } else {
