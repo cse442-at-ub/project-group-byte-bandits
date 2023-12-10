@@ -33,7 +33,7 @@ import {
 } from "../../bubble_api/bubble_api.js";
 import theme from '../../components/theme.js'; 
 
-const MessageItem = ({ user, content, isHost }) => {
+const MessageItem = ({ user, content, isHost, isFriend }) => {
   const scheme = useColorScheme();
   const colors = theme(scheme);
 
@@ -42,12 +42,14 @@ const MessageItem = ({ user, content, isHost }) => {
       <View style={styles.profilePic} />
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-          <Text style={{ fontWeight: 'bold', color: colors.primary, marginRight: isHost ? 3 : 0 }}>
+          <Text style={{ fontWeight: 'bold', color: colors.primary, marginRight: isHost || isFriend ? 3 : 0 }}>
             {user}
           </Text>
           {isHost && (
             <MaterialCommunityIcons name="crown" size={18} color="gold" />
+          )}
+          {isFriend && (
+            <MaterialCommunityIcons name="account" size={18} color="blue" /> 
           )}
         </View>
         <Text style={{ color: colors.text }}>{content}</Text>
@@ -55,6 +57,8 @@ const MessageItem = ({ user, content, isHost }) => {
     </View>
   );
 };
+
+
 export const ChatroomTemp = ({ navigation }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [message_contents, setMessageContents] = useState(null);
@@ -157,11 +161,12 @@ export const ChatroomTemp = ({ navigation }) => {
   scrollEventThrottle={400}
   renderItem={({ item }) => (
     <MessageItem
-    user={item[0]}
-    content={item[1]}
-    isHost={item[2]} />
-)}
-
+      user={item[0]}
+      content={item[1]}
+      isHost={item[2]}
+      isFriend={item[3]} 
+    />
+  )}
 />
 )}            
           <KeyboardAvoidingView
