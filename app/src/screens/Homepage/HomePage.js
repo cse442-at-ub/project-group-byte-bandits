@@ -415,12 +415,12 @@ const HomePage = ({ navigation }) => {
   const renderUserItem = ({ item }) => {
     return (
       <TouchableOpacity
-        style={styles.userListItem}
+        style={[styles.userListItem,{backgroundColor: colors.background}]}
         onPress={() => SendFriendRequest(item[1])}
       >
         <View style={styles.profileImage} />
         <View>
-          <Text style={styles.userListItemText}>{item[0]}</Text>
+          <Text style={[styles.userListItemText,{color: colors.text}]}>{item[0]}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -570,82 +570,7 @@ const HomePage = ({ navigation }) => {
         {renderContent()}
       </View>
       <NavBar navigation={navigation} currentScreen={"HomePage"} />
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
-      >
-        <TouchableWithoutFeedback onPress={toggleModal}>
-          <View style={styles.modalOverlay}>
-            <View style={modalViewStyle}>
-              <TextInput
-                style={modalTitleInputStyle}
-                onChangeText={setBubbleTitle}
-                value={bubbleTitle}
-                placeholder="Bubble Title"
-                placeholderTextColor="gray"
-                maxLength={30}
-              />
-
-              <TextInput
-                style={[modalInputStyle, { height: 100 }]}
-                onChangeText={setBubbleDescription}
-                value={bubbleDescription}
-                placeholder="Short Description"
-                placeholderTextColor="gray"
-                maxLength={100}
-                multiline
-              />
-
-              <View style={styles.switchContainer}>
-                <Text
-                  style={[styles.modalText, { color: colors.text, right: 10 }]}
-                >
-                  Private Room
-                </Text>
-                <Switch
-                  trackColor={{ false: "#767577", true: colors.primary }}
-                  thumbColor={isPrivate ? colors.secondary : "#f4f3f4"}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={setIsPrivate}
-                  value={isPrivate}
-                />
-              </View>
-
-              <View style={styles.sliderContainer}>
-                <Text style={[styles.modalText, { color: colors.text }]}>
-                  Radius: {selectedRadius}m
-                </Text>
-                <Slider
-                  style={styles.slider}
-                  minimumValue={10}
-                  maximumValue={100}
-                  step={1}
-                  value={selectedRadius}
-                  onValueChange={setSelectedRadius}
-                  minimumTrackTintColor={colors.primary}
-                  maximumTrackTintColor={colors.secondary}
-                  thumbTintColor={colors.primary}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={[
-                  styles.createBubbleButtonStyle,
-                  { backgroundColor: colors.buttonBackground },
-                ]}
-                onPress={() => {
-                  setCreatingBubble(false);
-                  CreateChatroom();
-                }}
-              >
-                <Text style={{ color: colors.buttonText }}>Create Bubble</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+    
     </View>
   );
 };

@@ -92,17 +92,22 @@ export async function load_messages() {
   const data = await response.data;
   const chatroom_data = await axios.get(chatroom_data_url)
   hostid = chatroom_data.data.host
-
+  let friends = await get_friends();
+  friends = friends.map(function(val) {
+    return val.slice(0, -1)[0];
+  });
+  console.log(friends);
   if(response.data.conde == undefined) {
     let text_messages = [];
     data.forEach((element) => {
       const text_data = JSON.parse(element);
       const user = text_data.user;
       const content = text_data.content;
-      console.log(text_data.user_id)
       let ishost = false;
+      let isfriend = false;
       if(text_data.user_id == hostid) ishost = true;
-      text_messages.push([user, content, ishost]);
+      if(friends.includes(text_data.user_id)) isfriend = true
+      text_messages.push([user, content, ishost, isfriend]);
     });
     return text_messages;
   } else {
