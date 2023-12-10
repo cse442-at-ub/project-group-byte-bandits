@@ -11,7 +11,7 @@ import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
 import { Chatroom } from "./src/screens/Chatroom/Chatroom";
-import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers";
+import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers"
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
 import DM from "./src/screens/DM/DM";
@@ -59,7 +59,7 @@ const App = () => {
             name="ChatroomUsers"
             options={{
               headerShown: false,
-              animation: "slide_from_right",
+              animation: "slide_from_bottom",
               gestureEnabled: true,
             }}
             component={ChatroomUsers}
