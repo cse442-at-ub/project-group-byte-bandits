@@ -31,6 +31,8 @@ const validate_login_url =
 const validate_signup_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup";
 
+const user_logout_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/logout";
+const delete_account_url = "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/account_ops/delete_account";
 const user_location_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/update_user_location";
 const user_profile_url =
@@ -368,4 +370,21 @@ export async function get_friends() {
     }
   });
   return friends;
+}
+
+export async function user_logout() {
+  const response = await axios.get(user_logout_url);
+  const data = response.data;
+  return data;
+}
+
+export async function delete_account(confirm_delete) {
+  const data = qs.stringify({
+    confirm_delete: confirm_delete
+  });
+  const token = await make_csrf_token();
+  const response = await axios.post(delete_account_url, data, {
+    headers: post_request_headers(token),
+  });
+  return response.data;
 }

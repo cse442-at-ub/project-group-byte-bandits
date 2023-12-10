@@ -159,6 +159,7 @@ const Register = ({navigation}) => {
           <View style={styles.line} />
         </View>
 
+        {Platform.OS === "ios" && (
 
        <AppleAuthentication.AppleAuthenticationButton
     buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
@@ -167,6 +168,7 @@ const Register = ({navigation}) => {
     style={styles.appleButton}
     onPress={fetchAppleInfo}
 />
+  )}
               </View>
             </KeyboardAvoidingView>
 </>
