@@ -8,6 +8,10 @@ import {
   Alert,
   TouchableWithoutFeedback
 } from "react-native";
+import {
+  user_logout,
+  delete_account,
+} from "../../bubble_api/bubble_api";
 import React, {useState} from "react";
 import * as Haptics from "expo-haptics";
 import { Entypo, Ionicons } from "@expo/vector-icons";
@@ -17,22 +21,22 @@ import axios from "axios";
 const Settings = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-  const [password, setPassword] = useState('');
+  const [delete_confirm_sign, setConfirmDelete] = useState('');
 
-  async function user_logout() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/logout"
-    );
-    const data = response.data;
+  async function UserLogout() {
+    const data = await user_logout()
     console.log(data);
     if (data == '') {
       navigation.navigate("Login");
     }
   }
-  const confirmDeleteAccount = () => {
-    //add api here
-    console.log("Account deletion confirmed. Password: ", password);
+  async function confirmDeleteAccount() {
+    const data = await delete_account(delete_confirm_sign);
     setModalVisible(false);
+    console.log(data);
+    if (data == '') {
+      navigation.navigate("Login");
+    }
   };
 
   return (
@@ -103,7 +107,7 @@ const Settings = () => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.signOutButton}
-                        onPress={() => user_logout()}>
+                        onPress={() => UserLogout()}>
         <View style={styles.gradient}>
           <Text style={styles.signOutButtonText}>Sign Out </Text>
         </View>
@@ -128,8 +132,8 @@ const Settings = () => {
             <Text style={styles.modalText}>Are you sure you want to delete your account?</Text>
             <TextInput
               style={styles.input}
-              onChangeText={setPassword}
-              value={password}
+              onChangeText={setConfirmDelete}
+              value={delete_confirm_sign}
               placeholder="Enter your password"
               secureTextEntry
             />
