@@ -19,6 +19,7 @@ import DMList from "./src/screens/DM/DMList";
 import Notification from "./src/screens/Notification/Notification";
 import { ChatroomTemp } from "./src/screens/Chatroom/ChatroomTemp";
 import CreateChatroom from "./src/screens/Homepage/CreateChatroom";
+import DeleteAccount from "./src/screens/Settings/DeleteAccount";
 
 const Stack = createNativeStackNavigator();
 
@@ -134,6 +135,14 @@ const App = () => {
               gestureEnabled: true,
             }}
             component={CreateChatroom}
+          />
+          <Stack.Screen
+            name="DeleteAccount"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={DeleteAccount}
           />
         </Stack.Navigator>
       </NavigationContainer>
