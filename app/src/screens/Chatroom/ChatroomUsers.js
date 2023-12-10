@@ -18,22 +18,20 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons";
 import { disconnect_from_chatroom, handle_login_state, 
-  load_chatroom_data, 
+  load_chatroom_users, 
   load_messages, 
   send_text_message } from "../../bubble_api/bubble_api.js";
 
 export const ChatroomUsers = ({ navigation }) => {
-  const [chatroom_name, setChatroomName] = useState(null);
-  const [chatroom_description, setDescription] = useState(null);
+  const [chatroom_users, setChatroomUsers] = useState(null);
 
-  async function LoadChatroomData() {
-    const data = await load_chatroom_data();
-    setChatroomName(data.name);
-    setDescription(data.description);
+  async function LoadChatroomUsers() {
+    const data = await load_chatroom_users();
+    setChatroomUsers(data);
   }
 
   return (
-    <SafeAreaView style={styles.ChatroomBackground} onLayout={() => LoadChatroomData()}>
+    <SafeAreaView style={styles.ChatroomBackground} onLayout={() => LoadChatroomUsers()}>
       <View style={styles.topBar}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Chatroom")}
@@ -48,6 +46,14 @@ export const ChatroomUsers = ({ navigation }) => {
         <Text style={styles.chatroomTitleText}>{chatroom_name}</Text>
         <Text style={{color:'white'}}>{chatroom_description}</Text>
       </View>
+      <FlatList
+                  data={chatroom_users}
+                  renderItem={({ item }) => (
+                    <Text style={{ color: "white" }}>
+                      {item}
+                    </Text>
+                  )}
+                />
     </SafeAreaView>
   );
 };

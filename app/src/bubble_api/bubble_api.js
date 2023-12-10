@@ -15,7 +15,8 @@ const load_chatrooms_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/chatroom_data";
   const delete_chatroom_url =
   "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/delete_chatroom";
-
+const chatroom_users_url = 
+  "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/chatroom/chatroom_users";
 
 
 const generate_csrf_token_url =
@@ -72,6 +73,12 @@ export async function handle_auto_login(navigation) {
   if (login_state_data == "") {
     navigation.navigate("HomePage");
   }
+}
+
+export async function load_chatroom_users() {
+  const response = await axios.get(chatroom_users_url);
+  const data = response.data;
+  console.log(data);
 }
 
 export async function load_messages() {

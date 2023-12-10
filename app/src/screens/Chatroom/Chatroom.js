@@ -82,7 +82,6 @@ export const Chatroom = ({ navigation }) => {
     setChatroomName(data.name);
     setDescription(data.description);
   }
-
   return (
     <SafeAreaView
       style={styles.ChatroomBackground}
