@@ -21,7 +21,15 @@ try {
 $id = $_COOKIE['chatroom'];
 $chatroom_record = get_chatroom_with_id($id)[0];
 
+try {
+    if($chatroom_record['host'] != $user_record['id'])
+        throw new Exception("not host to chatroom");
+} catch(Exception $e) {
+    handle_exception($e, "chatroom",$user_record['id']);
+}
+
 setcookie("chatroom", '', time() - $_GLOBALS['lifespan'],'/');
-delete_chatroom_auth_token_by_user($user_record['id']);  // make sure to call these methods before logging out or the sesssion will not match
 unset_user_chatroom_connection($_COOKIE['PHPSESSID']);
-set_chatroom_tokens($chatroom_record['available'] + 1,$id);
+delete_chatroom_auth_token_with_chatroom($chatroom_record['id']); // delete texts by chatroom
+delete_chatroom_with_id($chatroom_record['id']); // delete chatroom by id
+delete_text_with_chatroom($chatroom_record['id']);
