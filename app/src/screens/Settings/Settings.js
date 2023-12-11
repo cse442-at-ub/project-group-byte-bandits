@@ -3,9 +3,16 @@ import {
   Text,
   View,
   TouchableOpacity,
-  SafeAreaView,
+  Modal,
+  TextInput,
+  Alert,
+  TouchableWithoutFeedback
 } from "react-native";
-import React from "react";
+import {
+  user_logout,
+  delete_account,
+} from "../../bubble_api/bubble_api";
+import React, {useState} from "react";
 import * as Haptics from "expo-haptics";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/core";
@@ -13,17 +20,24 @@ import axios from "axios";
 
 const Settings = () => {
   const navigation = useNavigation();
-  
-  async function user_logout() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/logout"
-    );
-    const data = response.data;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [delete_confirm_sign, setConfirmDelete] = useState('');
+
+  async function UserLogout() {
+    const data = await user_logout()
     console.log(data);
     if (data == '') {
       navigation.navigate("Login");
     }
   }
+  async function confirmDeleteAccount() {
+    const data = await delete_account(delete_confirm_sign);
+    setModalVisible(false);
+    console.log(data);
+    if (data == '') {
+      navigation.navigate("Login");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -61,12 +75,13 @@ const Settings = () => {
           <Entypo name="chevron-right" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate("DeleteAccount")}
-        >
-          <Text style={styles.optionText}>Delete Account</Text>
-          <Entypo name="chevron-right" size={24} color="white" />
-        </TouchableOpacity>
+        style={styles.option}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.optionText}>Delete Account</Text>
+        <Entypo name="chevron-right" size={24} color="white" />
+      </TouchableOpacity>
+
       </View>
       <View style={styles.grayBox}>
         <TouchableOpacity
@@ -92,7 +107,7 @@ const Settings = () => {
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.signOutButton}
-                        onPress={() => user_logout()}>
+                        onPress={() => UserLogout()}>
         <View style={styles.gradient}>
           <Text style={styles.signOutButtonText}>Sign Out </Text>
         </View>
@@ -101,6 +116,37 @@ const Settings = () => {
       <View style={styles.footer}>
         <Text style={styles.copyright}>© Bubbles 2023</Text>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Are you sure you want to delete your account?</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setConfirmDelete}
+              value={delete_confirm_sign}
+              placeholder="Enter your password"
+              secureTextEntry
+            />
+            <TouchableOpacity
+              style={[styles.button, styles.buttonClose]}
+              onPress={confirmDeleteAccount}
+            >
+              <Text style={styles.textStyle}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -173,5 +219,45 @@ const styles = StyleSheet.create({
   signOutButtonText: {
     color: "white",
     fontSize: 20,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    width: '80%'
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
   },
 });

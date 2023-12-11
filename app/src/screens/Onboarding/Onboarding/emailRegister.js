@@ -17,6 +17,7 @@ import LineComponent from "../../../svgs/lineComponent";
 import axios from "axios";
 import qs from "qs";
 import { logIn } from "../../../../redux/user";
+import { secure_signup } from "../../../bubble_api/bubble_api";
 
 const EmailRegister = ({ navigation }) => {
   // Calculating width of phone screen to dynamically change position of text
@@ -29,30 +30,14 @@ const EmailRegister = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   
-  const secure_signup = async () => {
-    const data = qs.stringify({
-      email: email,
-      password: password,
-      password_check: confirmPassword,
-      initiate:true
-    });
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_data.csrf_token,
-        },
-      }
-    );
-    setErrorMessage(response.data.response);
-    if (response.data == '') {
+  async function SecureSignup() {
+    const data = await secure_signup(email, password, confirmPassword);
+    console.log(data.response);
+    setErrorMessage(data.response);
+    if (data == '') {
       navigation.navigate("GetUsername");
     }
-  };
+  }
 
   return (
     <TouchableWithoutFeedback
@@ -331,7 +316,7 @@ const EmailRegister = ({ navigation }) => {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => secure_signup()}
+                  onPress={() => SecureSignup()}
                   style={styles.logInButton}
                 >
                   {/* Login w/ Apple Text*/}

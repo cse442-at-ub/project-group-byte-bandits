@@ -1,18 +1,17 @@
 <?php
 include "../auth/utility.php";
-try {
-    if(isset($_COOKIE['PHPSESSID'])) {   
-        $session_id = $_COOKIE['PHPSESSID'];
-        if($userQuery->get_user_with_sid($session_id) != false) {
-            $userQuery->unset_chatroom_connection($session_id);
-            $chatroomQuery->delete_chatroom_auth_token($session_id);
-            $userQuery->unset_session_id($session_id);
-            setcookie("PHPSESSID", '', time() - $_GLOBALS['lifespan'],'/');
-            session_destroy();
-        } else
-            throw new Exception('there is no logged in user');
-    }
-    
-} catch(Exception $e) {
-    handle_exception($e, "session");
+
+$session_id = $_COOKIE['PHPSESSID'];
+$user_record = get_user_with_sid($session_id)[0];
+
+handle_login_state();
+unset_user_login_token($session_id);
+unset_session_id($session_id);
+if(isset($_COOKIE['chatroom'])) {
+    setcookie("chatroom", '', time() - $GLOBALS['lifespan'],'/');
 }
+if(isset($user_record['chatroom_connection'])) {
+    delete_chatroom_auth_token($user_record['chatroom_connection']);
+    unset_user_chatroom_connection($session_id);
+}
+setcookie("login_token", '', time() - $GLOBALS['lifespan'],'/');

@@ -1,28 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { Modal, Switch, Button, useColorScheme } from "react-native";
 import {
-  Text,
   View,
-  StyleSheet,
+  Text,
   TouchableOpacity,
-  SafeAreaView,
-  Modal,
-  TouchableWithoutFeedback,
+  StyleSheet,
+  Image,
   TextInput,
-  Keyboard,
-  Switch,
+  FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { useSelector } from "react-redux";
-import { Picker } from "@react-native-picker/picker";
+import { Header } from "react-native-elements";
+import {
+  MaterialCommunityIcons,
+  FontAwesome5,
+  Feather,
+  Entypo,
+} from "@expo/vector-icons";
+import theme from "../../components/theme";
+import NearbyDark from "../../assets/nearbydark.gif";
+import ExploreDark from "../../assets/exploredark.gif";
+import SocialDark from "../../assets/socialdark.gif";
+import NearbyLight from "../../assets/nearbylight.gif";
+import ExploreLight from "../../assets/explorelight.gif";
+import SocialLight from "../../assets/sociallight.gif";
+import NavBar from "../../components/Navbar";
+import { connect, useSelector } from "react-redux";
+import {
+  load_profile_data,
+  connect_to_chatroom,
+  load_chatrooms,
+  search_user,
+  update_location,
+  send_friend_request,
+  create_chatroom,
+  load_chatroom_data,
+  load_all_chatroom,
+} from "../../bubble_api/bubble_api";
+import * as Location from "expo-location";
 import axios from "axios";
-
-import BubbleComponent from "../../svgs/bubbleComponent";
-import Feather from "react-native-vector-icons/Feather";
-import Octicons from "react-native-vector-icons/Octicons";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import HomePageSocial from "../../components/HomePageSocial";
-import HomePageNearby from "../../components/HomePageNearby";
+import qs from "qs";
+import { handle_login_state } from "../../bubble_api/bubble_api";
+import { Slider } from "react-native-elements";
+import MapView, { Marker } from "react-native-maps";
 
 const HomePage = ({ navigation }) => {
   const [creatingBubble, setCreatingBubble] = useState(false);
@@ -32,896 +53,751 @@ const HomePage = ({ navigation }) => {
   const [exploreTab, setExploreTab] = useState(false);
   const [bubbleTitle, setBubbleTitle] = useState("");
   const [bubbleDescription, setBubbleDescription] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(0);
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  let locationSubscription;
+
+  useEffect(() => {
+    handle_login_state(navigation);
+  }, [navigation]);
 
   const userID = useSelector((state) => state.user.userID);
-
-  const create_bubble = () => {
-    try {
-      const data = qs.stringify({
-        chatroom_radius: selectedRadius,
-      });
-    } catch {}
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
   };
-  async function handle_login_state() {
-    const response = await axios.get(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/handle_login_state"
+
+  const getDescriptionStyle = (description) => {
+    return description === "No description"
+      ? { color: "gray", fontSize: 10, marginTop: 5 }
+      : { color: colors.subText, fontSize: 10, marginTop: 5 };
+  };
+
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
+  const [selectedTab, setSelectedTab] = useState("nearby");
+
+  const [location, setLocation] = useState(null);
+  const [connected_chatroom, setConnectedChatroom] = useState([]);
+
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [userid, setUserId] = useState(null);
+  const [chatroom_data, setChatroomData] = useState(null);
+  const [searched_user, setSearchedUser] = useState(null);
+  const [map_chatrooms, setMapData] = useState(null);
+
+  async function CreateChatroom() {
+    const data = await create_chatroom(
+      selectedRadius,
+      maxPeople,
+      isPrivate,
+      bubbleDescription,
+      bubbleTitle
     );
-    login_state_data = response.data;
-    console.log(login_state_data);
-    if (login_state_data != '') {
-      navigation.navigate("Login");
+    //console.log(data);
+    if (data == "") {
+      setIsModalVisible(false);
+      navigation.navigate("Chatroom");
     }
   }
-  
-  return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-      onLayout={() => handle_login_state()}
-    >
-      <View style={styles.HomePageBackground}>
-        <SafeAreaView style={{ flex: 1 }}>
-          {/* CREATE BUBBLE MODAL */}
-          <Modal
-            transparent={true}
-            animationType="fade"
-            visible={creatingBubble}
-          >
-            <TouchableWithoutFeedback
-              onPress={
-                bubbleDescription.length === 0 && bubbleTitle.length === 0
-                  ? () => {
-                      setCreatingBubble(false);
-                      setIsPrivate(false);
-                      setMaxPeople(1);
-                      setSelectedRadius(150);
-                    }
-                  : () => setShowDeleteBubble(true)
+
+  async function ConnectToChatroom(id) {
+    const data = await connect_to_chatroom(id);
+    setErrorMsg(data);
+    if (data == "") {
+      navigation.navigate("Chatroom");
+    }
+  }
+
+  async function LoadAllChatrooms() {
+    const data = await load_all_chatroom();
+    setMapData(data);
+  }
+
+  async function SearchUser(username) {
+    const data = await search_user(username);
+    let users = [];
+    if (data.length > 0) {
+      data.forEach((element) => {
+        users.push([element.name, element.id]);
+      });
+      setSearchedUser(users);
+    } else setSearchedUser("");
+  }
+
+  async function SendFriendRequest(id) {
+    const data = await send_friend_request(id);
+    console.log(data);
+  }
+
+  async function ProfileData() {
+    const data = await load_profile_data();
+    setUsername(data["name"]);
+    setUserId(data["id"]);
+  }
+
+  async function CheckConnection() {
+    const response = await load_chatroom_data();
+    if (response.code) {
+      console.log("connected chatroom", response);
+      setConnectedChatroom([]);
+      return false;
+    } else {
+      console.log(response);
+      setConnectedChatroom([response.id, response.name, response.host]);
+    }
+  }
+  useFocusEffect(
+    React.useCallback(() => {
+      let hasRun = false;
+
+      if (!hasRun) {
+        LoadAllChatrooms();
+        CheckConnection();
+
+        hasRun = true;
+      }
+
+      return () => {
+        hasRun = false;
+      };
+    }, [])
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let hasRun = false;
+
+      if (!hasRun) {
+        console.log("===========================================");
+
+        const getLocation = async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          console.log("STATUS", status);
+
+          if (status !== "granted") {
+            console.log("Location permission not granted");
+            return;
+          }
+
+          try {
+            let currentLocation = await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation);
+          } catch (error) {
+            console.error("Error getting the initial position:", error);
+          }
+
+          try {
+            locationSubscription = await Location.watchPositionAsync(
+              {
+                accuracy: Location.Accuracy.High,
+                timeInterval: 10000,
+                distanceInterval: 3,
+              },
+              async (newLocation) => {
+                setLocation(newLocation);
+                const data = await update_location(
+                  newLocation.coords.longitude,
+                  newLocation.coords.latitude
+                );
+                const c_data = await load_chatrooms(
+                  newLocation.coords.longitude,
+                  newLocation.coords.latitude
+                );
+                setChatroomData(c_data);
+                setErrorMsg(data);
+                //console.log(c_data);
               }
-            >
-              <View style={styles.invisibleScreen}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    Keyboard.dismiss();
-                  }}
-                >
-                  <View style={styles.createBubble}>
-                    <View style={styles.createBubbleLabel}>
-                      <View style={styles.cancelDiv}>
-                        <TouchableOpacity
-                          onPress={
-                            bubbleDescription.length === 0 &&
-                            bubbleTitle.length === 0
-                              ? () => {
-                                  setCreatingBubble(false);
-                                  setIsPrivate(false);
-                                  setMaxPeople(1);
-                                  setSelectedRadius(150);
-                                }
-                              : () => setShowDeleteBubble(true)
-                          }
-                        >
-                          <MaterialIcons
-                            name="cancel"
-                            size={30}
-                            color="#6B6A6A"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.createBubbleTop}>
-                        <Text style={styles.createBubbleTopText}>
-                          Create Bubble
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.createBubbleTitle}>
-                      <Text style={styles.createBubbleTitleText}>Title</Text>
-                    </View>
-                    <View style={styles.searchBarDiv}>
-                      <TextInput
-                        style={styles.searchBar}
-                        placeholder="Add a title..."
-                        placeholderTextColor={"#3D3C3C"}
-                        onChangeText={(text) => setBubbleTitle(text)}
-                        value={bubbleTitle}
-                        maxLength={25}
-                      />
-                      <Text style={styles.titleCounter}>
-                        {bubbleTitle.length + "/25"}
-                      </Text>
-                    </View>
-                    <View style={styles.createBubbleDescription}>
-                      <Text style={styles.createBubbleDescriptionText}>
-                        Description
-                      </Text>
-                    </View>
+            );
+          } catch (error) {
+            console.error("Error starting location monitoring:", error);
+          }
+        };
 
-                    <View style={styles.searchBarDivDescription}>
-                      <TextInput
-                        style={{
-                          shadowColor: "#000",
-                          shadowOffset: {
-                            width: 0,
-                            height: 2,
-                          },
-                          shadowOpacity: 0.23,
-                          shadowRadius: 2.62,
-                          elevation: 4,
-                          padding: 20,
-                          width: "80%",
-                          borderRadius: 20,
-                          borderColor: "#3D3C3C",
-                          borderWidth: 1,
-                          backgroundColor: "#191818",
-                          color: "#56585B",
-                          fontWeight: "bold",
-                          paddingLeft: 15,
-                          paddingRight: 85,
-                          paddingTop: bubbleDescription.length === 0 ? 25 : 10,
-                        }}
-                        placeholder="Add a description..."
-                        placeholderTextColor={"#3D3C3C"}
-                        onChangeText={(text) => setBubbleDescription(text)}
-                        value={bubbleDescription}
-                        maxLength={80}
-                        multiline={true}
-                        textAlignVertical="top"
-                        onSubmitEditing={() => {
-                          Keyboard.dismiss;
-                        }}
-                      />
-                      <Text style={styles.descriptionCounter}>
-                        {bubbleDescription.length + "/80"}
-                      </Text>
-                    </View>
+        getLocation();
+        hasRun = true;
+      }
 
-                    <View style={styles.createBubbleSettings}>
-                      <View style={styles.settings}>
-                        <View style={styles.oneThirdSettings}>
-                          <View style={styles.setting2Title}>
-                            <Text style={styles.settingsTitleText}>
-                              Privacy
-                            </Text>
-                          </View>
-                          <View style={styles.privacySwitchBar}>
-                            {/* Public by default */}
-                            <Switch
-                              trackColor={{ false: "#767577", true: "#81b0ff" }}
-                              onValueChange={() => setIsPrivate(!isPrivate)}
-                              value={isPrivate}
-                              style={{
-                                transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
-                              }}
-                            ></Switch>
-                          </View>
-                          <View style={styles.informOfPrivacy}>
-                            <Text style={styles.privacyText}>
-                              {isPrivate
-                                ? "Currently Private"
-                                : "Currently Public"}
-                            </Text>
-                          </View>
-                        </View>
+      return () => {
+        hasRun = false;
+        if (locationSubscription) {
+          locationSubscription.remove();
+        }
+      };
+    }, [])
+  );
 
-                        <View style={styles.oneThirdSettings}>
-                          <View style={styles.settingTitle}>
-                            <Text style={styles.settingsTitleText}>
-                              Bubble Radius
-                            </Text>
-                          </View>
+  const isUserInChatroom = (chatroomId) => {
+    return connected_chatroom.includes(chatroomId);
+  };
 
-                          <View style={styles.radiusChoiceDiv}>
-                            <Picker
-                              style={styles.radiusChoiceDiv}
-                              selectedValue={selectedRadius}
-                              onValueChange={(itemValue) =>
-                                setSelectedRadius(itemValue)
-                              }
-                              itemStyle={styles.radiusChoices}
-                            >
-                              <Picker.Item label="50 ft" value={50} />
-                              <Picker.Item label="100 ft" value={100} />
-                              <Picker.Item label="150 ft" value={150} />
-                              <Picker.Item label="200 ft" value={200} />
-                              <Picker.Item label="250 ft" vvalue={250} />
-                              <Picker.Item label="300 ft" value={300} />
-                            </Picker>
-                          </View>
-                        </View>
-                        <View style={styles.oneThirdSettings}>
-                          <View style={styles.settingTitle}>
-                            <Text style={styles.settingsTitleText}>
-                              Max People
-                            </Text>
-                          </View>
+  const renderIcon = (tabName) => {
+    if (scheme === "dark") {
+      switch (tabName) {
+        case "nearby":
+          return <Image source={NearbyDark} style={styles.iconImage} />;
+        case "explore":
+          return <Image source={ExploreDark} style={styles.iconImage} />;
+        case "social":
+          return <Image source={SocialDark} style={styles.iconImage} />;
+        default:
+          return null;
+      }
+    } else {
+      switch (tabName) {
+        case "nearby":
+          return <Image source={NearbyLight} style={styles.iconImage} />;
+        case "explore":
+          return <Image source={ExploreLight} style={styles.iconImage} />;
+        case "social":
+          return <Image source={SocialLight} style={styles.iconImage} />;
+        default:
+          return null;
+      }
+    }
+  };
 
-                          <View style={styles.radiusChoiceDiv}>
-                            <Picker
-                              style={styles.radiusChoiceDiv}
-                              selectedValue={maxPeople}
-                              onValueChange={(itemValue) =>
-                                setMaxPeople(itemValue)
-                              }
-                              itemStyle={styles.radiusChoices}
-                            >
-                              <Picker.Item label="1" value={1} />
-                              <Picker.Item label="2" value={2} />
-                              <Picker.Item label="3" value={3} />
-                              <Picker.Item label="4" value={4} />
-                              <Picker.Item label="5" value={5} />
-                              <Picker.Item label="6" value={6} />
-                              <Picker.Item label="7" value={7} />
-                              <Picker.Item label="8" value={8} />
-                              <Picker.Item label="9" value={9} />
-                              <Picker.Item label="10" value={10} />
-                              <Picker.Item label="11" value={11} />
-                              <Picker.Item label="12" value={12} />
-                              <Picker.Item label="13" value={13} />
-                              <Picker.Item label="14" value={14} />
-                              <Picker.Item label="15" value={15} />
-                              <Picker.Item label="16" value={16} />
-                              <Picker.Item label="17" value={17} />
-                              <Picker.Item label="18" value={18} />
-                              <Picker.Item label="19" value={19} />
-                              <Picker.Item label="20" value={20} />
-                              <Picker.Item label="21" value={21} />
-                              <Picker.Item label="22" value={22} />
-                              <Picker.Item label="23" value={23} />
-                              <Picker.Item label="24" value={24} />
-                              <Picker.Item label="25" value={25} />
-                              <Picker.Item label="26" value={26} />
-                              <Picker.Item label="27" value={27} />
-                              <Picker.Item label="28" value={28} />
-                              <Picker.Item label="29" value={29} />
-                              <Picker.Item label="30" value={30} />
-                              <Picker.Item label="31" value={31} />
-                              <Picker.Item label="32" value={32} />
-                              <Picker.Item label="33" value={33} />
-                              <Picker.Item label="34" value={34} />
-                              <Picker.Item label="35" value={35} />
-                              <Picker.Item label="36" value={36} />
-                              <Picker.Item label="37" value={37} />
-                              <Picker.Item label="38" value={38} />
-                              <Picker.Item label="39" value={39} />
-                              <Picker.Item label="40" value={40} />
-                              <Picker.Item label="41" value={41} />
-                              <Picker.Item label="42" value={42} />
-                              <Picker.Item label="43" value={43} />
-                              <Picker.Item label="44" value={44} />
-                              <Picker.Item label="45" value={45} />
-                              <Picker.Item label="46" value={46} />
-                              <Picker.Item label="47" value={47} />
-                              <Picker.Item label="48" value={48} />
-                              <Picker.Item label="49" value={49} />
-                              <Picker.Item label="50" value={50} />
-                              <Picker.Item label="51" value={51} />
-                              <Picker.Item label="52" value={52} />
-                              <Picker.Item label="53" value={53} />
-                              <Picker.Item label="54" value={54} />
-                              <Picker.Item label="55" value={55} />
-                              <Picker.Item label="56" value={56} />
-                              <Picker.Item label="57" value={57} />
-                              <Picker.Item label="58" value={58} />
-                              <Picker.Item label="59" value={59} />
-                              <Picker.Item label="60" value={60} />
-                              <Picker.Item label="61" value={61} />
-                              <Picker.Item label="62" value={62} />
-                              <Picker.Item label="63" value={63} />
-                              <Picker.Item label="64" value={64} />
-                              <Picker.Item label="65" value={65} />
-                              <Picker.Item label="66" value={66} />
-                              <Picker.Item label="67" value={67} />
-                              <Picker.Item label="68" value={68} />
-                              <Picker.Item label="69" value={69} />
-                              <Picker.Item label="70" value={70} />
-                              <Picker.Item label="71" value={71} />
-                              <Picker.Item label="72" value={72} />
-                              <Picker.Item label="73" value={73} />
-                              <Picker.Item label="74" value={74} />
-                              <Picker.Item label="75" value={75} />
-                              <Picker.Item label="76" value={76} />
-                              <Picker.Item label="77" value={77} />
-                              <Picker.Item label="78" value={78} />
-                              <Picker.Item label="79" value={79} />
-                              <Picker.Item label="80" value={80} />
-                              <Picker.Item label="81" value={81} />
-                              <Picker.Item label="82" value={82} />
-                              <Picker.Item label="83" value={83} />
-                              <Picker.Item label="84" value={84} />
-                              <Picker.Item label="85" value={85} />
-                              <Picker.Item label="86" value={86} />
-                              <Picker.Item label="87" value={87} />
-                              <Picker.Item label="88" value={88} />
-                              <Picker.Item label="89" value={89} />
-                              <Picker.Item label="90" value={90} />
-                              <Picker.Item label="91" value={91} />
-                              <Picker.Item label="92" value={92} />
-                              <Picker.Item label="93" value={93} />
-                              <Picker.Item label="94" value={94} />
-                              <Picker.Item label="95" value={95} />
-                              <Picker.Item label="96" value={96} />
-                              <Picker.Item label="97" value={97} />
-                              <Picker.Item label="98" value={98} />
-                              <Picker.Item label="99" value={99} />
-                              <Picker.Item label="100" value={100} />
-                            </Picker>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.createBubbleButton}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigation.navigate("Chatroom");
-                          setCreatingBubble(false);
-                        }}
-                      >
-                        <View style={styles.newBubble}>
-                          <Text style={styles.newBubbleText}>Create</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.errorMessageDiv}>
-                      <Text style={styles.errorMessageText}></Text>
-                    </View>
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </TouchableWithoutFeedback>
-
-            {/* CONFIRM DELETE MODAL */}
-            <Modal
-              transparent={true}
-              animationType="fade"
-              visible={showDeleteBubble}
-            >
-              <View style={styles.deleteBubbleBackground}>
-                <View style={styles.deleteBubblePopup}>
-                  {/* TOP WARNING LABEL */}
-                  <View style={styles.topWarning}>
-                    <Text style={styles.topWarningText}>Warning</Text>
-                  </View>
-                  <View style={styles.bodyWarning}>
-                    <Text style={styles.bodyWarningText}>
-                      Are you sure you want to cancel creating this Bubble? All
-                      progress will be lost.
-                    </Text>
-                  </View>
-                  <View style={styles.continueAndcancelButtons}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setBubbleDescription("");
-                        setBubbleTitle("");
-                        setIsPrivate(false);
-                        setMaxPeople(1);
-                        setSelectedRadius(150);
-                        setCreatingBubble(false);
-                        setShowDeleteBubble(false);
-                      }}
-                      style={styles.buttonDiv}
-                    >
-                      <Text style={styles.buttonText}>Continue</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => setShowDeleteBubble(false)}
-                      style={styles.buttonDiv}
-                    >
-                      <Text style={styles.buttonText}>Cancel</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </Modal>
-          </Modal>
-
-          <View style={styles.topOfHomePage}>
-            {/* Top Icon Bar */}
-            <View style={styles.topBar}>
-              {/* Bubble Logo */}
-              <View style={styles.bubbleLogo}>
-                <BubbleComponent width={120} height={40} />
-              </View>
-              {/* Padding Div*/}
-              <View style={styles.paddingDiv}></View>
-              {/* Div for Notifcations and DM Icons */}
-              <View style={styles.topIcons}>
-                {/* Notifcation Icon */}
-                <View style={styles.notiDiv}>
-                  <TouchableOpacity>
-                    <Feather name="bell" size={34} color={"#56585B"} />
-                  </TouchableOpacity>
-                </View>
-                {/* DM Icon */}
-                <View style={styles.dmDiv}>
-                  <TouchableOpacity>
-                    <Octicons
-                      name="paper-airplane"
-                      size={28}
-                      color={"#56585B"}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+  const renderContent = () => {
+    switch (selectedTab) {
+      case "social":
+        return (
+          <>
+            <View style={styles.infoContainer}>
+              <Feather name="info" size={16} color={colors.text} />
+              <Text style={[styles.infoText, { color: colors.text }]}>
+                Recent Users You’ve Chatted With
+              </Text>
             </View>
+            <TextInput
+              style={[
+                styles.input,
+                { borderColor: colors.secondary, color: colors.text },
+              ]}
+              onChangeText={(text) => SearchUser(text)}
+              placeholder="Add a friend..."
+              placeholderTextColor="gray"
+            />
+            <FlatList data={searched_user} renderItem={renderUserItem} />
+          </>
+        );
+      case "nearby":
+        const getChatroomItemStyle = (item) => {
+          return userid === item[7]
+            ? { ...styles.chatroomItemHost }
+            : { ...styles.chatroomItem };
+        };
 
-            <View style={styles.bottomBar}>
-              <View style={styles.addBubbleDiv}>
+        return (
+          <View onLayout={() => ProfileData()}>
+            <View style={styles.infoContainer}>
+              <Feather name="info" size={16} color={colors.text} />
+              <Text style={[styles.infoText, { color: colors.text }]}>
+                Tap to join a bubble
+              </Text>
+            </View>
+            <FlatList
+              contentContainerStyle={{ paddingBottom: 80 }}
+              data={chatroom_data}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
                 <TouchableOpacity
-                  onPress={() => setCreatingBubble(true)}
-                  style={styles.addBubbleIcon}
+                  style={[
+                    getChatroomItemStyle(item),
+                    { backgroundColor: colors.homeBackground },
+                  ]}
+                  onPress={() => ConnectToChatroom(item[1])}
                 >
-                  <View style={styles.plusLogoIcon}>
-                    <AntDesign name="pluscircleo" size={20} color={"white"} />
+                  <View style={styles.chatroomItemContent}>
+                    <View style={styles.chatroomItemTextContainer}>
+                      <Text
+                        style={[
+                          styles.chatroomItemName,
+                          { color: "white" },
+                        ]}
+                      >
+                        {item[10]}
+                      </Text>
+                      <Text style={getDescriptionStyle(item[13])}>
+                        {item[13]}
+                      </Text>
+                    </View>
+                    <Text style={styles.chatroomItemJoin}>+ Join</Text>
                   </View>
-
-                  <View style={styles.BubbleText}>
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                        color: "white",
-                        fontSize: 16,
-                      }}
-                    >
-                      Bubble
+                  <View style={styles.chatroomItemCreator}>
+                    <Text style={{ color: colors.subText, fontWeight: "bold" }}>
+                      Created by @{item[7]}
                     </Text>
                   </View>
                 </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+              )}
+                ListFooterComponent={<View style={{ height: 150 }} />}
 
-          {/* ====================================SOCIAL TAB======================================== */}
-
-          {socialTab && (
-            <HomePageSocial
-              setSocialTab={setSocialTab}
-              setNearbyTab={setNearbyTab}
             />
-          )}
-
-          {/* ====================================NEARBY TAB======================================== */}
-
-          {nearbyTab && (
-            <HomePageNearby
-              setNearbyTab={setNearbyTab}
-              setSocialTab={setSocialTab}
-            />
-          )}
-
-          {/* ===================================EXPLORE TAB========================================== */}
-
-          <View style={styles.bottomNavBar}>
-            {/* Home Icon */}
-            <View style={styles.bottomIconDiv}>
-              <TouchableOpacity>
-                <Octicons name="home" size={54} color={"#628CD1"} />
-              </TouchableOpacity>
-            </View>
-            {/* Settings Icon */}
-            <View style={styles.bottomIconDiv}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("UserDashboard")}
-              >
-                <MaterialCommunityIcons
-                  name="account-circle-outline"
-                  size={60}
-                  color={"white"}
-                />
-              </TouchableOpacity>
-            </View>
           </View>
-        </SafeAreaView>
+        );
+
+      case "explore":
+        return (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: location?.coords.latitude ?? 37.785834, // Fallback to mock location if no location
+                longitude: location?.coords.longitude ?? -122.406417, // Fallback to mock location if no location
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            >
+              {map_chatrooms.map((bubble, index) => (
+                <Marker
+                  key={index}
+                  coordinate={{
+                    latitude: parseFloat(bubble.latitude),
+                    longitude: parseFloat(bubble.longitude),
+                  }}
+                  title={bubble.name}
+                  description={bubble.description}
+                  onCalloutPress={() => ConnectToChatroom(bubble.id)}
+                >
+                  <View style={styles.bubbleMarker}>
+                    <Text style={styles.bubbleMarkerText}>{bubble.name}</Text>
+                  </View>
+                </Marker>
+              ))}
+            </MapView>
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const modalViewStyle = {
+    margin: 20,
+    backgroundColor: colors.modalBackground,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: "90%",
+  };
+  const modalInputStyle = {
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    color: colors.text,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: colors.subText,
+  };
+
+  const modalTitleInputStyle = {
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    color: colors.text,
+    width: "100%",
+    fontSize: 24,
+    fontWeight: "bold",
+  };
+
+  const renderUserItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={[styles.userListItem,{backgroundColor: colors.background}]}
+        onPress={() => SendFriendRequest(item[1])}
+      >
+        <View style={styles.profileImage} />
+        <View>
+          <Text style={[styles.userListItemText,{color: colors.text}]}>{item[0]}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View
+      style={[styles.container, { backgroundColor: colors.homeBackground }]}
+    >
+<Header
+  leftComponent={
+    (() => {
+      if (connected_chatroom.length > 0) {
+        return (
+          <TouchableOpacity
+            style={[
+              styles.connectedChatroomButton,
+              { backgroundColor: colors.widget, borderRadius: 20 },
+            ]}
+            onPress={() => {
+              if (connected_chatroom) ConnectToChatroom(connected_chatroom[0]);
+            }}
+          >
+            <Text
+              style={[styles.connectedChatroomText, { color: colors.text }]}
+            >
+              {`${connected_chatroom[1]}`}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+      return null; // Return null if no chatroom is connected
+    })()
+  }
+        rightComponent={
+          <View style={styles.iconsContainer}>
+            <TouchableOpacity
+              onPress={() => 
+                navigation.navigate("Notification")
+                // navigation.navigate("Register")
+            }
+            >
+              <Entypo name="mail" size={24} color={colors.iconColor} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate("DMList")}>
+              <Entypo
+                name="message"
+                size={24}
+                color={colors.iconColor}
+                style={styles.iconSpacing}
+              />
+            </TouchableOpacity>
+          </View>
+        }
+        containerStyle={{
+          backgroundColor: colors.homeBackground,
+          borderBottomWidth: 0,
+        }}
+      />
+      <View style={styles.createBubbleButton}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("CreateChatroom")
+            // navigation.navigate("GetUsername")
+          }}
+        >
+          <View
+            style={[
+              styles.newBubble,
+              { backgroundColor: "white" },
+            ]}
+          >
+        <Text style={[styles.newBubbleText, { color: scheme === 'dark' ? colors.buttonText : colors.subText }]}>
+          + Create
+        </Text>
+
+          </View>
+        </TouchableOpacity>
       </View>
-    </TouchableWithoutFeedback>
+
+      <View
+        style={[
+          styles.widget,
+          {
+            backgroundColor: colors.widget,
+            borderTopLeftRadius: 50,
+            borderTopRightRadius: 50,
+          },
+        ]}
+      >
+        <View style={styles.tabsContainer}>
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => setSelectedTab("social")}
+          >
+            {renderIcon("social")}
+            <Text
+              style={[
+                styles.tabText,
+                selectedTab === "social"
+                  ? { color: colors.text, fontWeight: "bold" }
+                  : { color: colors.secondary },
+              ]}
+            >
+              Social
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => {
+              setSelectedTab("nearby");
+              setNearbyTab(false);
+              setSocialTab(true);
+            }}
+          >
+            {renderIcon("nearby")}
+            <Text
+              style={[
+                styles.tabText,
+                selectedTab === "nearby"
+                  ? { color: colors.text, fontWeight: "bold" }
+                  : { color: colors.secondary },
+              ]}
+            >
+              Nearby
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => setSelectedTab("explore")}
+          >
+            {renderIcon("explore")}
+            <Text
+              style={[
+                styles.tabText,
+                selectedTab === "explore"
+                  ? { color: colors.text, fontWeight: "bold" }
+                  : { color: colors.secondary },
+              ]}
+            >
+              Explore
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {renderContent()}
+      </View>
+      <NavBar navigation={navigation} currentScreen={"HomePage"} />
+    
+    </View>
   );
 };
 
 export default HomePage;
 
 const styles = StyleSheet.create({
-  errorMessageText: {
-    fontWeight: "bold",
-    fontSize: 12,
+  bubbleMarker: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "rgba(0, 123, 255, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
+  bubbleMarkerText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  container: {
+    flex: 1,
+  },
+  bubbleContainer: {},
+  iconsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconSpacing: {
+    marginLeft: 20,
+  },
+  widget: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "75%",
+    padding: 10,
 
-  errorMessageDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "7%",
-    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  newBubbleText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "white",
-  },
-  newBubble: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 150,
-    height: 40,
-    backgroundColor: "#93B8DA",
-    borderRadius: 20,
-  },
-  createBubbleButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "8%",
-    width: "100%",
-  },
-  radiusChoices: {
-    width: "100%",
-    height: "90%",
-    color: "white",
-  },
-  radiusChoiceDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  privacyText: {
-    fontWeight: "bold",
-    fontSize: 12,
-    color: "#56585B",
-  },
-  informOfPrivacy: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "15%",
-    width: "100%",
-  },
-  privacySwitchBar: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "60%",
-    width: "100%",
-  },
-  settingsTitleText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "white",
-  },
-  settingTitle: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "15%",
-  },
-  oneThirdSettings: {
-    display: "flex",
-    alignItems: "center",
-    height: "100%",
-    width: "33%",
-  },
-  settings: {
-    display: "flex",
+  tabsContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    alignItems: "center",
-    height: "90%",
-    width: "100%",
+    paddingTop: 20,
   },
-  createBubbleSettingsBody: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "25%",
-  },
-  createBubbleSettingsText: {
-    fontWeight: "bold",
-    fontSize: 26,
-    color: "#6B6A6A",
-    paddingLeft: 16,
-  },
-  createBubbleSettings: {
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    height: "30%",
-    width: "100%",
-  },
-  descriptionCounter: {
-    color: "#3D3C3C",
-    textAlign: "right",
-  },
-  searchBarDivDescription: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "18%",
-    width: "100%",
-  },
-  createBubbleDescriptionText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "#6B6A6A",
-    paddingLeft: 16,
-  },
-  createBubbleDescription: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "5%",
-    width: "100%",
-  },
-  titleCounter: {
-    textAlign: "right",
-    color: "#3D3C3C",
-  },
-  searchBarDiv: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "12%",
-    width: "100%",
-  },
-  createBubbleTitleText: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "#6B6A6A",
-    paddingLeft: 16,
-  },
-  createBubbleTitle: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    height: "5%",
-    width: "100%",
-  },
-  createBubbleTopText: {
-    fontWeight: "bold",
-    fontSize: 34,
-    color: "white",
-  },
-  createBubbleTop: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "70%",
-  },
-  cancelDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-    width: "15%",
-  },
-  createBubbleLabel: {
-    display: "flex",
-    flexDirection: "row",
-    height: "15%",
-    width: "100%",
-  },
-  buttonText: {
-    fontWeight: "bold",
+  tabText: {
     fontSize: 16,
-    color: "white",
   },
-  buttonDiv: {
-    display: "flex",
-    justifyContent: "center",
+  tab: {
     alignItems: "center",
-    height: "100%",
-    width: "48%",
-    borderRadius: 15,
-    backgroundColor: "#191818",
   },
-  continueAndcancelButtons: {
-    display: "flex",
+  iconImage: {
+    width: 50,
+    height: 50,
+    marginBottom: 8,
+  },
+  input: {
+    borderRadius: 30,
+    borderWidth: 1,
+    padding: 15,
+    margin: 10,
+    fontSize: 12,
+  },
+  infoContainer: {
     flexDirection: "row",
-    height: "30%",
-    width: "90%",
-    justifyContent: "space-between",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 10,
+    marginTop: 10,
   },
-  bodyWarningText: {
+  infoText: {
+    fontSize: 12,
+    fontWeight: "normal",
+    left: 5,
     fontWeight: "bold",
-    fontSize: 14,
-    color: "white",
-    padding: 5,
-    textAlign: "center",
   },
-  bodyWarning: {
-    display: "flex",
-    height: "40%",
-    width: "90%",
-    flexShrink: 1,
+  map: {
+    width: "95%",
+    height: "80%",
+    borderRadius: 20,
+    bottom: '5%'
   },
-  topWarningText: {
-    fontWeight: "bold",
-    fontSize: 28,
-    color: "white",
-  },
-  topWarning: {
-    display: "flex",
-    height: "25%",
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  deleteBubblePopup: {
-    display: "flex",
-    height: "20%",
-    width: "60%",
-    backgroundColor: "#252525",
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  deleteBubbleBackground: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  invisibleScreen: {
-    display: "flex",
+  createBubbleButton: {
     position: "absolute",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    left: 0,
+    right: 0,
+    bottom: "75%", // Since the widget is 75% of the height from the bottom, this button will sit on top of it
+    paddingHorizontal: 20, // Match the padding of the widget for alignment
+    paddingBottom: 20, // To give some space between the button and the widget,
+    alignSelf: "center",
   },
-  createBubble: {
-    display: "flex",
-    position: "absolute",
-    width: "90%",
-    height: "60%",
-    backgroundColor: "#1B1B1B",
-    borderRadius: 30,
-    shadowOpacity: 0.5,
-    opacity: 1,
-  },
-  bottomIconDiv: {
-    display: "flex",
-    height: "100%",
-    width: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  searchBar: {
+
+  newBubble: {
+    borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 4,
-    padding: 15,
-    width: "80%",
-    borderRadius: 20,
-    borderColor: "#3D3C3C",
-    borderWidth: 1,
-    backgroundColor: "#191818",
-    color: "#56585B",
+    width: 110,
+  },
+
+  newBubbleText: {
     fontWeight: "bold",
-    paddingLeft: 15,
-    paddingRight: 85,
+    fontSize: 16,
+    textAlign: "center",
   },
-
-  topIconDiv: {
-    display: "flex",
-    height: "100%",
-    width: "33%",
-    alignItems: "center",
-  },
-
-  BubbleText: {
-    display: "flex",
+  centeredView: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: "100%",
-    width: "70%",
-    paddingRight: 5,
+    marginTop: 22,
   },
-  plusLogoIcon: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    height: "100%",
-    width: "30%",
+  modalText: {
+    marginBottom: 20,
+    textAlign: "center",
+    fontSize: 18, // Example size, adjust as needed
   },
-  addBubbleIcon: {
-    display: "flex",
+  switchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: 100,
-    height: 35,
-    backgroundColor: "#93B8DA",
+    marginBottom: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent background
+  },
+  createBubbleButtonStyle: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2, // Optional for Android shadow
+    shadowOpacity: 0.1, // Optional for iOS shadow
+    shadowRadius: 2, // Optional for iOS shadow
+    shadowOffset: { height: 2, width: 2 }, // Optional for iOS shadow
+    shadowColor: "#000", // Optional for iOS shadow,
+    marginTop: 10,
+  },
+
+  chatroomItem: {
+    borderRadius: 30,
+    padding: 25,
+    margin: 10,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    
+  },
+  chatroomItemHost: {
+    borderRadius: 30,
+    borderWidth: 2,
+    padding: 25,
+    margin: 10,
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  chatroomItemCreator: {
+    alignSelf: "flex-end",
+    marginTop: 10,
+  },
+  chatroomItemContent: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  chatroomItemTextContainer: {
+    flexShrink: 1,
+  },
+  chatroomItemName: {
+    fontWeight: "bold",
+    fontSize: 16, // You can adjust the font size as needed
+  },
+  chatroomItemJoin: {
+    fontWeight: "bold",
+    fontSize: 14, // You can adjust the font size as needed
+    alignSelf: "flex-start",
+    color: "white",
+  },
+  userListItem: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    elevation: 3, // for shadow on Android
+    shadowColor: "#000", // for shadow on iOS
+    shadowOffset: { width: 0, height: 1 }, // for shadow on iOS
+    shadowOpacity: 0.2, // for shadow on iOS
+    shadowRadius: 1.5, // for shadow on iOS
+  },
+  userListItemText: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: "black",
+  },
+  userListItemSubText: {
+    fontSize: 14,
+    color: "grey",
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
+    backgroundColor: "#ddd",
   },
-  addBubbleDiv: {
-    display: "flex",
-    height: "100%",
-    width: "35%",
-    justifyContent: "center",
-    alignItems: "center",
+  connectedChatroomButton: {
+    padding: 15,
   },
-  bottomBar: {
-    display: "flex",
-    flexDirection: "row",
-    height: "50%",
-    width: "100%",
-  },
-  dmDiv: {
-    display: "flex",
-    height: "100%",
-    width: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-    transform: [{ rotate: "-45deg" }],
-    paddingBottom: 8,
-  },
-  notiDiv: {
-    display: "flex",
-    height: "100%",
-    width: "50%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  topIcons: {
-    display: "flex",
-    flexDirection: "row",
-    height: "100%",
-    width: "30%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  paddingDiv: {
-    display: "flex",
-    height: "100%",
-    width: "35%",
-  },
-  bubbleLogo: {
-    display: "flex",
-    height: "100%",
-    width: "35%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  topBar: {
-    display: "flex",
-    flexDirection: "row",
-    height: "50%",
-    width: "100%",
-  },
-  HomePageBackground: {
-    display: "flex",
-    height: "100%",
-    width: "100%",
-    backgroundColor: "#191818",
-  },
-  topOfHomePage: {
-    display: "flex",
-    justifyContent: "flex-start",
-    height: "18%",
-    width: "100%",
-  },
-
-  bottomNavBar: {
-    display: "flex",
-    flexDirection: "row",
-    height: "8%",
-    width: "100%",
-    backgroundColor: "#1a1a1a",
+  connectedChatroomText: {
+    fontSize: 13,
+    textAlign: "center",
   },
 });

@@ -7,57 +7,47 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
+  useColorScheme
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
-import qs from "qs";
+import { Entypo } from "@expo/vector-icons";
+import { create_username } from "../../bubble_api/bubble_api";
+import theme from "../../components/theme";
 
 export const GetUsername = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const userID = useSelector((state) => state.user.userID);
-  
-  const create_username = async () => {
-    const data = qs.stringify({
-      username:username,
-      initiate:false
-    });
-    const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-    csrf_data = csrf_response.data;
-    const response = await axios.post(
-      "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/validate_signup",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Csrf-Token": csrf_data.csrf_token,
-        },
-      }
-    );
-    setErrorMessage(response.data);
-    console.log(response.data);
-    if (response.data == '') {
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
+
+  async function CreateUsername() {
+    const data = await create_username(username);
+    setErrorMessage(data);
+    console.log(data);
+    if (data == "") {
       navigation.navigate("HomePage");
     }
-  };
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container,{ backgroundColor: colors.widget }]}>
       <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Hello,</Text>
-        <Text style={styles.subWelcomeText}>
-          Welcome to <Text style={{ color: "#93B8DA" }}>Bubble</Text> 👋
+        <Text style={[styles.welcomeText,{color: colors.text}]}>Hello!</Text>
+        <Text style={[styles.subWelcomeText,{color: colors.subText}]}>
+          Welcome to <Text style={{ color: colors.text }}>Bubble</Text> 👋
         </Text>
       </View>
 
       <View style={styles.centerContent}>
-        <View style={styles.profileCircle}>
-          <Ionicons name="add-circle" style={styles.addIcon} />
-        </View>
+        <View style={[styles.profileCircle,{borderColor: colors.homeBackground}]}>
+        <TouchableOpacity style={[styles.cameraCircle, { backgroundColor: colors.homeBackground, borderColor: colors.homeBackground} ]}>
+    <Entypo name="plus" size={20} color="white" />
+  </TouchableOpacity>
+          </View>
 
         <View style={styles.leftContent}>
           <Text style={styles.enterUsername}>
-            Enter a <Text style={{ color: "#93B8DA" }}>username</Text>
+            <Text style={{ color: colors.subText }}>Enter a username</Text>
           </Text>
           <Text style={styles.description}>
             Others will be able to search you up with this username
@@ -76,10 +66,15 @@ export const GetUsername = ({ navigation }) => {
           <Text style={styles.errorMessageText}>{errorMessage}</Text>
         </View>
 
-        <TouchableOpacity style={styles.createAccountButton}>
-          <Text
-            onPress={() => create_username()}
-            style={styles.createAccountText}
+        <TouchableOpacity 
+    style={[
+        styles.createAccountButton,
+        {backgroundColor: scheme === 'dark' ? colors.background : colors.buttonBackground}
+    ]}
+>
+            <Text
+            onPress={() => CreateUsername()}
+            style={[styles.createAccountText,{color: "white"}]}
           >
             Create Account
           </Text>
@@ -104,7 +99,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#191818",
     justifyContent: "flex-start",
   },
   welcomeContainer: {
@@ -113,12 +107,10 @@ const styles = StyleSheet.create({
     marginTop: "20%",
   },
   welcomeText: {
-    color: "white",
     fontSize: 32,
     fontWeight: "bold",
   },
   subWelcomeText: {
-    color: "white",
     fontSize: 24,
     fontWeight: "bold",
   },
@@ -126,8 +118,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileCircle: {
-    borderWidth: 2,
-    borderColor: "white",
+    borderWidth: 5,
     width: 150,
     height: 150,
     borderRadius: 75,
@@ -142,7 +133,7 @@ const styles = StyleSheet.create({
   },
   leftContent: {
     alignSelf: "flex-start",
-    marginLeft: 10,
+    marginLeft: 15,
     marginBottom: 10,
   },
   enterUsername: {
@@ -156,25 +147,34 @@ const styles = StyleSheet.create({
   inputField: {
     width: "80%",
     borderRadius: 20,
-    backgroundColor: "#272727",
     borderColor: "#939BA7",
     borderWidth: 1,
     color: "white",
     paddingLeft: 15,
     marginTop: 40,
-    padding: 10,
+    padding: 20,
   },
   createAccountButton: {
     width: "40%",
     borderRadius: 20,
-    backgroundColor: "#93B8DA",
     padding: 15,
     marginTop: 60,
     alignItems: "center",
   },
   createAccountText: {
-    color: "white",
     fontWeight: "bold",
+  },
+  cameraCircle: {
+    position: 'absolute',
+    right: 0, 
+    bottom: '5%',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2, 
+    zIndex: 2,
   },
 });
 
