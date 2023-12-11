@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, FlatList, VirtualizedList} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, FlatList, VirtualizedList, useColorScheme} from 'react-native';
 import { Ionicons, Entypo, AntDesign  } from '@expo/vector-icons';
 import { VictoryBar, VictoryChart, VictoryTheme, VictoryAxis } from "victory-native";
 import * as Haptics from 'expo-haptics'
@@ -7,6 +7,7 @@ import axios from "axios";
 import { useState } from "react";
 import NavBar from '../../components/Navbar';
 import { get_friends, load_profile_data } from '../../bubble_api/bubble_api';
+import theme from "../../components/theme";
 
 const UserDashboard = ({ navigation }) => {
   const barData = [
@@ -21,6 +22,8 @@ const UserDashboard = ({ navigation }) => {
   const [username, setUsername] = useState(null);
   const [userid, setUserId] = useState(null);
   const [friends, setFriends] = useState(null);
+  const scheme = useColorScheme();
+  const colors = theme(scheme);
 
   async function GetFriends() {
     const data = await get_friends();
@@ -34,7 +37,7 @@ const UserDashboard = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container} onLayout={() => ProfileData() }>
+    <View style={[styles.container,{backgroundColor: colors.widget}]} onLayout={() => ProfileData() }>
             <SafeAreaView style={{ flex: 1 }}>
 
       <View>
@@ -42,10 +45,10 @@ const UserDashboard = ({ navigation }) => {
       <View style={styles.header}>
         <View style={styles.profileInfoContainer}>
           <View style={styles.profileInfo}>
-            <View style={styles.circle}></View>
+            <View style={[styles.circle,{borderColor: colors.homeBackground}]}></View>
             <View style={styles.nameInfo}>
-              <Text style={styles.name}>{ username }</Text>
-              <Text style={styles.handle}>@{ userid }</Text>
+              <Text style={[styles.name,{color: colors.secondary}]}>{ username }</Text>
+              <Text style={[styles.handle,{color: colors.subText}]}>@{ userid }</Text>
             </View>
           </View>
         </View>
@@ -54,59 +57,61 @@ const UserDashboard = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <View style={styles.weeklyDashboard}>
-          <Text style={styles.dashboardTitle}>Weekly Dashboard</Text>
+        <View style={[styles.weeklyDashboard,{backgroundColor: colors.homeBackground}]}>
+          <Text style={[styles.dashboardTitle,{color: colors.subText}]}>Weekly Dashboard</Text>
           <View style={styles.dashboardContent}>
 
           <View style={styles.barChartContainer}>
-          <VictoryChart
-                theme={VictoryTheme.material}
-                domainPadding={{ x: [30, 30], y: 20 }}
-                height={200}
-                width={250}
-              >
-                <VictoryAxis
-                  style={{
-                    grid: { stroke: "none" },
-                    ticks: { stroke: "none" },
-                    tickLabels: {
-                      fill: "white",  // Removed labels
-                    },
-                  }}
-                />
-                <VictoryAxis
-                  dependentAxis
-                  style={{
-                    grid: { stroke: "none" },
-                    tickLabels: {
-                      fill: "none",  // Removed y-axis
-                    },
-                  }}
-                />
-  <VictoryBar
-  data={barData.map((dataPoint, index) => ({
-    ...dataPoint,
-      value: dataPoint.value,
-      index,
-    }))}
-    x="label"
-    y="value"
-    style={{
-      data: {
-        fill: ({ datum }) => datum.frontColor || colorScale[datum.index % colorScale.length],
-        borderRadius: 8,
-      },
-
-    }}
-    labels={({ datum }) => `${datum.value} ${currentMetric}`}
-    cornerRadius={5}
-    animate={{
-      duration: 2000,
-      onLoad: { duration: 1000 },
-    }}
-  />
-</VictoryChart>
+  <VictoryChart
+    theme={VictoryTheme.material}
+    domainPadding={{ x: [30, 30], y: 20 }}
+    height={200}
+    width={250}
+  >
+    <VictoryAxis
+      style={{
+        grid: { stroke: "none" },
+        ticks: { stroke: "none" },
+        axis: { stroke: colors.subText }, // Adjust the axis color
+        tickLabels: {
+          fill: colors.text,  // Adjust tick labels color based on theme
+        },
+      }}
+    />
+    <VictoryAxis
+      dependentAxis
+      style={{
+        grid: { stroke: "none" },
+        axis: { stroke: colors.subText }, // Adjust the axis color
+        tickLabels: {
+          fill: colors.text,  // Adjust tick labels color based on theme
+        },
+      }}
+    />
+    <VictoryBar
+      data={barData.map((dataPoint, index) => ({
+        ...dataPoint,
+        value: dataPoint.value,
+        index,
+      }))}
+      x="label"
+      y="value"
+      style={{
+        data: {
+          fill: ({ datum }) => datum.frontColor || colorScale[datum.index % colorScale.length],
+          borderRadius: 8,
+        },
+      }}
+      labels={({ datum }) => `${datum.value}`}
+      cornerRadius={5}
+      animate={{
+        duration: 2000,
+        onLoad: { duration: 1000 },
+      }}
+    />
+  </VictoryChart>
 </View>
+
 <View style={styles.bubbleInfoContainer}>
           <Text style={styles.headerText}>Bubbles Joined</Text>
           <View style={styles.blackBox}>
@@ -158,7 +163,6 @@ const UserDashboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#191818',
     padding: 20,
   },
   header: {
@@ -166,6 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start', // Changed to flex-start
     marginBottom: 20,
+    marginTop: 15
   },
   profileInfoContainer: {
     marginTop: 30, // Added more margin to move the circle down
@@ -179,7 +184,6 @@ const styles = StyleSheet.create({
     height: 80, // Increased the size
     borderRadius: 40, // Increased the size
     borderWidth: 5,
-    borderColor: 'white',
   },
   nameInfo: {
     marginLeft: 10,
@@ -187,10 +191,8 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
   },
   handle: {
-    color: 'gray',
   },
   content: {
     flexDirection: 'row', // Changed to row for side-by-side layout
@@ -198,7 +200,6 @@ const styles = StyleSheet.create({
   },
   weeklyDashboard: {
     flex: 1,
-    backgroundColor: '#242735',
     borderRadius: 20,
     padding: 20,
     height: '80%'
@@ -211,13 +212,11 @@ const styles = StyleSheet.create({
   },
 
   dashboardTitle: {
-    color: '#56586F',
     fontSize: 12,
     marginBottom: 10,
   },
   bubbleInfo: {
     flex: 0.4, // Adjusted flex
-    backgroundColor: '#1B1D26',
     padding: 20,
     borderRadius: 20,
   },
@@ -234,7 +233,6 @@ const styles = StyleSheet.create({
 
   
   bubbleInfoContainer: {  
-    backgroundColor: '#1B1D26',
     padding: 15,  // Reduced padding to make the box smaller
     borderRadius: 20,
     alignItems: 'center', // Center text content horizontally

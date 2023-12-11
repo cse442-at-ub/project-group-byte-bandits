@@ -16,7 +16,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
                                     $longitude, 
                                     $latitude);
     }
-    echo json_encode(["long" => $longitude, "lat" => $latitude]);
+    echo json_encode(["long" => $longitude, "lat" => $latitude]); 
 } else {
     forbidden_response();
 }

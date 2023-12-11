@@ -11,13 +11,15 @@ import UserDashboard from "./src/screens/Settings/UserDashboard";
 import GetUsername from "./src/screens/Onboarding/GetUsername";
 import EmailRegister from "./src/screens/Onboarding/Onboarding/emailRegister";
 import { Chatroom } from "./src/screens/Chatroom/Chatroom";
-import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers";
+import { ChatroomUsers } from "./src/screens/Chatroom/ChatroomUsers"
 import store from "./redux/configureStore";
 import { Provider } from "react-redux";
 import DM from "./src/screens/DM/DM";
 import DMList from "./src/screens/DM/DMList";
 import Notification from "./src/screens/Notification/Notification";
 import { ChatroomTemp } from "./src/screens/Chatroom/ChatroomTemp";
+import CreateChatroom from "./src/screens/Homepage/CreateChatroom";
+import DeleteAccount from "./src/screens/Settings/DeleteAccount";
 
 const Stack = createNativeStackNavigator();
 
@@ -58,7 +60,7 @@ const App = () => {
             name="ChatroomUsers"
             options={{
               headerShown: false,
-              animation: "slide_from_right",
+              animation: "slide_from_bottom",
               gestureEnabled: true,
             }}
             component={ChatroomUsers}
@@ -125,6 +127,22 @@ const App = () => {
               gestureEnabled: true,
             }}
             component={Notification}
+          />
+            <Stack.Screen
+            name="CreateChatroom"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={CreateChatroom}
+          />
+          <Stack.Screen
+            name="DeleteAccount"
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+            component={DeleteAccount}
           />
         </Stack.Navigator>
       </NavigationContainer>

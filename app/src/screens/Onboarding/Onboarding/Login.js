@@ -38,7 +38,48 @@ const Login = ({ navigation }) => {
     }
   }
 
-  /*const fetchAppleInfo = async () => {
+  // const fetchAppleInfo = async () => {
+  //   try {
+  //     const response = await AppleAuthentication.signInAsync({
+  //       requestedScopes: [
+  //         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+  //         AppleAuthentication.AppleAuthenticationScope.EMAIL,
+  //       ],
+  //     });
+
+  //     const apple_user = response.user;
+  //     const data = qs.stringify({
+  //       apple_user: apple_user,
+  //     });
+  //     const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
+  //     csrf_data = csrf_response.data;
+  //     response = await axios.post(
+  //       "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/apple_login",
+  //       data,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //           "X-Csrf-Token": csrf_data.csrf_token,
+  //         },
+  //       }
+  //     );
+  //     // if valid data was entered, navigate user to HomePage
+  //     console.log(response.data);
+
+  //     if (response.data == '') {
+  //       navigation.navigate("HomePage")
+  //     }
+  //   } catch (error) {
+  //     if (error.code === "ERR_REQUEST_CANCELED") {
+  //       console.log("Error while fetching apple data");
+  //       // handle that the user canceled the sign-in flow
+  //     } else {
+  //       // handle other errors
+  //     }
+  //   }
+  // };
+
+  const fetchAppleInfo = async () => {
     try {
       const response = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -46,47 +87,6 @@ const Login = ({ navigation }) => {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-
-      const apple_user = response.user;
-      const data = qs.stringify({
-        apple_user: apple_user,
-      });
-      const csrf_response = await axios.get("https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/generate_csrf");
-      csrf_data = csrf_response.data;
-      response = await axios.post(
-        "https://www-student.cse.buffalo.edu/CSE442-542/2023-Fall/cse-442a/auth/apple_login",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-Csrf-Token": csrf_data.csrf_token,
-          },
-        }
-      );
-      // if valid data was entered, navigate user to HomePage
-      console.log(response.data);
-
-      if (response.data == '') {
-        navigation.navigate("HomePage")
-      }
-    } catch (error) {
-      if (error.code === "ERR_REQUEST_CANCELED") {
-        console.log("Error while fetching apple data");
-        // handle that the user canceled the sign-in flow
-      } else {
-        // handle other errors
-      }
-    }
-  };*/
-
-  const fetchAppleInfo = async () => {
-    try {
-      /*const response = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });*/
 
       const apple_user = response.user;
       const data = qs.stringify({
@@ -201,17 +201,19 @@ const Login = ({ navigation }) => {
             <View style={styles.line} />
           </View>
 
-          {/*<AppleAuthentication.AppleAuthenticationButton
-            buttonStyle={
-              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-            }
-            buttonType={
-              AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
-            }
-            cornerRadius={5}
-            style={styles.appleButton}
-            onPress={fetchAppleInfo}
-          />*/}
+          {Platform.OS === "ios" && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+              }
+              cornerRadius={5}
+              style={styles.appleButton}
+              onPress={fetchAppleInfo}
+            />
+          )}
         </View>
       </KeyboardAvoidingView>
     </>

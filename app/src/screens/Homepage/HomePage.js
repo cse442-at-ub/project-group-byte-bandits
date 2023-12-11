@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Switch, Button } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { Modal, Switch, Button, useColorScheme } from "react-native";
 import {
   View,
   Text,
@@ -17,7 +18,6 @@ import {
   Feather,
   Entypo,
 } from "@expo/vector-icons";
-import { useColorScheme } from "react-native";
 import theme from "../../components/theme";
 import NearbyDark from "../../assets/nearbydark.gif";
 import ExploreDark from "../../assets/exploredark.gif";
@@ -36,7 +36,7 @@ import {
   send_friend_request,
   create_chatroom,
   load_chatroom_data,
-  load_all_chatroom
+  load_all_chatroom,
 } from "../../bubble_api/bubble_api";
 import * as Location from "expo-location";
 import axios from "axios";
@@ -57,6 +57,7 @@ const HomePage = ({ navigation }) => {
   const [selectedRadius, setSelectedRadius] = useState(150);
   const [maxPeople, setMaxPeople] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  let locationSubscription;
 
   useEffect(() => {
     handle_login_state(navigation);
@@ -70,7 +71,7 @@ const HomePage = ({ navigation }) => {
   const getDescriptionStyle = (description) => {
     return description === "No description"
       ? { color: "gray", fontSize: 10, marginTop: 5 }
-      : { color: colors.text, fontSize: 10, marginTop: 5 };
+      : { color: colors.subText, fontSize: 10, marginTop: 5 };
   };
 
   const scheme = useColorScheme();
@@ -78,7 +79,7 @@ const HomePage = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState("nearby");
 
   const [location, setLocation] = useState(null);
-  const [connected_chatroom, setConnectedChatroom] = useState(null);
+  const [connected_chatroom, setConnectedChatroom] = useState([]);
 
   const [errorMsg, setErrorMsg] = useState(null);
   const [username, setUsername] = useState(null);
@@ -86,7 +87,6 @@ const HomePage = ({ navigation }) => {
   const [chatroom_data, setChatroomData] = useState(null);
   const [searched_user, setSearchedUser] = useState(null);
   const [map_chatrooms, setMapData] = useState(null);
-
 
   async function CreateChatroom() {
     const data = await create_chatroom(
@@ -137,75 +137,101 @@ const HomePage = ({ navigation }) => {
     setUsername(data["name"]);
     setUserId(data["id"]);
   }
-  
+
   async function CheckConnection() {
     const response = await load_chatroom_data();
-    if(response.code) {
+    if (response.code) {
       console.log("connected chatroom", response);
+      setConnectedChatroom([]);
       return false;
     } else {
       console.log(response);
-      setConnectedChatroom([response.id,
-                            response.name,
-                            response.host]);
+      setConnectedChatroom([response.id, response.name, response.host]);
     }
   }
-  useEffect(() => {
-    LoadAllChatrooms()
-  });
-  useEffect(() => {
-    const getLocation = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log("STATUS", status);
+  useFocusEffect(
+    React.useCallback(() => {
+      let hasRun = false;
 
-      if (status !== "granted") {
-        console.log("Location permission not granted");
-        return;
+      if (!hasRun) {
+        LoadAllChatrooms();
+        CheckConnection();
+
+        hasRun = true;
       }
 
-      try {
-        let currentLocation = await Location.getCurrentPositionAsync({});
-        setLocation(currentLocation);
-      } catch (error) {
-        console.error("Error getting the initial position:", error);
-      }
+      return () => {
+        hasRun = false;
+      };
+    }, [])
+  );
 
-      try {
-        locationSubscription = await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.High,
-            timeInterval: 5000,
-            distanceInterval: 1,
-          },
-          async (newLocation) => {
-            setLocation(newLocation);
-            const data = await update_location(
-              newLocation.coords.longitude,
-              newLocation.coords.latitude
-            );
-            const c_data = await load_chatrooms(
-              newLocation.coords.longitude,
-              newLocation.coords.latitude
-            );
-            CheckConnection();
-            setChatroomData(c_data);
-            setErrorMsg(data);
-            //console.log(c_data);
+  useFocusEffect(
+    React.useCallback(() => {
+      let hasRun = false;
+
+      if (!hasRun) {
+        console.log("===========================================");
+
+        const getLocation = async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          console.log("STATUS", status);
+
+          if (status !== "granted") {
+            console.log("Location permission not granted");
+            return;
           }
-        );
-      } catch (error) {
-        console.error("Error starting location monitoring:", error);
-      }
-    };
 
-    getLocation();
+          try {
+            let currentLocation = await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation);
+          } catch (error) {
+            console.error("Error getting the initial position:", error);
+          }
 
-    return () => {
-      if (locationSubscription) {
-        locationSubscription.remove();
+          try {
+            locationSubscription = await Location.watchPositionAsync(
+              {
+                accuracy: Location.Accuracy.High,
+                timeInterval: 10000,
+                distanceInterval: 3,
+              },
+              async (newLocation) => {
+                setLocation(newLocation);
+                const data = await update_location(
+                  newLocation.coords.longitude,
+                  newLocation.coords.latitude
+                );
+                const c_data = await load_chatrooms(
+                  newLocation.coords.longitude,
+                  newLocation.coords.latitude
+                );
+                setChatroomData(c_data);
+                setErrorMsg(data);
+                //console.log(c_data);
+              }
+            );
+          } catch (error) {
+            console.error("Error starting location monitoring:", error);
+          }
+        };
+
+        getLocation();
+        hasRun = true;
       }
-    };
-  }, []);
+
+      return () => {
+        hasRun = false;
+        if (locationSubscription) {
+          locationSubscription.remove();
+        }
+      };
+    }, [])
+  );
+
+  const isUserInChatroom = (chatroomId) => {
+    return connected_chatroom.includes(chatroomId);
+  };
 
   const renderIcon = (tabName) => {
     if (scheme === "dark") {
@@ -253,11 +279,7 @@ const HomePage = ({ navigation }) => {
               placeholder="Add a friend..."
               placeholderTextColor="gray"
             />
-            <FlatList
-              data={searched_user}
-                renderItem={renderUserItem}
-
-            />
+            <FlatList data={searched_user} renderItem={renderUserItem} />
           </>
         );
       case "nearby":
@@ -276,7 +298,7 @@ const HomePage = ({ navigation }) => {
               </Text>
             </View>
             <FlatList
-              contentContainerStyle={{ paddingBottom: 150 }}
+              contentContainerStyle={{ paddingBottom: 80 }}
               data={chatroom_data}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
@@ -292,7 +314,7 @@ const HomePage = ({ navigation }) => {
                       <Text
                         style={[
                           styles.chatroomItemName,
-                          { color: colors.text },
+                          { color: "white" },
                         ]}
                       >
                         {item[10]}
@@ -304,12 +326,14 @@ const HomePage = ({ navigation }) => {
                     <Text style={styles.chatroomItemJoin}>+ Join</Text>
                   </View>
                   <View style={styles.chatroomItemCreator}>
-                    <Text style={{ color: "gray", fontWeight: "bold" }}>
+                    <Text style={{ color: colors.subText, fontWeight: "bold" }}>
                       Created by @{item[7]}
                     </Text>
                   </View>
                 </TouchableOpacity>
               )}
+                ListFooterComponent={<View style={{ height: 150 }} />}
+
             />
           </View>
         );
@@ -317,7 +341,7 @@ const HomePage = ({ navigation }) => {
       case "explore":
         return (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <MapView 
+            <MapView
               style={styles.map}
               initialRegion={{
                 latitude: location?.coords.latitude ?? 37.785834, // Fallback to mock location if no location
@@ -326,8 +350,7 @@ const HomePage = ({ navigation }) => {
                 longitudeDelta: 0.0421,
               }}
             >
-              {       
-              map_chatrooms.map((bubble, index) => (
+              {map_chatrooms.map((bubble, index) => (
                 <Marker
                   key={index}
                   coordinate={{
@@ -392,14 +415,12 @@ const HomePage = ({ navigation }) => {
   const renderUserItem = ({ item }) => {
     return (
       <TouchableOpacity
-        style={styles.userListItem}
+        style={[styles.userListItem,{backgroundColor: colors.background}]}
         onPress={() => SendFriendRequest(item[1])}
       >
         <View style={styles.profileImage} />
         <View>
-          <Text style={styles.userListItemText}>
-            {item[0]}
-          </Text>
+          <Text style={[styles.userListItemText,{color: colors.text}]}>{item[0]}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -409,25 +430,38 @@ const HomePage = ({ navigation }) => {
     <View
       style={[styles.container, { backgroundColor: colors.homeBackground }]}
     >
-      <Header
-        leftComponent={
-        <TouchableOpacity 
-          style={[styles.connectedChatroomButton,{backgroundColor: colors.widget, borderRadius: 20,}]}
-          onPress={() => {
-            if (connected_chatroom) 
-              ConnectToChatroom(connected_chatroom[0])
-          }} 
-        >
-          <Text style={[styles.connectedChatroomText,{color: colors.text}]}>
-            {connected_chatroom ? `${connected_chatroom[1]}` : "No Chatroom Connected"}
-          </Text>
-        </TouchableOpacity>
-          
-        }
+<Header
+  leftComponent={
+    (() => {
+      if (connected_chatroom.length > 0) {
+        return (
+          <TouchableOpacity
+            style={[
+              styles.connectedChatroomButton,
+              { backgroundColor: colors.widget, borderRadius: 20 },
+            ]}
+            onPress={() => {
+              if (connected_chatroom) ConnectToChatroom(connected_chatroom[0]);
+            }}
+          >
+            <Text
+              style={[styles.connectedChatroomText, { color: colors.text }]}
+            >
+              {`${connected_chatroom[1]}`}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+      return null; // Return null if no chatroom is connected
+    })()
+  }
         rightComponent={
           <View style={styles.iconsContainer}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Notification")}
+              onPress={() => 
+                navigation.navigate("Notification")
+                // navigation.navigate("Register")
+            }
             >
               <Entypo name="mail" size={24} color={colors.iconColor} />
             </TouchableOpacity>
@@ -450,18 +484,20 @@ const HomePage = ({ navigation }) => {
       <View style={styles.createBubbleButton}>
         <TouchableOpacity
           onPress={() => {
-            setIsModalVisible(true);
+            navigation.navigate("CreateChatroom")
+            // navigation.navigate("GetUsername")
           }}
         >
           <View
             style={[
               styles.newBubble,
-              { backgroundColor: colors.buttonBackground },
+              { backgroundColor: "white" },
             ]}
           >
-            <Text style={[styles.newBubbleText, { color: colors.buttonText }]}>
-              + Create
-            </Text>
+        <Text style={[styles.newBubbleText, { color: scheme === 'dark' ? colors.buttonText : colors.subText }]}>
+          + Create
+        </Text>
+
           </View>
         </TouchableOpacity>
       </View>
@@ -534,82 +570,7 @@ const HomePage = ({ navigation }) => {
         {renderContent()}
       </View>
       <NavBar navigation={navigation} currentScreen={"HomePage"} />
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
-      >
-        <TouchableWithoutFeedback onPress={toggleModal}>
-          <View style={styles.modalOverlay}>
-            <View style={modalViewStyle}>
-              <TextInput
-                style={modalTitleInputStyle}
-                onChangeText={setBubbleTitle}
-                value={bubbleTitle}
-                placeholder="Bubble Title"
-                placeholderTextColor="gray"
-                maxLength={30}
-              />
-
-              <TextInput
-                style={[modalInputStyle, { height: 100 }]}
-                onChangeText={setBubbleDescription}
-                value={bubbleDescription}
-                placeholder="Short Description"
-                placeholderTextColor="gray"
-                maxLength={100}
-                multiline
-              />
-
-              <View style={styles.switchContainer}>
-                <Text
-                  style={[styles.modalText, { color: colors.text, right: 10 }]}
-                >
-                  Private Room
-                </Text>
-                <Switch
-                  trackColor={{ false: "#767577", true: colors.primary }}
-                  thumbColor={isPrivate ? colors.secondary : "#f4f3f4"}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={setIsPrivate}
-                  value={isPrivate}
-                />
-              </View>
-
-              <View style={styles.sliderContainer}>
-                <Text style={[styles.modalText, { color: colors.text }]}>
-                  Radius: {selectedRadius}m
-                </Text>
-                <Slider
-                  style={styles.slider}
-                  minimumValue={10}
-                  maximumValue={100}
-                  step={1}
-                  value={selectedRadius}
-                  onValueChange={setSelectedRadius}
-                  minimumTrackTintColor={colors.primary}
-                  maximumTrackTintColor={colors.secondary}
-                  thumbTintColor={colors.primary}
-                />
-              </View>
-
-              <TouchableOpacity
-                style={[
-                  styles.createBubbleButtonStyle,
-                  { backgroundColor: colors.buttonBackground },
-                ]}
-                onPress={() => {
-                  setCreatingBubble(false);
-                  CreateChatroom();
-                }}
-              >
-                <Text style={{ color: colors.buttonText }}>Create Bubble</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+    
     </View>
   );
 };
@@ -695,8 +656,9 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "95%",
-    height: "85%",
+    height: "80%",
     borderRadius: 20,
+    bottom: '5%'
   },
   createBubbleButton: {
     position: "absolute",
@@ -769,6 +731,7 @@ const styles = StyleSheet.create({
     margin: 10,
     flexDirection: "column",
     justifyContent: "space-between",
+    
   },
   chatroomItemHost: {
     borderRadius: 30,
@@ -802,13 +765,13 @@ const styles = StyleSheet.create({
     color: "white",
   },
   userListItem: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 15,
     marginVertical: 5,
     marginHorizontal: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     elevation: 3, // for shadow on Android
     shadowColor: "#000", // for shadow on iOS
     shadowOffset: { width: 0, height: 1 }, // for shadow on iOS
@@ -818,24 +781,23 @@ const styles = StyleSheet.create({
   userListItemText: {
     marginLeft: 15,
     fontSize: 16,
-    color: 'black',
+    color: "black",
   },
   userListItemSubText: {
     fontSize: 14,
-    color: 'grey',
+    color: "grey",
   },
   profileImage: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#ddd', 
+    backgroundColor: "#ddd",
   },
   connectedChatroomButton: {
     padding: 15,
   },
   connectedChatroomText: {
-    fontSize: 13, 
-    textAlign: 'center',
-    
+    fontSize: 13,
+    textAlign: "center",
   },
 });
